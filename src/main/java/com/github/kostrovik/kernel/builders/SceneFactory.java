@@ -2,7 +2,7 @@ package com.github.kostrovik.kernel.builders;
 
 import com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
 import com.github.kostrovik.kernel.interfaces.views.*;
-import com.github.kostrovik.kernel.settings.ApplicationSettings;
+import com.github.kostrovik.kernel.common.ApplicationSettings;
 import com.github.kostrovik.kernel.settings.Configurator;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -61,6 +61,10 @@ final public class SceneFactory implements ViewEventListenerInterface {
 
     public static SceneFactory provider() {
         return getInstance();
+    }
+
+    public void setMainStage(Stage mainWindow) {
+        SceneFactory.mainWindow = mainWindow;
     }
 
     public void initScene(String moduleName, String viewName, LayoutType layoutType, EventObject event) {
@@ -171,10 +175,12 @@ final public class SceneFactory implements ViewEventListenerInterface {
             MenuBuilderInterface menu = config.getConfigForModule(module).getMenuBuilder();
             List<MenuItem> menuItems = menu.getMenuList();
 
-            Menu addDataMenu = new Menu(menu.getModuleMenuName());
-            addDataMenu.getItems().addAll(menuItems);
+            if (!menuItems.isEmpty()) {
+                Menu addDataMenu = new Menu(menu.getModuleMenuName());
+                addDataMenu.getItems().addAll(menuItems);
 
-            menuBar.getMenus().add(addDataMenu);
+                menuBar.getMenus().add(addDataMenu);
+            }
         }
 
         return menuBar;

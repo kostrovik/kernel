@@ -1,14 +1,11 @@
 package com.github.kostrovik.kernel.settings;
 
-import com.github.kostrovik.kernel.dictionaries.ViewTypeDictionary;
 import com.github.kostrovik.kernel.interfaces.ApplicationLoggerInterface;
 import com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
 import com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface;
 import com.github.kostrovik.kernel.interfaces.views.ContentViewInterface;
 import com.github.kostrovik.kernel.interfaces.views.MenuBuilderInterface;
 import com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;
-import com.github.kostrovik.kernel.views.ColorThemesListView;
-import com.github.kostrovik.kernel.views.ServerListView;
 import com.github.kostrovik.kernel.views.menu.MenuBuilder;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -58,15 +55,6 @@ final public class Configurator implements ModuleConfiguratorInterface {
 
     @Override
     public Map<String, ContentViewInterface> getViewEvents(Pane content, Stage stage) {
-        if (views.isEmpty()) {
-            synchronized (Configurator.class) {
-                if (views.isEmpty()) {
-                    views.put(ViewTypeDictionary.COLOR_THEME_LIST.name(), new ColorThemesListView(content, stage));
-                    views.put(ViewTypeDictionary.DATA_BASE_SERVER_LIST.name(), new ServerListView(content, stage));
-                }
-            }
-        }
-
         return views;
     }
 

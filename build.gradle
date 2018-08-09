@@ -7,7 +7,6 @@ plugins {
 group 'com.github.kostrovik'
 version '1.0-SNAPSHOT'
 def moduleName = 'kernel'
-def launcherClassName = 'com.github.kostrovik.kernel.common.AppCore'
 def artifactRepository = 'file:/repositoryUrl/repo/'
 
 sourceCompatibility = 10
@@ -46,7 +45,6 @@ jar {
     inputs.property("moduleName", moduleName)
     manifest {
         attributes(
-                'Main-Class': launcherClassName,
                 'Automatic-Module-Name': moduleName,
         )
     }

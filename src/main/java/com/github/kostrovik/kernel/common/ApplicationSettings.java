@@ -1,9 +1,9 @@
-package com.github.kostrovik.kernel.settings;
+package com.github.kostrovik.kernel.common;
 
 import com.github.kostrovik.kernel.builders.SceneFactory;
-import com.github.kostrovik.kernel.common.ConfigParser;
 import com.github.kostrovik.kernel.dictionaries.ColorThemeDictionary;
 import com.github.kostrovik.kernel.models.ServerConnectionAddress;
+import com.github.kostrovik.kernel.settings.Configurator;
 
 import java.io.IOException;
 import java.net.URI;
@@ -142,9 +142,12 @@ public class ApplicationSettings {
 
             if (Paths.get(applicationDirectory).getParent().toString().equals("/")) {
                 applicationDirectory = URI.create(System.getProperty("java.home"));
+                applicationConfigPath = Paths.get(applicationDirectory.getPath());
+            } else {
+                applicationConfigPath = Paths.get(applicationDirectory.getPath()).getParent();
             }
 
-            applicationConfigPath = Paths.get(applicationDirectory.getPath() + "/settings", "application.yaml");
+            applicationConfigPath = Paths.get(applicationConfigPath + "/settings", "application.yaml");
 
             if (Files.notExists(applicationConfigPath.getParent())) {
                 Files.createDirectory(applicationConfigPath.getParent());

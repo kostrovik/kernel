@@ -1,5 +1,7 @@
 package com.github.kostrovik.kernel.interfaces.views;
 
+import javafx.stage.Stage;
+
 /**
  * project: glcmtx
  * author:  kostrovik
@@ -8,4 +10,6 @@ package com.github.kostrovik.kernel.interfaces.views;
  */
 public interface ViewEventListenerInterface {
     void handle(ViewEventInterface event);
+
+    void setMainStage(Stage mainWindow);
 }

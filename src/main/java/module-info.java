@@ -22,6 +22,8 @@ module kernel {
     exports com.github.kostrovik.kernel.graphics.controls.field;
     exports com.github.kostrovik.kernel.graphics.common;
     exports com.github.kostrovik.kernel.graphics.common.icons;
+    exports com.github.kostrovik.kernel.models;
+    exports com.github.kostrovik.kernel.dictionaries;
 
     uses com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
     uses com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;

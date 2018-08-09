@@ -1,7 +1,6 @@
 package com.github.kostrovik.kernel.common;
 
 import com.github.kostrovik.kernel.models.ServerConnectionAddress;
-import com.github.kostrovik.kernel.settings.ApplicationSettings;
 import com.github.kostrovik.kernel.settings.Configurator;
 import com.github.kostrovik.kernel.interfaces.ServerConnectionInterface;
 
