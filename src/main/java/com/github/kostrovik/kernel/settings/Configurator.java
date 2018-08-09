@@ -54,7 +54,7 @@ final public class Configurator implements ModuleConfiguratorInterface {
     }
 
     @Override
-    public Map<String, ContentViewInterface> getViewEvents(Pane content, Stage stage) {
+    public Map<String, ContentViewInterface> getModuleViews(Pane content, Stage stage) {
         return views;
     }
 

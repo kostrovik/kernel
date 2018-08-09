@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public interface ModuleConfiguratorInterface {
     MenuBuilderInterface getMenuBuilder();
 
-    Map<String, ContentViewInterface> getViewEvents(Pane content, Stage stage);
+    Map<String, ContentViewInterface> getModuleViews(Pane content, Stage stage);
 
     ViewEventListenerInterface getEventListener();
 

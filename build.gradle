@@ -1,13 +1,13 @@
 plugins {
     id 'java'
-    id 'maven'
     id 'idea'
+    id 'maven-publish'
 }
 
 group 'com.github.kostrovik'
 version '1.0-SNAPSHOT'
 def moduleName = 'kernel'
-def artifactRepository = 'file:/repositoryUrl/repo/'
+def artifactRepository = 'http://server.ru/repositories/kostrovik'
 
 sourceCompatibility = 10
 targetCompatibility = 10
@@ -23,12 +23,7 @@ dependencies {
     testCompile("org.junit.jupiter:junit-jupiter-api:5.2.0")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:5.2.0")
 
-
-    compile files('libs/jackson-core-2.9.6.jar')
-    compile files('libs/jackson-dataformat-yaml-2.9.2.jar')
-    compile files('libs/snakeyaml-1.18.jar')
-    compile files('libs/jackson-databind-2.9.6.jar')
-    compile files('libs/jackson-annotations-2.9.0.jar')
+    compile('jackson:jackson-dataformat-yaml:2.9.6')
 }
 
 test {
@@ -63,10 +58,23 @@ compileJava {
 /**
  * Задание на выгрузку артефакта в указанный репозиторий
  * */
-uploadArchives {
+publishing {
     repositories {
-        mavenDeployer {
-            repository(url: artifactRepository)
+        maven {
+            url artifactRepository
         }
     }
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourceJar {
+                classifier "sources"
+            }
+        }
+    }
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
 }

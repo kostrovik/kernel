@@ -77,7 +77,7 @@ public class MenuBuilder implements MenuBuilderInterface {
     private URI getPath() {
         URI applicationConfigPath = null;
         try {
-            URL moduleResource = Class.forName(MenuBuilder.class.getName()).getResource("/configurations/menu_config.yaml");
+            URL moduleResource = Class.forName(MenuBuilder.class.getName()).getResource("/com/github/kostrovik/configurations/menu_config.yaml");
             applicationConfigPath = moduleResource.toURI();
         } catch (URISyntaxException | ClassNotFoundException e) {
             logger.log(Level.SEVERE, "Ошибка получения настроек.", e);

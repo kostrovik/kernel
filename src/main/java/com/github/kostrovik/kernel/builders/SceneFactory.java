@@ -1,8 +1,8 @@
 package com.github.kostrovik.kernel.builders;
 
+import com.github.kostrovik.kernel.common.ApplicationSettings;
 import com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
 import com.github.kostrovik.kernel.interfaces.views.*;
-import com.github.kostrovik.kernel.common.ApplicationSettings;
 import com.github.kostrovik.kernel.settings.Configurator;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -118,7 +118,7 @@ final public class SceneFactory implements ViewEventListenerInterface {
     private ContentViewInterface createView(String moduleName, String viewName, Pane content, Stage stage) {
         ModuleConfiguratorInterface moduleConfiguration = config.getConfigForModule(moduleName);
 
-        Map<String, ContentViewInterface> moduleViews = moduleConfiguration.getViewEvents(content, stage);
+        Map<String, ContentViewInterface> moduleViews = moduleConfiguration.getModuleViews(content, stage);
         return moduleViews.get(viewName);
     }
 
@@ -135,11 +135,7 @@ final public class SceneFactory implements ViewEventListenerInterface {
         content.prefWidthProperty().bind(vbox.widthProperty());
         content.prefHeightProperty().bind(vbox.heightProperty());
 
-        try {
-            scene.getStylesheets().add(Class.forName(this.getClass().getName()).getResource(String.format("/styles/themes/%s", settings.getDefaultColorTheme())).toExternalForm());
-        } catch (ClassNotFoundException error) {
-            logger.log(Level.WARNING, "Ошибка загрузки стилей.", error);
-        }
+        setStyle(scene);
 
         return scene;
     }
@@ -158,11 +154,7 @@ final public class SceneFactory implements ViewEventListenerInterface {
         content.prefWidthProperty().bind(vbox.widthProperty());
         content.prefHeightProperty().bind(vbox.heightProperty());
 
-        try {
-            scene.getStylesheets().add(Class.forName(this.getClass().getName()).getResource(String.format("/styles/themes/%s", settings.getDefaultColorTheme())).toExternalForm());
-        } catch (ClassNotFoundException error) {
-            logger.log(Level.WARNING, "Ошибка загрузки стилей.", error);
-        }
+        setStyle(scene);
 
         return scene;
     }
@@ -217,6 +209,14 @@ final public class SceneFactory implements ViewEventListenerInterface {
 
     private void setBackground(Region container) {
         container.setBackground(Background.EMPTY);
+    }
+
+    private void setStyle(Scene scene) {
+        try {
+            scene.getStylesheets().add(Class.forName(this.getClass().getName()).getResource(String.format("/com/github/kostrovik/styles/themes/%s", settings.getDefaultColorTheme())).toExternalForm());
+        } catch (ClassNotFoundException error) {
+            logger.log(Level.WARNING, "Ошибка загрузки стилей.", error);
+        }
     }
 
     @Override

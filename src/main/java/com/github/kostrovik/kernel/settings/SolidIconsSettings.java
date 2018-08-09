@@ -19,7 +19,7 @@ final public class SolidIconsSettings {
 
     private static volatile SolidIconsSettings settings;
     private static Properties config;
-    private final static String defaultConfigFilePath = "/icons/control_icons.properties";
+    private final static String defaultConfigFilePath = "/com/github/kostrovik/icons/control_icons.properties";
 
     private SolidIconsSettings() {
         config = getDefaultConfig();
