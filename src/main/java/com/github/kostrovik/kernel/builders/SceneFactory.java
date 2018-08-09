@@ -1,8 +1,9 @@
 package com.github.kostrovik.kernel.builders;
 
+import com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
+import com.github.kostrovik.kernel.interfaces.views.*;
 import com.github.kostrovik.kernel.settings.ApplicationSettings;
 import com.github.kostrovik.kernel.settings.Configurator;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -13,9 +14,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
-import com.github.kostrovik.kernel.interfaces.views.*;
-import javafx.stage.WindowEvent;
 
 import java.util.EventObject;
 import java.util.List;

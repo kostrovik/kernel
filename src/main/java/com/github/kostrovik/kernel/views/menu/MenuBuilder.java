@@ -11,7 +11,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -77,14 +77,10 @@ public class MenuBuilder implements MenuBuilderInterface {
     private URI getPath() {
         URI applicationConfigPath = null;
         try {
-            URI applicationDirectory = MenuBuilder.class.getProtectionDomain().getCodeSource().getLocation().toURI();
-            if (Paths.get(applicationDirectory).getParent().toString().equals("/")) {
-                applicationDirectory = URI.create(System.getProperty("java.home"));
-            }
-
-            applicationConfigPath = new URI(applicationDirectory + "configurations/menu_config.yaml");
-        } catch (URISyntaxException e) {
-            logger.log(Level.SEVERE, "Нет доступа к директории с настройками.", e);
+            URL moduleResource = Class.forName(MenuBuilder.class.getName()).getResource("/configurations/menu_config.yaml");
+            applicationConfigPath = moduleResource.toURI();
+        } catch (URISyntaxException | ClassNotFoundException e) {
+            logger.log(Level.SEVERE, "Ошибка получения настроек.", e);
         }
 
         return applicationConfigPath;
