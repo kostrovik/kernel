@@ -1,5 +1,7 @@
 package com.github.kostrovik.kernel.interfaces;
 
+import java.util.Map;
+
 /**
  * project: glcmtx
  * author:  kostrovik
@@ -9,5 +11,9 @@ package com.github.kostrovik.kernel.interfaces;
 public interface ServerConnectionInterface {
     String sendGet(String apiUrl);
 
+    String sendGet(String apiUrl, Map<String, String> headers);
+
     String sendPost(String apiUrl, String json);
+
+    String sendPost(String apiUrl, String json, Map<String, String> headers);
 }
