@@ -4,7 +4,6 @@ import com.github.kostrovik.kernel.interfaces.ServerConnectionInterface;
 import com.github.kostrovik.kernel.models.ServerConnectionAddress;
 import com.github.kostrovik.kernel.settings.Configurator;
 
-import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -90,10 +89,19 @@ public class ServerConnector implements ServerConnectionInterface {
     }
 
     private void parseResponse(StringBuilder answer, HttpURLConnection connection) throws IOException {
-        try (InputStreamReader input = new InputStreamReader(connection.getInputStream(), Charset.forName("UTF-8"))) {
-            int character;
-            while (((character = input.read()) != -1)) {
-                answer.append((char) character);
+        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            try (InputStreamReader input = new InputStreamReader(connection.getErrorStream(), Charset.forName("UTF-8"))) {
+                int character;
+                while (((character = input.read()) != -1)) {
+                    answer.append((char) character);
+                }
+            }
+        } else {
+            try (InputStreamReader input = new InputStreamReader(connection.getInputStream(), Charset.forName("UTF-8"))) {
+                int character;
+                while (((character = input.read()) != -1)) {
+                    answer.append((char) character);
+                }
             }
         }
     }

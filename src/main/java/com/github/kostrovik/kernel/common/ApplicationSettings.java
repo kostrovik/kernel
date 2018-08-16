@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -121,12 +120,11 @@ public class ApplicationSettings {
     }
 
     private ServerConnectionAddress createAddress(String host) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         String[] hostParams = host.split("@");
         ServerConnectionAddress address = new ServerConnectionAddress(hostParams[0]);
 
         if (hostParams.length > 1 && !hostParams[1].equals("null")) {
-            address.setLastUsage(LocalDateTime.parse(hostParams[1], formatter));
+            address.setLastUsage(LocalDateTime.parse(hostParams[1]));
         }
 
         return address;
