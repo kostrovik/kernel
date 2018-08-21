@@ -1,11 +1,8 @@
 package com.github.kostrovik.kernel.interfaces;
 
 import com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface;
-import com.github.kostrovik.kernel.interfaces.views.ContentViewInterface;
 import com.github.kostrovik.kernel.interfaces.views.MenuBuilderInterface;
 import com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 
 import java.util.Map;
 import java.util.logging.Logger;
@@ -19,7 +16,7 @@ import java.util.logging.Logger;
 public interface ModuleConfiguratorInterface {
     MenuBuilderInterface getMenuBuilder();
 
-    Map<String, ContentViewInterface> getModuleViews(Pane content, Stage stage);
+    Map<String, Class<?>> getModuleViews();
 
     ViewEventListenerInterface getEventListener();
 

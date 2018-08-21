@@ -3,12 +3,9 @@ package com.github.kostrovik.kernel.settings;
 import com.github.kostrovik.kernel.interfaces.ApplicationLoggerInterface;
 import com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
 import com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface;
-import com.github.kostrovik.kernel.interfaces.views.ContentViewInterface;
 import com.github.kostrovik.kernel.interfaces.views.MenuBuilderInterface;
 import com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;
 import com.github.kostrovik.kernel.views.menu.MenuBuilder;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,14 +20,10 @@ import java.util.logging.Logger;
  * date:    23/07/2018
  * github:  https://github.com/kostrovik/glcmtx
  */
-final public class Configurator implements ModuleConfiguratorInterface {
-    private static Logger logger;
+public final class Configurator implements ModuleConfiguratorInterface {
     private static volatile Configurator configurator;
-    private static Map<String, ContentViewInterface> views;
 
     private Configurator() {
-        views = new HashMap<>();
-        logger = getLogger(Configurator.class.getName());
     }
 
     public static Configurator provider() {
@@ -54,8 +47,8 @@ final public class Configurator implements ModuleConfiguratorInterface {
     }
 
     @Override
-    public Map<String, ContentViewInterface> getModuleViews(Pane content, Stage stage) {
-        return views;
+    public Map<String, Class<?>> getModuleViews() {
+        return new HashMap<>();
     }
 
     @Override
@@ -65,7 +58,7 @@ final public class Configurator implements ModuleConfiguratorInterface {
         if (applicationSettings.isPresent()) {
             return applicationSettings.get();
         }
-        logger.log(Level.SEVERE, String.format("Не найден контейнер view приложения. Модуль: %s", this.getClass().getModule().getName()));
+        getLogger(Configurator.class.getName()).log(Level.SEVERE, String.format("Не найден контейнер view приложения. Модуль: %s", this.getClass().getModule().getName()));
 
         return null;
     }
@@ -77,7 +70,7 @@ final public class Configurator implements ModuleConfiguratorInterface {
         if (controlBuilderFacade.isPresent()) {
             return controlBuilderFacade.get();
         }
-        logger.log(Level.SEVERE, String.format("Не найден фасад для построения элементов интерфейса. Модуль: %s", this.getClass().getModule().getName()));
+        getLogger(Configurator.class.getName()).log(Level.SEVERE, String.format("Не найден фасад для построения элементов интерфейса. Модуль: %s", this.getClass().getModule().getName()));
 
         return null;
     }

@@ -13,6 +13,8 @@ public interface ServerConnectionInterface {
 
     String sendGet(String apiUrl, Map<String, String> headers);
 
+    String sendGet(String apiUrl, Map<String, String> headers, Map<String, String> urlParams);
+
     String sendPost(String apiUrl, String json);
 
     String sendPost(String apiUrl, String json, Map<String, String> headers);

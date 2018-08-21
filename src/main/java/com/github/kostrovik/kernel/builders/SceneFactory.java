@@ -15,6 +15,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Map;
@@ -28,24 +30,17 @@ import java.util.logging.Logger;
  * date:    21/07/2018
  * github:  https://github.com/kostrovik/glcmtx
  */
-final public class SceneFactory implements ViewEventListenerInterface {
+public final class SceneFactory implements ViewEventListenerInterface {
     private static Logger logger = Configurator.getConfig().getLogger(SceneFactory.class.getName());
 
-    /**
-     * Рефлективно внедряется при создании приложения. Когда в kernel.common.AppCore при вызове start() появляется
-     * объект основного Stage приложения.
-     */
-    private static Stage mainWindow;
+    private Stage mainWindow;
 
     private static volatile SceneFactory factory;
-    private static Map<String, ContentViewInterface> storage;
-    private static ModulesConfigBuilder config;
-    private static ApplicationSettings settings;
+    private static Map<String, ContentViewInterface> storage = new ConcurrentHashMap<>();
+    private static ModulesConfigBuilder config = ModulesConfigBuilder.getInstance();
+    private static ApplicationSettings settings = ApplicationSettings.getInstance();
 
     private SceneFactory() {
-        storage = new ConcurrentHashMap<>();
-        config = ModulesConfigBuilder.getInstance();
-        settings = ApplicationSettings.getInstance();
     }
 
     public static SceneFactory getInstance() {
@@ -63,8 +58,8 @@ final public class SceneFactory implements ViewEventListenerInterface {
         return getInstance();
     }
 
-    public void setMainStage(Stage mainWindow) {
-        SceneFactory.mainWindow = mainWindow;
+    public void setMainStage(Stage stage) {
+        mainWindow = stage;
     }
 
     public void initScene(String moduleName, String viewName, LayoutType layoutType, EventObject event) {
@@ -89,7 +84,7 @@ final public class SceneFactory implements ViewEventListenerInterface {
                 break;
         }
 
-        Pane content = (Pane) scene.lookup("#scene-content");
+        Pane content = (Pane) scene.lookup(".scene-content");
 
         ContentViewInterface contentView = storage.getOrDefault(moduleName + "_" + viewName, createView(moduleName, viewName, content, stage));
 
@@ -117,9 +112,24 @@ final public class SceneFactory implements ViewEventListenerInterface {
 
     private ContentViewInterface createView(String moduleName, String viewName, Pane content, Stage stage) {
         ModuleConfiguratorInterface moduleConfiguration = config.getConfigForModule(moduleName);
+        Map<String, Class<?>> moduleViews = moduleConfiguration.getModuleViews();
 
-        Map<String, ContentViewInterface> moduleViews = moduleConfiguration.getModuleViews(content, stage);
-        return moduleViews.get(viewName);
+        ContentViewInterface view = null;
+        Class<?> viewClass = moduleViews.get(viewName);
+        if (viewClass != null) {
+            try {
+                Constructor<?> constructor = viewClass.getDeclaredConstructor(Pane.class, Stage.class);
+                view = (ContentViewInterface) constructor.newInstance(content, stage);
+            } catch (NoSuchMethodException e) {
+                logger.log(Level.SEVERE, "Не задан конструктор с необходимымой сигнатурой getDeclaredConstructor(Pane.class, Stage.class).", e);
+            } catch (IllegalAccessException e) {
+                logger.log(Level.SEVERE, "Конструктор не доступен.", e);
+            } catch (InstantiationException | InvocationTargetException e) {
+                logger.log(Level.SEVERE, String.format("Не возможно создать объект %s.", viewClass.getName()), e);
+            }
+        }
+
+        return view;
     }
 
     private Scene getDefaultSceneTemplate() {
@@ -127,7 +137,7 @@ final public class SceneFactory implements ViewEventListenerInterface {
         Scene scene = new Scene(vbox);
 
         Pane content = new Pane();
-        content.setId("scene-content");
+        content.getStyleClass().add("scene-content");
         vbox.getChildren().addAll(getSceneMenu(), content);
 
         setBackground(content);
@@ -143,10 +153,10 @@ final public class SceneFactory implements ViewEventListenerInterface {
     private Scene getPopupSceneTemplate() {
         VBox vbox = new VBox(10);
 
-        Scene scene = new Scene(vbox, 980, 760);
+        Scene scene = new Scene(vbox);
 
         Pane content = new Pane();
-        content.setId("scene-content");
+        content.getStyleClass().add("scene-content");
         vbox.getChildren().addAll(content);
 
         setBackground(content);

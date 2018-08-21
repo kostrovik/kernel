@@ -9,11 +9,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * project: glcmtx
@@ -24,6 +26,7 @@ import java.util.logging.Logger;
 public class ServerConnector implements ServerConnectionInterface {
     private static Logger logger = Configurator.getConfig().getLogger(ServerConnector.class.getName());
     private ServerConnectionAddress serverAddress;
+    private final Charset charset = Charset.forName("UTF-8");
 
     public ServerConnector() {
         this.serverAddress = ApplicationSettings.getInstance().getDefaultHost();
@@ -31,58 +34,54 @@ public class ServerConnector implements ServerConnectionInterface {
 
     @Override
     public String sendGet(String apiUrl) {
-        return sendGet(apiUrl, new HashMap<>());
+        return sendRequest("GET", apiUrl, new HashMap<>(), "", new HashMap<>());
     }
 
     @Override
     public String sendGet(String apiUrl, Map<String, String> headers) {
-        StringBuilder response = new StringBuilder();
-        StringBuilder responseHeaders = new StringBuilder();
-
-        try {
-            URL serverApiUrl = new URL(serverAddress.getUrl() + apiUrl);
-            HttpURLConnection connection = createConnection("GET", headers, serverApiUrl);
-            connection.setRequestProperty("Accept", "application/json");
-
-            prepareAnswer(responseHeaders, serverApiUrl, connection);
-            parseResponse(response, connection);
-
-            ApplicationSettings.getInstance().updateHostLastUsage();
-        } catch (IOException e) {
-            logger.log(Level.WARNING, String.format("Ошибка выполнения запроса\n%s", responseHeaders), e);
-        }
-
-        return response.toString();
+        return sendRequest("GET", apiUrl, headers, "", new HashMap<>());
     }
 
     @Override
-    public String sendPost(String apiUrl, String json) {
-        return sendPost(apiUrl, json, new HashMap<>());
+    public String sendGet(String apiUrl, Map<String, String> headers, Map<String, String> urlParams) {
+        return sendRequest("GET", apiUrl, headers, "", urlParams);
     }
 
     @Override
-    public String sendPost(String apiUrl, String json, Map<String, String> headers) {
+    public String sendPost(String apiUrl, String data) {
+        return sendRequest("POST", apiUrl, new HashMap<>(), data, new HashMap<>());
+    }
+
+    @Override
+    public String sendPost(String apiUrl, String data, Map<String, String> headers) {
+        return sendRequest("POST", apiUrl, headers, data, new HashMap<>());
+    }
+
+    private String sendRequest(String method, String apiUrl, Map<String, String> headers, String data, Map<String, String> urlParams) {
         StringBuilder response = new StringBuilder();
-        StringBuilder responseHeaders = new StringBuilder();
+        StringBuilder responseResult = new StringBuilder();
 
         try {
-            URL serverApiUrl = new URL(serverAddress.getUrl() + apiUrl);
-            HttpURLConnection connection = createConnection("POST", headers, serverApiUrl);
-            connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            connection.setRequestProperty("Accept", "application/json");
+            String requestParams = urlParams.keySet().stream().map(key -> String.format("%s=%s", key, encodeValue(urlParams.get(key)))).collect(Collectors.joining("&"));
 
-            try (OutputStream output = connection.getOutputStream()) {
-                if (output != null) {
-                    output.write(json.getBytes(Charset.forName("UTF-8")));
+            URL serverApiUrl = new URL(serverAddress.getUrl() + apiUrl + "?" + requestParams);
+
+            HttpURLConnection connection = createConnection(method, headers, serverApiUrl);
+
+            if (!data.trim().isEmpty()) {
+                try (OutputStream output = connection.getOutputStream()) {
+                    if (output != null) {
+                        output.write(data.getBytes(charset));
+                    }
                 }
             }
 
-            prepareAnswer(responseHeaders, serverApiUrl, connection);
+            prepareResponseResult(responseResult, serverApiUrl, connection);
             parseResponse(response, connection);
 
             ApplicationSettings.getInstance().updateHostLastUsage();
         } catch (IOException e) {
-            logger.log(Level.WARNING, String.format("Ошибка выполнения запроса\n%s", responseHeaders), e);
+            logger.log(Level.WARNING, String.format("Ошибка выполнения запроса%n%s", responseResult), e);
         }
 
         return response.toString();
@@ -90,14 +89,14 @@ public class ServerConnector implements ServerConnectionInterface {
 
     private void parseResponse(StringBuilder answer, HttpURLConnection connection) throws IOException {
         if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            try (InputStreamReader input = new InputStreamReader(connection.getErrorStream(), Charset.forName("UTF-8"))) {
+            try (InputStreamReader input = new InputStreamReader(connection.getErrorStream(), charset)) {
                 int character;
                 while (((character = input.read()) != -1)) {
                     answer.append((char) character);
                 }
             }
         } else {
-            try (InputStreamReader input = new InputStreamReader(connection.getInputStream(), Charset.forName("UTF-8"))) {
+            try (InputStreamReader input = new InputStreamReader(connection.getInputStream(), charset)) {
                 int character;
                 while (((character = input.read()) != -1)) {
                     answer.append((char) character);
@@ -119,10 +118,14 @@ public class ServerConnector implements ServerConnectionInterface {
         return connection;
     }
 
-    private void prepareAnswer(StringBuilder builder, URL url, HttpURLConnection connection) throws IOException {
-        builder.append(String.format("Запрос: %s\n", url.toExternalForm()));
-        builder.append(String.format("Meтoд: %s\n", connection.getRequestMethod()));
-        builder.append(String.format("Koд ответа: %s\n", connection.getResponseCode()));
-        builder.append(String.format("Oтвeт: %s\n", connection.getResponseMessage()));
+    private void prepareResponseResult(StringBuilder builder, URL url, HttpURLConnection connection) throws IOException {
+        builder.append(String.format("Запрос: %s%n", url.toExternalForm()));
+        builder.append(String.format("Meтoд: %s%n", connection.getRequestMethod()));
+        builder.append(String.format("Koд ответа: %s%n", connection.getResponseCode()));
+        builder.append(String.format("Oтвeт: %s%n", connection.getResponseMessage()));
+    }
+
+    private String encodeValue(String value) {
+        return URLEncoder.encode(value, charset);
     }
 }
