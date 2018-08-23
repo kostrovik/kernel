@@ -1,6 +1,9 @@
 package com.github.kostrovik.kernel.graphics.common;
 
+import com.github.kostrovik.kernel.graphics.builders.CellPropertyValueFactory;
+import com.github.kostrovik.kernel.graphics.controls.dropdown.SearchableDropDownField;
 import javafx.scene.control.Button;
+import javafx.scene.control.Skinnable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -20,10 +23,10 @@ import java.time.format.DateTimeFormatter;
 /**
  * Класс представляющий фасад к различным билдерам контролов.
  * <p>
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    20/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public class ControlBuilderFacade implements ControlBuilderFacadeInterface {
     public Button createButton(String buttonTitle) {
@@ -79,6 +82,14 @@ public class ControlBuilderFacade implements ControlBuilderFacadeInterface {
         return builder.createBooleanValueColumn(columnName, propertyName);
     }
 
+    @Override
+    public <E> TableColumn<E, Integer> createTableIntegerColumn(String columnName, String propertyName) {
+        TableColumnBuilder<E, Integer> builder = new TableColumnBuilder<>();
+        TableColumn<E, Integer> column = builder.createColumn(columnName);
+        column.setCellValueFactory(new CellPropertyValueFactory<>(propertyName));
+        return column;
+    }
+
     public <E> TableColumn<E, LocalDateTime> createTableLocalDateTimeColumn(String columnName, String propertyName, DateTimeFormatter formatter) {
         TableColumnBuilder<E, LocalDateTime> builder = new TableColumnBuilder<>();
         return builder.createLocalDateTimeValueColumn(columnName, propertyName, formatter);
@@ -100,5 +111,10 @@ public class ControlBuilderFacade implements ControlBuilderFacadeInterface {
     public TextField addPasswordField(GridPane formLayout, String label) {
         TableFormBuilder builder = new TableFormBuilder();
         return builder.createFormTextField(formLayout, label, true);
+    }
+
+    @Override
+    public Skinnable createDropDownField(String labelValue) {
+        return new SearchableDropDownField<>(labelValue);
     }
 }

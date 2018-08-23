@@ -1,8 +1,6 @@
 package com.github.kostrovik.kernel.graphics.controls.field;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -12,10 +10,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
 /**
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    24/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public class LabeledTextFieldSkin extends SkinBase<LabeledTextField> {
     private HBox group;
@@ -25,12 +23,16 @@ public class LabeledTextFieldSkin extends SkinBase<LabeledTextField> {
     public LabeledTextFieldSkin(LabeledTextField control) {
         super(control);
         createSkin();
-        control.editableProperty().addListener(observable -> lockTextField());
-        control.textProperty().addListener((observable, oldValue, newValue) -> {
+        getSkinnable().editableProperty().addListener(observable -> lockTextField());
+        getSkinnable().textProperty().addListener((observable, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 setText();
             }
         });
+
+        getSkinnable().onActionProperty().addListener((observable, oldValue, newValue) -> textField.setOnAction(newValue));
+
+        textField.focusedProperty().addListener((observable, oldValue, newValue) -> getSkinnable().setFocus(newValue));
     }
 
     private void lockTextField() {
@@ -46,6 +48,7 @@ public class LabeledTextFieldSkin extends SkinBase<LabeledTextField> {
         group.setAlignment(Pos.CENTER_LEFT);
 
         label = new Label(getSkinnable().getLabel());
+        label.setFocusTraversable(false);
 
         Platform.runLater(() -> {
             label.setMinWidth(label.getBoundsInLocal().getWidth());

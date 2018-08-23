@@ -8,10 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 /**
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    23/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public class ModulesConfigBuilder {
     private static Logger logger = Configurator.getConfig().getLogger(ModulesConfigBuilder.class.getName());

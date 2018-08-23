@@ -1,21 +1,41 @@
 package com.github.kostrovik.kernel.graphics.controls.field;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 
 /**
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    24/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public class LabeledTextField extends Control {
     private final ObjectProperty<String> label;
     private final ObjectProperty<String> text;
     private final ObjectProperty<Boolean> editable;
     private boolean isPassoword;
+
+    private ObjectProperty<EventHandler<ActionEvent>> onAction = new ObjectPropertyBase<EventHandler<ActionEvent>>() {
+        @Override
+        protected void invalidated() {
+            setEventHandler(ActionEvent.ACTION, get());
+        }
+
+        @Override
+        public Object getBean() {
+            return LabeledTextField.this;
+        }
+
+        @Override
+        public String getName() {
+            return "onAction";
+        }
+    };
 
     public LabeledTextField(String label) {
         this.label = new SimpleObjectProperty<>();
@@ -70,6 +90,22 @@ public class LabeledTextField extends Control {
         editable.set(editableValue);
     }
     // -- свойсто редактирования --
+
+    public ObjectProperty<EventHandler<ActionEvent>> onActionProperty() {
+        return onAction;
+    }
+
+    public EventHandler<ActionEvent> getOnAction() {
+        return onActionProperty().get();
+    }
+
+    public void setOnAction(EventHandler<ActionEvent> value) {
+        onActionProperty().set(value);
+    }
+
+    public void setFocus(boolean value) {
+        setFocused(value);
+    }
 
     public boolean isPassoword() {
         return isPassoword;

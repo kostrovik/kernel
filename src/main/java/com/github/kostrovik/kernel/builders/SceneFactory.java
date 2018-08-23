@@ -1,10 +1,12 @@
 package com.github.kostrovik.kernel.builders;
 
 import com.github.kostrovik.kernel.common.ApplicationSettings;
+import com.github.kostrovik.kernel.graphics.controls.progress.ProgressBarIndicator;
 import com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
 import com.github.kostrovik.kernel.interfaces.views.*;
 import com.github.kostrovik.kernel.settings.Configurator;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -20,15 +22,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    21/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public final class SceneFactory implements ViewEventListenerInterface {
     private static Logger logger = Configurator.getConfig().getLogger(SceneFactory.class.getName());
@@ -117,11 +120,17 @@ public final class SceneFactory implements ViewEventListenerInterface {
         ContentViewInterface view = null;
         Class<?> viewClass = moduleViews.get(viewName);
         if (viewClass != null) {
+            Constructor<?> constructor;
             try {
-                Constructor<?> constructor = viewClass.getDeclaredConstructor(Pane.class, Stage.class);
-                view = (ContentViewInterface) constructor.newInstance(content, stage);
+                if (viewClass.isAssignableFrom(PopupWindowInterface.class)) {
+                    constructor = viewClass.getDeclaredConstructor(Pane.class, Stage.class);
+                    view = (ContentViewInterface) constructor.newInstance(content, stage);
+                } else {
+                    constructor = viewClass.getDeclaredConstructor(Pane.class);
+                    view = (ContentViewInterface) constructor.newInstance(content);
+                }
             } catch (NoSuchMethodException e) {
-                logger.log(Level.SEVERE, "Не задан конструктор с необходимымой сигнатурой getDeclaredConstructor(Pane.class, Stage.class).", e);
+                logger.log(Level.SEVERE, "Не задан конструктор с необходимымой сигнатурой.", e);
             } catch (IllegalAccessException e) {
                 logger.log(Level.SEVERE, "Конструктор не доступен.", e);
             } catch (InstantiationException | InvocationTargetException e) {
@@ -139,6 +148,10 @@ public final class SceneFactory implements ViewEventListenerInterface {
         Pane content = new Pane();
         content.getStyleClass().add("scene-content");
         vbox.getChildren().addAll(getSceneMenu(), content);
+
+        if (settings.showMemoryUsage()) {
+            vbox.getChildren().add(getSystemTray());
+        }
 
         setBackground(content);
 
@@ -215,6 +228,21 @@ public final class SceneFactory implements ViewEventListenerInterface {
         });
 
         return view;
+    }
+
+    private HBox getSystemTray() {
+        HBox tray = new HBox(5);
+        tray.setPadding(new Insets(5, 5, 5, 5));
+        tray.setAlignment(Pos.BOTTOM_RIGHT);
+
+        Timer timer = new Timer();
+        ProgressBarIndicator bar = new ProgressBarIndicator(6, 10);
+        MemoryStateBuilder timerTask = new MemoryStateBuilder(bar);
+        timer.schedule(timerTask, 1000, 5000);
+
+        tray.getChildren().setAll(bar);
+
+        return tray;
     }
 
     private void setBackground(Region container) {

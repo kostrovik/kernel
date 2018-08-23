@@ -15,10 +15,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    23/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public final class Configurator implements ModuleConfiguratorInterface {
     private static volatile Configurator configurator;

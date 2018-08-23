@@ -6,10 +6,10 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 
 /**
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    21/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public class Notification extends Control {
     private final ObjectProperty<Boolean> isVisible;

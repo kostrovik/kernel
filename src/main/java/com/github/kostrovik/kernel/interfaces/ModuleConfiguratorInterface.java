@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    24/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public interface ModuleConfiguratorInterface {
     MenuBuilderInterface getMenuBuilder();

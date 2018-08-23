@@ -15,10 +15,10 @@ import java.util.logging.Logger;
  * Служебный класс для получения значений из объектов разных типов.
  * Используется при создании ячеек таблицы.
  *
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    25/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public class CellPropertyValueFactory<S, T> implements Callback<TableColumn.CellDataFeatures<S, T>, ObservableValue<T>> {
     private static Logger logger = Configurator.getConfig().getLogger(CellPropertyValueFactory.class.getName());

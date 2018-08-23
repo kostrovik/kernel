@@ -1,6 +1,0 @@
-menu:
-  builder: com.github.kostrovik.kernel.views.menu.MenuBuilder
-  items:
-    exit:
-      title: Выход
-      action: com.github.kostrovik.kernel.views.menu.actions.ExitAction

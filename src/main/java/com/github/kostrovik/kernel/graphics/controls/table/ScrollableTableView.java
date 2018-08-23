@@ -7,9 +7,10 @@ import javafx.scene.control.Skin;
 import javafx.scene.control.TableView;
 
 /**
- * Created by grom on 17/08/2018.
- * Project kernel
- * author <grom25174@gmail.com>
+ * project: kernel
+ * author:  kostrovik
+ * date:    17/08/2018
+ * github:  https://github.com/kostrovik/kernel
  */
 public class ScrollableTableView<S> extends TableView<S> {
     private final ObjectProperty<Integer> firstVisibleIndex;

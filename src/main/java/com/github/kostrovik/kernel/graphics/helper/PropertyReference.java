@@ -13,10 +13,10 @@ import java.util.logging.Logger;
  * Служебный объект используемый при получении значений для ячеек таблиц.
  * Представляет собой ссылочный объект на getter и setter методы.
  *
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    25/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public class PropertyReference<T> {
     private static Logger logger = Configurator.getConfig().getLogger(PropertyReference.class.getName());

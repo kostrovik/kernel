@@ -10,9 +10,10 @@ import javafx.scene.control.skin.VirtualFlow;
 import java.util.Set;
 
 /**
- * Created by grom on 17/08/2018.
- * Project kernel
- * author <grom25174@gmail.com>
+ * project: kernel
+ * author:  kostrovik
+ * date:    17/08/2018
+ * github:  https://github.com/kostrovik/kernel
  */
 public class ScrollableTableViewSkin<T> extends TableViewSkin<T> {
     private VirtualFlow<TableRow<T>> flow;

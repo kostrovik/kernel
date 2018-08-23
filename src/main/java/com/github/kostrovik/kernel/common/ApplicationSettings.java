@@ -18,10 +18,10 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    26/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public class ApplicationSettings {
     private static Logger logger = Configurator.getConfig().getLogger(ApplicationSettings.class.getName());
@@ -116,6 +116,17 @@ public class ApplicationSettings {
     public void saveDefaultColorTheme(String theme) {
         Map<String, Object> config = parser.getConfig();
         config.put("colorTheme", theme);
+        writeSettings(config);
+    }
+
+    public boolean showMemoryUsage() {
+        Object show = parser.getConfigProperty("showMemoryUsage");
+        return show != null ? (boolean) show : false;
+    }
+
+    public void saveShowMemoryUsage(boolean isShow) {
+        Map<String, Object> config = parser.getConfig();
+        config.put("showMemoryUsage", isShow);
         writeSettings(config);
     }
 

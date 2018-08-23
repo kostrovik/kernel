@@ -3,10 +3,10 @@ package com.github.kostrovik.kernel.models;
 import java.time.LocalDateTime;
 
 /**
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    26/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public class ServerConnectionAddress {
     private String url;

@@ -9,10 +9,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    20/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 final public class SolidIconsSettings {
     private static Logger logger = Configurator.getConfig().getLogger(SolidIconsSettings.class.getName());

@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    30/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public interface ControlBuilderFacadeInterface {
     Button createButton(String buttonTitle);
@@ -35,6 +35,8 @@ public interface ControlBuilderFacadeInterface {
 
     <E> TableColumn<E, Boolean> createTableBooleanColumn(String columnName, String propertyName);
 
+    <E> TableColumn<E, Integer> createTableIntegerColumn(String columnName, String propertyName);
+
     <E> TableColumn<E, LocalDateTime> createTableLocalDateTimeColumn(String columnName, String propertyName, DateTimeFormatter formatter);
 
     GridPane createTableFormLayout();
@@ -42,4 +44,6 @@ public interface ControlBuilderFacadeInterface {
     Skinnable addTextField(GridPane formLayout, String label);
 
     Skinnable addPasswordField(GridPane formLayout, String label);
+
+    Skinnable createDropDownField(String labelValue);
 }

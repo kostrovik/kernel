@@ -8,16 +8,18 @@ import javafx.scene.text.Font;
  * Словарь иконок.
  * Использует иконочный шрифт font-awesome (https://fontawesome.com).
  * <p>
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    20/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public enum SolidIcons implements IconInterface {
     CARET_DOWN("\uf0d7"),
     SERVER("\uf233"),
     DATA_BASE("\uf1c0"),
-    PALETTE("\uf53f");
+    PALETTE("\uf53f"),
+    ELIPSIS("\uf141"),
+    CROSS("\uf00d");
 
     private final String character;
     private final Font font;
@@ -29,12 +31,19 @@ public enum SolidIcons implements IconInterface {
         this.font = prepareFont(settings);
     }
 
+    @Override
     public String getSymbol() {
         return character;
     }
 
+    @Override
     public Font getFont() {
         return font;
+    }
+
+    @Override
+    public String getFontPath() {
+        return settings.getFontPath();
     }
 
     private Font prepareFont(SolidIconsSettings settings) {

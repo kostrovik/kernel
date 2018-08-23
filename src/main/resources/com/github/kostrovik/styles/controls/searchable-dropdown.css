@@ -1,0 +1,104 @@
+.drop-down .field-block .text-field {
+    -fx-border-width: 1 0 1 1;
+    -fx-background-radius: 4px 0 0 4px;
+    -fx-border-radius: 4px 0 0 4px;
+}
+
+.drop-down .field-block .text-field:focused {
+    -fx-effect: none;
+}
+
+.drop-down .button {
+    -fx-padding: 0px 5px;
+    -fx-border-radius: 0;
+    -fx-background-color: derive(-styleTextFieldBackground-color, -50%);
+    -fx-text-fill: #ffffff;
+    -fx-background-radius: 0;
+    -fx-border-width: 1 1 1 0;
+    -fx-border-insets: 0;
+    -fx-border-color: -styleTextFieldBorder-color;
+    -fx-effect: none;
+    -fx-background-insets: 0;
+}
+
+.drop-down .clear-button {
+    -fx-border-radius: 0 4px 4px 0;
+    -fx-background-radius: 0 4px 4px 0;
+}
+
+.drop-down .button:hover,
+.drop-down .button:hover:focused {
+    -fx-background-color: derive(-styleTextFieldBackground-color, -20%);
+    -fx-effect: none;
+}
+
+.drop-down .button:focused {
+    -fx-background-color: derive(-styleTextFieldBackground-color, -15%);
+    -fx-effect: none;
+}
+
+.drop-down .button .icon {
+    -fx-fill: -styleTextFieldText-color;
+}
+
+.drop-down .button:hover .icon {
+    -fx-fill: -styleTextFieldText-color;
+}
+
+.drop-down .popup-block {
+    -fx-background-color: -styleTableBackground-color;
+    -fx-border-color: derive(-styleTableBackground-color, -50%);
+}
+
+.drop-down .popup-block .text-field {
+    -fx-background-color: -styleTableBackground-color;
+    -fx-border-width: 0 0 0 0;
+    -fx-text-fill: -styleTextFieldText-color;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+.drop-down .popup-block .text-field:focused {
+    -fx-effect: none;
+}
+
+.drop-down .popup-block .items-count {
+    -fx-fill: -styleTextFieldText-color;
+}
+
+.drop-down .list-view {
+    -fx-border-radius: 0;
+    -fx-background-color: -styleTableBackground-color;
+    -fx-border-width: 1;
+    -fx-border-color: -styleTextFieldBorder-color;
+}
+
+.drop-down .list-cell {
+    -fx-text-fill: #dddddd;
+    -fx-background-color: -styleTableBackground-color;
+}
+
+.drop-down .list-cell:filled {
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: derive(-styleTableBackground-color, -40%);
+}
+
+.drop-down .list-cell:empty {
+    -fx-background-color: -styleTableBackground-color;
+}
+
+.drop-down .list-cell:hover {
+    -fx-text-fill: #ffffff;
+}
+
+.drop-down .list-view .list-cell:filled:selected, .drop-down .list-view .list-cell:filled:selected:hover {
+    -fx-background: derive(-styleTableSelectedRow-color, 30%);
+    -fx-background-color: derive(-styleTableSelectedRow-color, 30%);
+    -fx-text-fill: #ffffff;
+}
+
+.drop-down .list-view .list-cell:filled:hover {
+    -fx-background: derive(-styleTableSelectedRow-color, 30%);
+    -fx-background-color: derive(-styleTableSelectedRow-color, 30%);
+    -fx-text-fill: #ffffff;
+}

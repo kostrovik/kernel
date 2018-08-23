@@ -1,10 +1,10 @@
 package com.github.kostrovik.kernel.dictionaries;
 
 /**
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    27/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public enum ColorThemeDictionary {
     LIGHT() {

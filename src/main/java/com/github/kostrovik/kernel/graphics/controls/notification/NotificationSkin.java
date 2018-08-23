@@ -9,10 +9,10 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 
 /**
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    21/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public class NotificationSkin extends SkinBase<Notification> {
     private Group notificationGroup;

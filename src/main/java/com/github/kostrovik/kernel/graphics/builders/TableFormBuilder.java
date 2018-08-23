@@ -8,10 +8,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
 /**
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    30/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public class TableFormBuilder {
     public GridPane createLayout() {

@@ -18,10 +18,10 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    25/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 public class ServerConnector implements ServerConnectionInterface {
     private static Logger logger = Configurator.getConfig().getLogger(ServerConnector.class.getName());
@@ -30,11 +30,6 @@ public class ServerConnector implements ServerConnectionInterface {
 
     public ServerConnector() {
         this.serverAddress = ApplicationSettings.getInstance().getDefaultHost();
-    }
-
-    @Override
-    public String sendGet(String apiUrl) {
-        return sendRequest("GET", apiUrl, new HashMap<>(), "", new HashMap<>());
     }
 
     @Override
@@ -48,13 +43,13 @@ public class ServerConnector implements ServerConnectionInterface {
     }
 
     @Override
-    public String sendPost(String apiUrl, String data) {
-        return sendRequest("POST", apiUrl, new HashMap<>(), data, new HashMap<>());
+    public String sendPost(String apiUrl, String data, Map<String, String> headers) {
+        return sendRequest("POST", apiUrl, headers, data, new HashMap<>());
     }
 
     @Override
-    public String sendPost(String apiUrl, String data, Map<String, String> headers) {
-        return sendRequest("POST", apiUrl, headers, data, new HashMap<>());
+    public String sendPost(String apiUrl, String data, Map<String, String> headers, Map<String, String> urlParams) {
+        return sendRequest("POST", apiUrl, headers, data, urlParams);
     }
 
     private String sendRequest(String method, String apiUrl, Map<String, String> headers, String data, Map<String, String> urlParams) {

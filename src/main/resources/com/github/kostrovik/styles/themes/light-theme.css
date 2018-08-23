@@ -1,31 +1,31 @@
-.root{
--styleMainBackground-color: #ffffff;
+.root {
+    -styleMainBackground-color: #ffffff;
 
--styleMenuTextColor-color: #444444;
--styleMenuHoverButtonColor-color: #444444;
--styleSubMenuBackground-color: #326eb2;
+    -styleMenuTextColor-color: #444444;
+    -styleMenuHoverButtonColor-color: #444444;
+    -styleSubMenuBackground-color: #326eb2;
 
--styleButtonBackground-color: #bfc3c5;
--styleButtonBorder-color: #444444;
--styleButtonText-color: #454545;
--styleButtonHover-color: #c4dbf4;
+    -styleButtonBackground-color: #bfc3c5;
+    -styleButtonBorder-color: #444444;
+    -styleButtonText-color: #454545;
+    -styleButtonHover-color: #c4dbf4;
 
--styleTableBackground-color: #fdfdfd;
--styleTableCellBorder-color: #444444;
--styleTableSelectedRow-color: #326eb2;
--styleTableText-color: #000000;
+    -styleTableBackground-color: #fdfdfd;
+    -styleTableCellBorder-color: #444444;
+    -styleTableSelectedRow-color: #326eb2;
+    -styleTableText-color: #000000;
 
--styleTextFieldBackground-color: #ffffff;
--styleTextFieldBorder-color: #2b2b2b;
--styleTextFieldText-color: #000000;
--styleTextFieldFocused-color: #326eb2;
--styleTitleText-color: #000000;
+    -styleTextFieldBackground-color: #ffffff;
+    -styleTextFieldBorder-color: #2b2b2b;
+    -styleTextFieldText-color: #000000;
+    -styleTextFieldFocused-color: #326eb2;
+    -styleTitleText-color: #000000;
 
     -fx-background-color: -styleMainBackground-color;
     -fx-background: -styleMainBackground-color;
 }
 
-.menu-bar{
+.menu-bar {
     -fx-background-color: derive(-styleMainBackground-color, -5%);
     -fx-border-width: 0 0 1 0;
     -fx-border-color: derive(#000000, +30%);
@@ -40,11 +40,13 @@
     -fx-background-radius: 2px;
     -fx-border-radius: 2px;
 }
+
 .menu-bar > .container > .menu-button:hover {
     -fx-background-color: derive(-styleMainBackground-color, -5%);
     -fx-text-fill: derive(-styleMenuTextColor-color, -20%);
     -fx-border-color: -styleMenuHoverButtonColor-color;
 }
+
 .menu-bar > .container > .menu-button:focused,
 .menu-bar > .container > .menu-button:showing {
     -fx-background-color: derive(-styleMainBackground-color, -5%);
@@ -89,7 +91,7 @@
     -fx-background-insets: 0;
 }
 
-.button{
+.button {
     -fx-padding: 5px 10px;
     -fx-border-radius: 6px;
     -fx-background-radius: 6px;
@@ -98,17 +100,17 @@
     -fx-effect: innershadow(gaussian, -styleButtonBorder-color, 4, 0.1, 0, 0);
 }
 
-.button:hover{
+.button:hover {
     -fx-background-color: linear-gradient(-styleButtonHover-color 1%, #ffffff 20%, derive(-styleButtonHover-color, +10%) 70%, -styleButtonHover-color 100%);
     -fx-effect: innershadow(gaussian, derive(-styleButtonHover-color, -10%), 4, 0.3, 0, 0);
 }
 
-.button:focused{
+.button:focused {
     -fx-effect: dropshadow(two-pass-box, derive(-styleButtonHover-color, +10%), 5, 0.7, 0, 0);
 }
 
 .button:cancel {
-    -fx-background-insets:0;
+    -fx-background-insets: 0;
     -fx-background: derive(-styleButtonBackground-color, +70%);
     -fx-background-color: derive(-styleButtonBackground-color, +70%);
     -fx-text-fill: derive(-styleButtonText-color, +50%);
@@ -146,7 +148,7 @@
 .table-view .table-row-cell .check-box .box {
     -fx-background-color: #797979;
     -fx-border-color: derive(#404040, -20%);
-    -fx-border-radius:2px;
+    -fx-border-radius: 2px;
     -fx-background-radius: 2px;
 }
 
@@ -162,7 +164,7 @@
     -fx-fill: -styleTableText-color;
 }
 
-.text-field{
+.text-field {
     -fx-background-color: -styleTextFieldBackground-color;
     -fx-border-color: derive(-styleTextFieldBorder-color, +30%);
     -fx-border-width: 1;
@@ -175,7 +177,7 @@
     -fx-effect: innershadow(gaussian, -styleTextFieldFocused-color, 5, 0.8, 0, 0);
 }
 
-.view-title{
+.view-title {
     -fx-font-size: 18px;
     -fx-fill: -styleTitleText-color;
 }
@@ -183,7 +185,7 @@
 .check-box .box {
     -fx-background-color: #797979;
     -fx-border-color: derive(#404040, -20%);
-    -fx-border-radius:2px;
+    -fx-border-radius: 2px;
     -fx-background-radius: 2px;
 }
 

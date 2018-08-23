@@ -1,10 +1,10 @@
 import com.github.kostrovik.kernel.settings.Configurator;
 
 /**
- * project: glcmtx
+ * project: kernel
  * author:  kostrovik
  * date:    18/07/2018
- * github:  https://github.com/kostrovik/glcmtx
+ * github:  https://github.com/kostrovik/kernel
  */
 module kernel {
     requires javafx.graphics;
@@ -22,6 +22,8 @@ module kernel {
     exports com.github.kostrovik.kernel.graphics.controls.notification;
     exports com.github.kostrovik.kernel.graphics.controls.field;
     exports com.github.kostrovik.kernel.graphics.controls.table;
+    exports com.github.kostrovik.kernel.graphics.controls.dropdown;
+    exports com.github.kostrovik.kernel.graphics.controls.progress;
     exports com.github.kostrovik.kernel.graphics.common;
     exports com.github.kostrovik.kernel.graphics.common.icons;
 
