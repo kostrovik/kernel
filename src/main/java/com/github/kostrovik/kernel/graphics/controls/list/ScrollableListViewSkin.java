@@ -1,10 +1,10 @@
-package com.github.kostrovik.kernel.graphics.controls.table;
+package com.github.kostrovik.kernel.graphics.controls.list;
 
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ScrollBar;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.skin.TableViewSkin;
+import javafx.scene.control.skin.ListViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
 
 import java.util.Set;
@@ -12,13 +12,13 @@ import java.util.Set;
 /**
  * project: kernel
  * author:  kostrovik
- * date:    17/08/2018
+ * date:    30/08/2018
  * github:  https://github.com/kostrovik/kernel
  */
-public class ScrollableTableViewSkin<T> extends TableViewSkin<T> {
-    private VirtualFlow<TableRow<T>> flow;
+public class ScrollableListViewSkin<T> extends ListViewSkin<T> {
+    private VirtualFlow<ListCell<T>> flow;
 
-    public ScrollableTableViewSkin(ScrollableTableView<T> control) {
+    public ScrollableListViewSkin(ScrollableListView<T> control) {
         super(control);
 
         flow = getVirtualFlow();
@@ -33,10 +33,10 @@ public class ScrollableTableViewSkin<T> extends TableViewSkin<T> {
     }
 
     private void setVisibleIndex() {
-        TableRow<T> firstVisible = flow.getFirstVisibleCell();
-        TableRow<T> lastVisible = flow.getLastVisibleCell();
+        ListCell<T> firstVisible = flow.getFirstVisibleCell();
+        ListCell<T> lastVisible = flow.getLastVisibleCell();
 
-        ((ScrollableTableView<T>) getSkinnable()).setFirstVisibleIndex((firstVisible != null) ? firstVisible.getIndex() : 0);
-        ((ScrollableTableView<T>) getSkinnable()).setLastVisibleIndex((lastVisible != null) ? lastVisible.getIndex() : 0);
+        ((ScrollableListView<T>) getSkinnable()).setFirstVisibleIndex((firstVisible != null) ? firstVisible.getIndex() : 0);
+        ((ScrollableListView<T>) getSkinnable()).setLastVisibleIndex((lastVisible != null) ? lastVisible.getIndex() : 0);
     }
 }

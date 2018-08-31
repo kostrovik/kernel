@@ -1,10 +1,12 @@
 package com.github.kostrovik.kernel.settings;
 
+import com.github.kostrovik.kernel.dictionaries.ViewTypeDictionary;
 import com.github.kostrovik.kernel.interfaces.ApplicationLoggerInterface;
 import com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
 import com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface;
 import com.github.kostrovik.kernel.interfaces.views.MenuBuilderInterface;
 import com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;
+import com.github.kostrovik.kernel.views.DropDownDialog;
 import com.github.kostrovik.kernel.views.menu.MenuBuilder;
 
 import java.util.HashMap;
@@ -21,9 +23,13 @@ import java.util.logging.Logger;
  * github:  https://github.com/kostrovik/kernel
  */
 public final class Configurator implements ModuleConfiguratorInterface {
+    private static Logger logger;
     private static volatile Configurator configurator;
+    private static Map<String, Class<?>> views;
 
     private Configurator() {
+        views = new HashMap<>();
+        logger = getLogger(Configurator.class.getName());
     }
 
     public static Configurator provider() {
@@ -48,7 +54,15 @@ public final class Configurator implements ModuleConfiguratorInterface {
 
     @Override
     public Map<String, Class<?>> getModuleViews() {
-        return new HashMap<>();
+        if (views.isEmpty()) {
+            synchronized (Configurator.class) {
+                if (views.isEmpty()) {
+                    views.put(ViewTypeDictionary.DROPDOWN_DIALOG.name(), DropDownDialog.class);
+                }
+            }
+        }
+
+        return views;
     }
 
     @Override
@@ -58,7 +72,7 @@ public final class Configurator implements ModuleConfiguratorInterface {
         if (applicationSettings.isPresent()) {
             return applicationSettings.get();
         }
-        getLogger(Configurator.class.getName()).log(Level.SEVERE, String.format("Не найден контейнер view приложения. Модуль: %s", this.getClass().getModule().getName()));
+        logger.log(Level.SEVERE, String.format("Не найден контейнер view приложения. Модуль: %s", this.getClass().getModule().getName()));
 
         return null;
     }
@@ -70,7 +84,7 @@ public final class Configurator implements ModuleConfiguratorInterface {
         if (controlBuilderFacade.isPresent()) {
             return controlBuilderFacade.get();
         }
-        getLogger(Configurator.class.getName()).log(Level.SEVERE, String.format("Не найден фасад для построения элементов интерфейса. Модуль: %s", this.getClass().getModule().getName()));
+        logger.log(Level.SEVERE, String.format("Не найден фасад для построения элементов интерфейса. Модуль: %s", this.getClass().getModule().getName()));
 
         return null;
     }

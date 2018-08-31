@@ -1,32 +1,42 @@
 package com.github.kostrovik.kernel.graphics.controls.dropdown;
 
+import com.github.kostrovik.kernel.dictionaries.ViewTypeDictionary;
 import com.github.kostrovik.kernel.graphics.common.icons.SolidIcons;
+import com.github.kostrovik.kernel.graphics.controls.list.ScrollableListView;
+import com.github.kostrovik.kernel.graphics.helper.ListPageDataLoader;
+import com.github.kostrovik.kernel.graphics.helper.PageInfo;
+import com.github.kostrovik.kernel.interfaces.EventListenerInterface;
 import com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface;
+import com.github.kostrovik.kernel.interfaces.views.ContentViewInterface;
+import com.github.kostrovik.kernel.interfaces.views.LayoutType;
+import com.github.kostrovik.kernel.interfaces.views.ViewEventInterface;
+import com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;
+import com.github.kostrovik.kernel.models.PagedList;
 import com.github.kostrovik.kernel.settings.Configurator;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.css.Styleable;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
-import java.util.Comparator;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -43,9 +53,7 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
     private Button clear;
     private Button openList;
 
-    private ListView<T> itemsList;
-    private FilteredList<T> filteredList;
-    private SortedList<T> sortedList;
+    private ScrollableListView<T> itemsList;
     private TextField searchPattern;
     private VBox popupGroup;
 
@@ -55,11 +63,19 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
     private ControlBuilderFacadeInterface facade;
     private Callback<T, String> callback;
 
+    private PageInfo pageInfo;
+    private DropDownListFilter listFilter;
+
     public SearchableDropDownFieldSkin(SearchableDropDownField<T> control) {
         super(control);
         this.isListVisible = new SimpleObjectProperty<>(false);
         this.facade = Configurator.getConfig().getControlBuilder();
         callback = getSkinnable().getListLabelCallback();
+        pageInfo = new PageInfo();
+
+        listFilter = new DropDownListFilter(getSkinnable().getLookupAttribute(), getSkinnable().getLookupAttribute());
+        listFilter.addListener(event -> downloadData());
+
 
         this.isListVisible.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -83,6 +99,10 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
         });
 
         createSkin();
+
+        if (getSkinnable().getPaginationService() != null) {
+            downloadData();
+        }
     }
 
     private void createSkin() {
@@ -133,15 +153,13 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
         searchPattern = new TextField();
         searchPattern.setFocusTraversable(false);
 
-        filteredList = new FilteredList<>(FXCollections.observableArrayList(getSkinnable().getItems()), item -> true);
-        sortedList = new SortedList<>(filteredList, Comparator.comparing(callback::call));
-
         searchPattern.textProperty().addListener(obs -> {
             String filter = searchPattern.getText();
+
             if (filter == null || filter.length() == 0) {
-                filteredList.setPredicate(s -> true);
+                listFilter.clear();
             } else {
-                filteredList.setPredicate(s -> callback.call(s).contains(filter));
+                listFilter.setValueFilter(filter);
             }
         });
 
@@ -167,24 +185,16 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
             }
         });
 
-        itemsList = new ListView<>(sortedList);
+        itemsList = new ScrollableListView<>();
         itemsList.setCellFactory(new Callback<>() {
             @Override
             public ListCell<T> call(ListView<T> param) {
-                return new ListCell<T>() {
+                return new ListCell<>() {
                     @Override
                     public void updateItem(T item, boolean empty) {
                         super.updateItem(item, empty);
                         if (item != null) {
                             setText(callback.call(item));
-
-                            Text text = new Text(getText());
-                            text.applyCss();
-
-                            if (itemsList.getPrefWidth() < text.getBoundsInLocal().getWidth() + 10) {
-                                itemsList.setPrefWidth(text.getBoundsInLocal().getWidth() + 10);
-                            }
-
                         } else {
                             setText("");
                         }
@@ -194,21 +204,70 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
         });
         itemsList.setFocusTraversable(false);
         itemsList.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                addSelectedItem();
+            if (event.getButton() == MouseButton.PRIMARY) {
+                if (getSkinnable().isMultiple()) {
+                    if (event.getClickCount() == 2) {
+                        addSelectedItem();
+                    }
+                } else {
+                    addSelectedItem();
+                    isListVisible.set(false);
+                }
             }
         });
 
-        itemsList.setPrefHeight(200);
+
+        itemsList.skinProperty().addListener((observable, oldValue, newValue) -> {
+            VirtualFlow<ListCell<T>> flow = (VirtualFlow<ListCell<T>>) itemsList.lookup(".virtual-flow");
+
+            ScrollBar hBar = null;
+            ScrollBar vBar = null;
+            Set<Node> scrollBars = flow.lookupAll(".scroll-bar");
+            for (Node bar : scrollBars) {
+                Orientation orientation = ((ScrollBar) bar).getOrientation();
+                if (orientation.equals(Orientation.HORIZONTAL)) {
+                    hBar = (ScrollBar) bar;
+                }
+                if (orientation.equals(Orientation.VERTICAL)) {
+                    vBar = (ScrollBar) bar;
+                }
+            }
+
+            ListCell<T> cell = flow.getCell(0);
+            Border borders = cell.getBorder();
+
+            double height = cell.getHeight();
+            if (borders != null) {
+                height += borders.getStrokes().get(0).getWidths().getBottom();
+                height += borders.getStrokes().get(0).getWidths().getTop();
+            }
+
+            itemsList.setPrefHeight(1 + itemsList.getItems().size() * height);
+
+            double maxWidth = 0;
+            for (T item : itemsList.getItems()) {
+                Text text = new Text(callback.call(item));
+                text.applyCss();
+
+                if (maxWidth < text.getBoundsInLocal().getWidth()) {
+                    maxWidth = text.getBoundsInLocal().getWidth();
+                }
+            }
+
+            double wDelta = vBar.getWidth() + cell.getPadding().getLeft() + cell.getPadding().getRight();
+            itemsList.setMinWidth(maxWidth + wDelta + 1);
+        });
+
+        itemsList.setMinHeight(30);
         itemsList.setMaxSize(400, 400);
 
         HBox statistics = new HBox();
         statistics.setPadding(new Insets(2, 2, 2, 2));
         statistics.setAlignment(Pos.CENTER_RIGHT);
 
-        Text count = new Text(String.format("Быстрый поиск %d", sortedList.size()));
+        Text count = new Text(String.format("Быстрый поиск %d", itemsList.getItems().size()));
         count.getStyleClass().add("items-count");
-        sortedList.addListener((ListChangeListener<T>) c -> count.setText(String.format("Быстрый поиск %d", sortedList.size())));
+        itemsList.getItems().addListener((ListChangeListener<T>) c -> count.setText(String.format("Быстрый поиск %d", itemsList.getItems().size())));
 
         statistics.getChildren().add(count);
 
@@ -225,6 +284,8 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
 
         label = new Label(getSkinnable().getLabel());
         label.setFocusTraversable(false);
+        label.visibleProperty().bind(getSkinnable().showLabelProperty());
+        label.managedProperty().bind(getSkinnable().showLabelProperty());
 
         Platform.runLater(() -> {
             label.setMinWidth(label.getBoundsInLocal().getWidth());
@@ -263,7 +324,7 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
         openDictionary.setFocusTraversable(false);
         openDictionary.prefHeightProperty().bind(textField.heightProperty());
 
-        getSkinnable().onOpenDictionaryActionProperty().addListener((observable, oldValue, newValue) -> openDictionary.setOnAction(newValue));
+        openDictionary.setOnAction(event -> openDialog());
 
         clear = facade.createButton("", SolidIcons.CROSS);
         clear.setOnAction(event -> clearSelectedValues());
@@ -274,6 +335,7 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
         openList = facade.createButton("", SolidIcons.CARET_DOWN);
         openList.setFocusTraversable(false);
         openList.prefHeightProperty().bind(textField.heightProperty());
+        openList.getStyleClass().add("open-list-button");
         openList.setOnAction(event -> {
             if (popupControl.isShowing()) {
                 isListVisible.set(false);
@@ -286,16 +348,20 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
         fieldBlock.getChildren().addAll(textField);
         if (getSkinnable().isMultiple()) {
             fieldBlock.getChildren().addAll(openDictionary, clear);
+            fieldBlock.getStyleClass().add("multiple");
         } else {
-            fieldBlock.getChildren().addAll(openList);
+            fieldBlock.getChildren().addAll(clear, openList);
+            fieldBlock.getStyleClass().remove("multiple");
         }
 
         getSkinnable().isMultipleProperty().addListener((observable, oldValue, newValue) -> {
             fieldBlock.getChildren().setAll(textField);
             if (getSkinnable().isMultiple()) {
                 fieldBlock.getChildren().addAll(openDictionary, clear);
+                fieldBlock.getStyleClass().add("multiple");
             } else {
-                fieldBlock.getChildren().addAll(openList);
+                fieldBlock.getChildren().addAll(clear, openList);
+                fieldBlock.getStyleClass().remove("multiple");
             }
         });
 
@@ -327,5 +393,66 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
         String str = selectedValues.stream().map(item -> callback.call(item)).collect(Collectors.joining(";"));
 
         textField.setText(str);
+    }
+
+    private void openDialog() {
+        Configurator configurator = Configurator.getConfig();
+        ViewEventListenerInterface listener = configurator.getEventListener();
+        ContentViewInterface view = listener.handle(new ViewEventInterface() {
+            @Override
+            public String getModuleName() {
+                return SearchableDropDownFieldSkin.class.getModule().getName();
+            }
+
+            @Override
+            public String getViewName() {
+                return ViewTypeDictionary.DROPDOWN_DIALOG.name();
+            }
+
+            @Override
+            public Object getEventData() {
+                Map<String, Object> data = new HashMap<>();
+                data.put("service", getSkinnable().getPaginationService());
+                data.put("callback", getSkinnable().getListLabelCallback());
+                data.put("attribute", getSkinnable().getLookupAttribute());
+                data.put("selectedItems", getSkinnable().getSelectedItems());
+
+                return data;
+            }
+
+            @Override
+            public LayoutType getLayoutType() {
+                return LayoutType.POPUP;
+            }
+        });
+
+        view.addListener(new EventListenerInterface() {
+            @Override
+            public void handle(EventObject event) {
+                System.out.println("dialog event");
+                System.out.println(event);
+                System.out.println(event.getSource());
+
+                getSkinnable().getSelectedItems().setAll((List<T>) event.getSource());
+            }
+        });
+    }
+
+    private void downloadData() {
+        updatePageInfo();
+
+        ListPageDataLoader<T> downloadDataThread = new ListPageDataLoader<>(getSkinnable().getPaginationService(), pageInfo, event -> {
+            PagedList<T> list = (PagedList<T>) event.getSource();
+            Platform.runLater(() -> itemsList.getItems().setAll(list.getList()));
+        });
+        downloadDataThread.setDaemon(true);
+        downloadDataThread.start();
+    }
+
+    private void updatePageInfo() {
+        pageInfo.setOffset(0);
+        pageInfo.setPageSize((int) (itemsList.getMaxHeight() / 24));
+        pageInfo.setFilter(listFilter);
+        pageInfo.setHasNextPage(true);
     }
 }

@@ -60,6 +60,20 @@ public class ButtonBuilder {
         return button;
     }
 
+    public Button createButton(SolidIcons buttonIcon, String buttonLabel, boolean bindFontSize) {
+        Button button = new Button();
+        setIcon(button, buttonIcon, bindFontSize);
+        setLabel(button, buttonLabel);
+        return button;
+    }
+
+    public Button createButton(SolidIcons buttonIcon, SolidIcons buttonHoverIcon, String buttonLabel, boolean bindFontSize) {
+        Button button = new Button();
+        setIcon(button, buttonIcon, buttonHoverIcon, bindFontSize);
+        setLabel(button, buttonLabel);
+        return button;
+    }
+
     private void setLabel(Button button, String buttonLabel) {
         button.setText(buttonLabel);
     }
@@ -71,13 +85,33 @@ public class ButtonBuilder {
         button.setGraphic(icon);
 
         if (bindFontSize) {
-            button.prefHeightProperty().addListener((observable, oldValue, newValue) -> {
-                Insets paddings = button.getPadding();
-                double size = newValue.intValue() - paddings.getTop() - paddings.getBottom();
-                Font font = Font.loadFont(buttonIcon.getFontPath(), size);
-                icon.setFont(font);
-            });
+            setIcontFont(button, buttonIcon, icon);
+
+            button.heightProperty().addListener((observable, oldValue, newValue) -> setIcontFont(button, buttonIcon, icon));
         }
+    }
+
+    private void setIcon(Button button, SolidIcons buttonIcon, SolidIcons buttonHoverIcon, boolean bindFontSize) {
+        setIcon(button, buttonIcon, bindFontSize);
+        Text icon = (Text) button.getGraphic();
+
+        button.hoverProperty().addListener((observable, oldValue, newValue) -> {
+            SolidIcons selectedIcon;
+            if (newValue) {
+                selectedIcon = buttonHoverIcon;
+            } else {
+                selectedIcon = buttonIcon;
+            }
+
+            setIcontFont(button, selectedIcon, icon);
+        });
+    }
+
+    private void setIcontFont(Button button, SolidIcons buttonIcon, Text icon) {
+        Insets paddings = button.getPadding();
+        int size = (int) (button.getPrefHeight() - paddings.getTop() - paddings.getBottom());
+        Font font = Font.loadFont(buttonIcon.getFontPath(), size);
+        icon.setFont(font);
     }
 
     public Button setIconPosition(Button button, ButtonIconPosition position) {

@@ -2,6 +2,8 @@ package com.github.kostrovik.kernel.common;
 
 import com.github.kostrovik.kernel.builders.SceneFactory;
 import com.github.kostrovik.kernel.dictionaries.ColorThemeDictionary;
+import com.github.kostrovik.kernel.interfaces.EventListenerInterface;
+import com.github.kostrovik.kernel.interfaces.Observable;
 import com.github.kostrovik.kernel.models.ServerConnectionAddress;
 import com.github.kostrovik.kernel.settings.Configurator;
 
@@ -23,17 +25,19 @@ import java.util.stream.Collectors;
  * date:    26/07/2018
  * github:  https://github.com/kostrovik/kernel
  */
-public class ApplicationSettings {
+public class ApplicationSettings implements Observable {
     private static Logger logger = Configurator.getConfig().getLogger(ApplicationSettings.class.getName());
     private static volatile ApplicationSettings settings;
 
     private Path applicationConfigPath;
     private ConfigParser parser;
     private ServerConnectionAddress defaultHost;
+    private List<EventListenerInterface> listeners;
 
     private ApplicationSettings() {
         setPath();
         this.parser = new ConfigParser(applicationConfigPath.toUri());
+        this.listeners = new ArrayList<>();
     }
 
     public static ApplicationSettings getInstance() {
@@ -143,6 +147,7 @@ public class ApplicationSettings {
 
     private void writeSettings(Map<String, Object> config) {
         parser.writeSettings(config);
+        notifyListeners();
     }
 
     private void setPath() {
@@ -170,5 +175,19 @@ public class ApplicationSettings {
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Нет возможно создать директорию с настройками.", e);
         }
+    }
+
+    @Override
+    public void addListener(EventListenerInterface listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void removeListener(EventListenerInterface listener) {
+        listeners.remove(listener);
+    }
+
+    private void notifyListeners() {
+        listeners.forEach(listener -> listener.handle(new EventObject(getInstance())));
     }
 }

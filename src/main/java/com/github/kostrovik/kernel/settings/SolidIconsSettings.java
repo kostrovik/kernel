@@ -44,6 +44,10 @@ final public class SolidIconsSettings {
                 result.load(inputStream);
 
                 result.setProperty("icons.font.path", preparePathForDefaultResource(result.getProperty("icons.font.path")));
+                result.setProperty("icons.font.path.light", preparePathForDefaultResource(result.getProperty("icons.font.path.light")));
+                result.setProperty("icons.font.path.solid", preparePathForDefaultResource(result.getProperty("icons.font.path.solid")));
+                result.setProperty("icons.font.path.regular", preparePathForDefaultResource(result.getProperty("icons.font.path.regular")));
+                result.setProperty("icons.font.path.brand", preparePathForDefaultResource(result.getProperty("icons.font.path.brand")));
             }
 
         } catch (FileNotFoundException error) {
@@ -69,6 +73,22 @@ final public class SolidIconsSettings {
 
     public String getFontPath() {
         return (String) config.getOrDefault("icons.font.path", "");
+    }
+
+    public String getBrandFontPath() {
+        return (String) config.getOrDefault("icons.font.path.brand", "");
+    }
+
+    public String getLightFontPath() {
+        return (String) config.getOrDefault("icons.font.path.light", "");
+    }
+
+    public String getRegularFontPath() {
+        return (String) config.getOrDefault("icons.font.path.regular", "");
+    }
+
+    public String getSolidFontPath() {
+        return (String) config.getOrDefault("icons.font.path.solid", "");
     }
 
     public double getDefaultIconsFontSize() {

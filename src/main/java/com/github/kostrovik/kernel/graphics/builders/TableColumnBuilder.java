@@ -26,6 +26,7 @@ public class TableColumnBuilder<T, R> {
      * @param <T>        the type parameter
      * @param <R>        the type parameter
      * @param columnName the column name
+     *
      * @return the table column
      */
     public <T, R> TableColumn<T, R> createColumn(String columnName) {
@@ -43,6 +44,7 @@ public class TableColumnBuilder<T, R> {
      *
      * @param columnName the column name
      * @param property   the property
+     *
      * @return the table column
      */
     public TableColumn<T, String> createStringValueColumn(String columnName, String property) {
@@ -85,6 +87,7 @@ public class TableColumnBuilder<T, R> {
      *
      * @param columnName the column name
      * @param property   the property
+     *
      * @return the table column
      */
     public TableColumn<T, String> createMultilineStringValueColumn(String columnName, String property) {
@@ -105,9 +108,16 @@ public class TableColumnBuilder<T, R> {
                     @Override
                     public void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
-                        if (!isEmpty() && !isEditing()) {
-                            cellText = createText(item);
-                            setGraphic(cellText);
+                        setText(null);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            if (item != null) {
+                                cellText = createText(item);
+                                setGraphic(cellText);
+                            } else {
+                                setGraphic(null);
+                            }
                         }
                     }
 
@@ -129,6 +139,7 @@ public class TableColumnBuilder<T, R> {
      *
      * @param columnName the column name
      * @param property   the property
+     *
      * @return the table column
      */
     public TableColumn<T, Boolean> createBooleanValueColumn(String columnName, String property) {
@@ -150,6 +161,7 @@ public class TableColumnBuilder<T, R> {
      * @param columnName the column name
      * @param property   the property
      * @param formatter  the formatter
+     *
      * @return the table column
      */
     public TableColumn<T, LocalDateTime> createLocalDateTimeValueColumn(String columnName, String property, DateTimeFormatter formatter) {

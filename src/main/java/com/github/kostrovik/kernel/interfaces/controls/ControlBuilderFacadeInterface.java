@@ -1,5 +1,6 @@
 package com.github.kostrovik.kernel.interfaces.controls;
 
+import com.github.kostrovik.kernel.graphics.controls.dropdown.SearchableDropDownField;
 import javafx.scene.control.Button;
 import javafx.scene.control.Skinnable;
 import javafx.scene.control.TableColumn;
@@ -20,6 +21,10 @@ public interface ControlBuilderFacadeInterface {
     Button createButton(String buttonTitle, IconInterface icon);
 
     Button createButton(String buttonTitle, IconInterface icon, IconPositionInterface iconPosition);
+
+    Button createButton(String buttonTitle, IconInterface icon, boolean bindFontSize);
+
+    Button createButton(String buttonTitle, IconInterface icon, IconInterface iconHover, boolean bindFontSize);
 
     Skinnable createFormNotification();
 
@@ -43,7 +48,17 @@ public interface ControlBuilderFacadeInterface {
 
     Skinnable addTextField(GridPane formLayout, String label);
 
+    Skinnable addTextAreaField(GridPane formLayout, String label);
+
     Skinnable addPasswordField(GridPane formLayout, String label);
 
-    Skinnable createDropDownField(String labelValue);
+    Skinnable addCheckBoxField(GridPane formLayout, String label);
+
+    Skinnable addCheckBoxField(GridPane formLayout, String label, int column);
+
+    void addSeparator(GridPane formLayout);
+
+    <E extends Comparable> SearchableDropDownField<E> addDropDownField(GridPane formLayout, String label);
+
+    <E extends Comparable> SearchableDropDownField<E> createDropDownField(String labelValue, String attribute);
 }

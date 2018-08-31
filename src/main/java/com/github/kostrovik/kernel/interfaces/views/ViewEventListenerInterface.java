@@ -9,7 +9,7 @@ import javafx.stage.Stage;
  * github:  https://github.com/kostrovik/kernel
  */
 public interface ViewEventListenerInterface {
-    void handle(ViewEventInterface event);
+    ContentViewInterface handle(ViewEventInterface event);
 
     void setMainStage(Stage mainWindow);
 }

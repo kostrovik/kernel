@@ -2,10 +2,7 @@ package com.github.kostrovik.kernel.graphics.common;
 
 import com.github.kostrovik.kernel.graphics.builders.CellPropertyValueFactory;
 import com.github.kostrovik.kernel.graphics.controls.dropdown.SearchableDropDownField;
-import javafx.scene.control.Button;
-import javafx.scene.control.Skinnable;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import com.github.kostrovik.kernel.graphics.builders.ButtonBuilder;
 import com.github.kostrovik.kernel.graphics.builders.TableColumnBuilder;
@@ -47,6 +44,18 @@ public class ControlBuilderFacade implements ControlBuilderFacadeInterface {
         Button button = builder.createButton((SolidIcons) icon, buttonTitle);
         builder.setIconPosition(button, (ButtonIconPosition) iconPosition);
 
+        return button;
+    }
+
+    public Button createButton(String buttonTitle, IconInterface icon, boolean bindFontSize) {
+        ButtonBuilder builder = new ButtonBuilder();
+        Button button = builder.createButton((SolidIcons) icon, buttonTitle, bindFontSize);
+        return button;
+    }
+
+    public Button createButton(String buttonTitle, IconInterface icon, IconInterface iconhover, boolean bindFontSize) {
+        ButtonBuilder builder = new ButtonBuilder();
+        Button button = builder.createButton((SolidIcons) icon, (SolidIcons) iconhover, buttonTitle, bindFontSize);
         return button;
     }
 
@@ -108,13 +117,43 @@ public class ControlBuilderFacade implements ControlBuilderFacadeInterface {
     }
 
     @Override
+    public TextArea addTextAreaField(GridPane formLayout, String label) {
+        TableFormBuilder builder = new TableFormBuilder();
+        return builder.createFormTextArea(formLayout, label);
+    }
+
+    @Override
     public TextField addPasswordField(GridPane formLayout, String label) {
         TableFormBuilder builder = new TableFormBuilder();
         return builder.createFormTextField(formLayout, label, true);
     }
 
     @Override
-    public Skinnable createDropDownField(String labelValue) {
-        return new SearchableDropDownField<>(labelValue);
+    public CheckBox addCheckBoxField(GridPane formLayout, String label) {
+        TableFormBuilder builder = new TableFormBuilder();
+        return builder.createFormCheckBoxField(formLayout, label);
+    }
+
+    @Override
+    public CheckBox addCheckBoxField(GridPane formLayout, String label, int column) {
+        TableFormBuilder builder = new TableFormBuilder();
+        return builder.createFormCheckBoxField(formLayout, label, column);
+    }
+
+    @Override
+    public void addSeparator(GridPane formLayout) {
+        TableFormBuilder builder = new TableFormBuilder();
+        builder.addSeparator(formLayout);
+    }
+
+    @Override
+    public <E extends Comparable> SearchableDropDownField<E> addDropDownField(GridPane formLayout, String label) {
+        TableFormBuilder builder = new TableFormBuilder();
+        return builder.createFormDropDownField(formLayout, label);
+    }
+
+    @Override
+    public <E extends Comparable> SearchableDropDownField<E> createDropDownField(String labelValue, String attribute) {
+        return new SearchableDropDownField<E>(labelValue, attribute);
     }
 }

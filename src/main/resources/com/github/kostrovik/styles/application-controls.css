@@ -1,0 +1,203 @@
+.menu-bar {
+    -fx-background-color: derive(-styleMainBackground-color, -5%);
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: derive(#000000, +30%);
+}
+
+.menu-bar .label {
+    -fx-text-fill: -styleMenuTextColor-color;
+}
+
+.menu-bar .menu-button {
+    -fx-border-color: transparent;
+    -fx-background-radius: 2px;
+    -fx-border-radius: 2px;
+}
+
+.menu-bar .menu-button:hover,
+.menu-bar .menu-button:focused,
+.menu-bar .menu-button:showing {
+    -fx-background-color: -styleMenuHoverButtonColor-color;
+    -fx-border-color: -styleMenuHoverButtonColor-color;
+}
+
+.menu-bar .menu-button:hover > .label,
+.menu-bar .menu-button:focused > .label,
+.menu-bar .menu-button:showing > .label {
+    -fx-text-fill: -styleMenuHoverText-color;
+}
+
+.menu-item:focused {
+    -fx-background-color: -styleMenuHoverButtonColor-color;
+    -fx-background-radius: 2px;
+    -fx-border-radius: 2px;
+}
+
+.menu-item:focused > .label {
+    -fx-text-fill: -styleMenuHoverText-color;
+}
+
+.context-menu {
+    -fx-background-color: -styleMainBackground-color;
+    -fx-background-insets: 0, 1, 2;
+    -fx-border-color: derive(#000000, +30%);
+    -fx-effect: dropshadow(two-pass-box, derive(#000000, +30%), 5, 0, 3, 3);
+    -fx-padding: 3;
+}
+
+.scroll-pane {
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.scroll-pane:focused {
+    -fx-background-insets: 0;
+}
+
+.scroll-pane .corner {
+    -fx-background-insets: 0;
+}
+
+.button {
+    -fx-padding: 5px 10px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-background-color: -styleButtonBackground-color;
+    -fx-text-fill: derive(-styleButtonText-color, +10%);
+}
+
+.button:hover {
+    -fx-background-color: -styleButtonHover-color;
+}
+
+.button:focused {
+    -fx-background-color: -styleButtonHover-color;
+}
+
+.button:cancel {
+    -fx-background-insets: 0;
+    -fx-background: derive(-styleButtonBackground-color, +70%);
+    -fx-background-color: derive(-styleButtonBackground-color, +70%);
+    -fx-text-fill: derive(-styleButtonText-color, +50%);
+}
+
+.button .icon {
+    -fx-fill: derive(-styleButtonText-color, +10%);
+}
+
+.button:hover .icon,
+.button:focused .icon,
+.button:hover:focused .icon {
+    -fx-fill: -styleButtonHoverIcon-color;
+}
+
+.button:cancel .icon {
+    -fx-fill: derive(-styleButtonText-color, +50%);
+}
+
+.table-view {
+    -fx-background-color: derive(-styleTableBackground-color, -10%);
+}
+
+.table-view .column-header, .table-view .column-header .label {
+    -fx-background-color: derive(-styleTableBackground-color, -30%);
+    -fx-color-label-visible: -styleTableText-color;
+    -fx-text-fill: -styleTableText-color;
+}
+
+.table-view .indexed-cell {
+    -fx-text-fill: -styleTableText-color;
+    -fx-table-cell-border-color: -styleTableCellBorder-color;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: -styleTableBackground-color;
+}
+
+.table-view .table-row-cell:even {
+    -fx-background-color: derive(-styleTableBackground-color, -10%);
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background: derive(-styleTableSelectedRow-color, +70%);
+    -fx-background-color: derive(-styleTableSelectedRow-color, +70%);
+    -fx-table-cell-border-color: -styleTableCellBorder-color;
+}
+
+.table-view .table-row-cell .check-box .box {
+    -fx-background-color: #797979;
+    -fx-border-color: derive(-styleMainBackground-color, -20%);
+    -fx-border-radius: 2px;
+    -fx-background-radius: 2px;
+}
+
+.table-view .table-row-cell:empty {
+    -fx-background-color: -styleTableBackground-color;
+}
+
+.table-view .table-row-cell:empty:odd, .table-view .table-row-cell:empty:even {
+    -fx-background-color: -styleTableBackground-color;
+}
+
+.table-view .table-row-cell .text {
+    -fx-fill: -styleTableText-color;
+}
+
+.text-field,
+.text-area .content {
+    -fx-background-color: -styleTextFieldBackground-color;
+    -fx-border-color: derive(-styleTextFieldBorder-color, +30%);
+    -fx-border-width: 1;
+    -fx-text-fill: -styleTextFieldText-color;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.text-area {
+    -fx-text-fill: -styleTextFieldText-color;
+}
+
+.text-field:focused,
+.text-area:focused .content {
+    -fx-effect: innershadow(gaussian, -styleTextFieldFocused-color, 5, 0.8, 0, 0);
+}
+
+.text-field.has-error,
+.text-area.has-error .content {
+    -fx-background-color: -styleTextFieldErrorBackground-color;
+    -fx-border-color: -styleTextFieldErrorBorder-color;
+}
+
+.text-field.has-error:focused,
+.text-area.has-error:focused .content {
+    -fx-background-color: -styleTextFieldBackground-color;
+    -fx-border-color: -styleTextFieldBorder-color;
+}
+
+.view-title {
+    -fx-font-size: 18px;
+    -fx-fill: -styleTitleText-color;
+}
+
+.check-box .box {
+    -fx-background-color: #797979;
+    -fx-border-color: derive(-styleMainBackground-color, -20%);
+    -fx-border-radius: 2px;
+    -fx-background-radius: 2px;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: #ffffff;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #323232;
+}
+
+.pagination-text {
+    -fx-fill: -styleTextFieldText-color;
+}
+
+.progress-bar .bar {
+    -fx-background-color: -styleProgressBar-color;
+}

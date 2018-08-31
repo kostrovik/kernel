@@ -19,11 +19,13 @@ module kernel {
     exports com.github.kostrovik.kernel.interfaces.controls;
     exports com.github.kostrovik.kernel.interfaces.views;
 
-    exports com.github.kostrovik.kernel.graphics.controls.notification;
-    exports com.github.kostrovik.kernel.graphics.controls.field;
-    exports com.github.kostrovik.kernel.graphics.controls.table;
     exports com.github.kostrovik.kernel.graphics.controls.dropdown;
+    exports com.github.kostrovik.kernel.graphics.controls.field;
+    exports com.github.kostrovik.kernel.graphics.controls.list;
+    exports com.github.kostrovik.kernel.graphics.controls.notification;
+    exports com.github.kostrovik.kernel.graphics.controls.panel;
     exports com.github.kostrovik.kernel.graphics.controls.progress;
+    exports com.github.kostrovik.kernel.graphics.controls.table;
     exports com.github.kostrovik.kernel.graphics.common;
     exports com.github.kostrovik.kernel.graphics.common.icons;
 

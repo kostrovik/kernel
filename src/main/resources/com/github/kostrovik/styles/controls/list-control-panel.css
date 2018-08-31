@@ -1,0 +1,42 @@
+.list-control-panel .button {
+    -fx-padding: 4px 4px;
+    -fx-border-radius: 4px;
+    -fx-background-color: transparent;
+    -fx-text-fill: derive(-styleButtonText-color, -30%);;
+    -fx-border-color: transparent;
+}
+
+.list-control-panel .button .icon {
+    -fx-fill: derive(-styleButtonText-color, -30%);
+}
+
+.list-control-panel .button:hover,
+.list-control-panel .button:hover:focused {
+    -fx-background-color: derive(-styleMainBackground-color, +20%);
+    -fx-effect: none;
+    -fx-border-color: derive(-styleButtonText-color, -30%);
+}
+
+.list-control-panel .button:hover .icon,
+.list-control-panel .button:hover:focused .icon {
+    -fx-fill: derive(-styleButtonText-color, -10%);
+}
+
+.list-control-panel .button:focused {
+    -fx-background-color: transparent;
+    -fx-effect: none;
+    -fx-border-color: derive(-styleButtonText-color, -30%);
+}
+
+.list-control-panel .button:focused .icon {
+    -fx-fill: derive(-styleButtonText-color, -10%);
+}
+
+.list-control-panel .button:cancel {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.list-control-panel .button:cancel .icon {
+    -fx-fill: derive(-styleButtonText-color, -50%);
+}

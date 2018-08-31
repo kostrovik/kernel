@@ -12,6 +12,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,31 +31,33 @@ public class ServerConnector implements ServerConnectionInterface {
 
     public ServerConnector() {
         this.serverAddress = ApplicationSettings.getInstance().getDefaultHost();
+        ApplicationSettings.getInstance().addListener(event -> serverAddress = ApplicationSettings.getInstance().getDefaultHost());
     }
 
     @Override
-    public String sendGet(String apiUrl, Map<String, String> headers) {
+    public Map<String, Object> sendGet(String apiUrl, Map<String, String> headers) {
         return sendRequest("GET", apiUrl, headers, "", new HashMap<>());
     }
 
     @Override
-    public String sendGet(String apiUrl, Map<String, String> headers, Map<String, String> urlParams) {
+    public Map<String, Object> sendGet(String apiUrl, Map<String, String> headers, Map<String, String> urlParams) {
         return sendRequest("GET", apiUrl, headers, "", urlParams);
     }
 
     @Override
-    public String sendPost(String apiUrl, String data, Map<String, String> headers) {
+    public Map<String, Object> sendPost(String apiUrl, String data, Map<String, String> headers) {
         return sendRequest("POST", apiUrl, headers, data, new HashMap<>());
     }
 
     @Override
-    public String sendPost(String apiUrl, String data, Map<String, String> headers, Map<String, String> urlParams) {
+    public Map<String, Object> sendPost(String apiUrl, String data, Map<String, String> headers, Map<String, String> urlParams) {
         return sendRequest("POST", apiUrl, headers, data, urlParams);
     }
 
-    private String sendRequest(String method, String apiUrl, Map<String, String> headers, String data, Map<String, String> urlParams) {
+    private Map<String, Object> sendRequest(String method, String apiUrl, Map<String, String> headers, String data, Map<String, String> urlParams) {
         StringBuilder response = new StringBuilder();
         StringBuilder responseResult = new StringBuilder();
+        Map<String, Object> result = new HashMap<>();
 
         try {
             String requestParams = urlParams.keySet().stream().map(key -> String.format("%s=%s", key, encodeValue(urlParams.get(key)))).collect(Collectors.joining("&"));
@@ -72,17 +75,21 @@ public class ServerConnector implements ServerConnectionInterface {
             }
 
             prepareResponseResult(responseResult, serverApiUrl, connection);
-            parseResponse(response, connection);
+            result = parseResponse(response, connection);
 
             ApplicationSettings.getInstance().updateHostLastUsage();
         } catch (IOException e) {
             logger.log(Level.WARNING, String.format("Ошибка выполнения запроса%n%s", responseResult), e);
         }
 
-        return response.toString();
+        return result;
     }
 
-    private void parseResponse(StringBuilder answer, HttpURLConnection connection) throws IOException {
+    private Map<String, Object> parseResponse(StringBuilder answer, HttpURLConnection connection) throws IOException {
+        Map<String, List<String>> headers = connection.getHeaderFields();
+        Map<String, Object> result = new HashMap<>();
+        result.put("headers", headers);
+
         if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
             try (InputStreamReader input = new InputStreamReader(connection.getErrorStream(), charset)) {
                 int character;
@@ -98,6 +105,9 @@ public class ServerConnector implements ServerConnectionInterface {
                 }
             }
         }
+
+        result.put("body", answer.toString());
+        return result;
     }
 
     private HttpURLConnection createConnection(String method, Map<String, String> headers, URL connectionUrl) throws IOException {

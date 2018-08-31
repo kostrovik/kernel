@@ -1,0 +1,103 @@
+package com.github.kostrovik.kernel.models;
+
+import com.github.kostrovik.kernel.interfaces.EventListenerInterface;
+import com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface;
+import com.github.kostrovik.kernel.interfaces.views.PopupWindowInterface;
+import com.github.kostrovik.kernel.settings.Configurator;
+import javafx.geometry.Insets;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+
+import java.util.ArrayList;
+import java.util.EventObject;
+import java.util.List;
+
+/**
+ * project: kernel
+ * author:  kostrovik
+ * date:    31/08/2018
+ * github:  https://github.com/kostrovik/kernel
+ */
+public abstract class AbstractPopupWindow implements PopupWindowInterface {
+    protected List<EventListenerInterface> listeners;
+    protected ControlBuilderFacadeInterface facade;
+    protected Stage stage;
+    protected Pane parent;
+    protected VBox view;
+
+    protected AbstractPopupWindow(Pane parent) {
+        this.listeners = new ArrayList<>();
+        this.parent = parent;
+        this.facade = Configurator.getConfig().getControlBuilder();
+    }
+
+    @Override
+    public void setStage(Stage stage) {
+        this.stage = stage;
+        setDefaultWindowSize();
+        createView();
+    }
+
+    @Override
+    public Region getView() {
+        return view;
+    }
+
+    @Override
+    public void addListener(EventListenerInterface listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void removeListener(EventListenerInterface listener) {
+        listeners.remove(listener);
+    }
+
+    protected void notifyListeners(Object eventObject) {
+        listeners.forEach(listener -> listener.handle(new EventObject(eventObject)));
+    }
+
+    protected int getWindowWidth() {
+        return 980;
+    }
+
+    protected int getWindowHeight() {
+        return 760;
+    }
+
+    protected void createView() {
+        view = new VBox(10);
+        view.setPadding(new Insets(10, 10, 10, 10));
+
+        view.prefWidthProperty().bind(parent.widthProperty());
+        view.prefHeightProperty().bind(parent.heightProperty());
+
+        view.getChildren().setAll(getViewTitle(), getWindowContent(), getWindowButtons());
+    }
+
+    protected abstract Region getWindowContent();
+
+    protected abstract Region getWindowButtons();
+
+    protected abstract String getWindowTitle();
+
+    protected Region getViewTitle() {
+        Text viewTitle = new Text(getWindowTitle());
+        viewTitle.getStyleClass().add("view-title");
+
+        HBox titleBox = new HBox(10);
+        titleBox.setPadding(new Insets(10, 10, 10, 10));
+        titleBox.getChildren().addAll(viewTitle);
+
+        return titleBox;
+    }
+
+    private void setDefaultWindowSize() {
+        this.stage.setWidth(getWindowWidth());
+        this.stage.setHeight(getWindowHeight());
+    }
+}

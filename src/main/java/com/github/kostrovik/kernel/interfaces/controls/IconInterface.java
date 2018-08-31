@@ -13,5 +13,13 @@ public interface IconInterface {
 
     Font getFont();
 
+    Font getSolidFont();
+
+    Font getLightFont();
+
     String getFontPath();
+
+    String getSolidFontPath();
+
+    String getLightFontPath();
 }

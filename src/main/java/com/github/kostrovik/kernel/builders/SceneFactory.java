@@ -65,7 +65,7 @@ public final class SceneFactory implements ViewEventListenerInterface {
         mainWindow = stage;
     }
 
-    public void initScene(String moduleName, String viewName, LayoutType layoutType, EventObject event) {
+    public ContentViewInterface initScene(String moduleName, String viewName, LayoutType layoutType, EventObject event) {
         Scene scene;
         Stage stage = null;
 
@@ -89,7 +89,7 @@ public final class SceneFactory implements ViewEventListenerInterface {
 
         Pane content = (Pane) scene.lookup(".scene-content");
 
-        ContentViewInterface contentView = storage.getOrDefault(moduleName + "_" + viewName, createView(moduleName, viewName, content, stage));
+        ContentViewInterface contentView = storage.getOrDefault(moduleName + "_" + viewName, createView(moduleName, viewName, content));
 
         if (contentView == null) {
             content.getChildren().setAll(errorCreateScene(content));
@@ -111,9 +111,11 @@ public final class SceneFactory implements ViewEventListenerInterface {
         } else {
             mainWindow.setScene(scene);
         }
+
+        return contentView;
     }
 
-    private ContentViewInterface createView(String moduleName, String viewName, Pane content, Stage stage) {
+    private ContentViewInterface createView(String moduleName, String viewName, Pane content) {
         ModuleConfiguratorInterface moduleConfiguration = config.getConfigForModule(moduleName);
         Map<String, Class<?>> moduleViews = moduleConfiguration.getModuleViews();
 
@@ -122,13 +124,8 @@ public final class SceneFactory implements ViewEventListenerInterface {
         if (viewClass != null) {
             Constructor<?> constructor;
             try {
-                if (viewClass.isAssignableFrom(PopupWindowInterface.class)) {
-                    constructor = viewClass.getDeclaredConstructor(Pane.class, Stage.class);
-                    view = (ContentViewInterface) constructor.newInstance(content, stage);
-                } else {
-                    constructor = viewClass.getDeclaredConstructor(Pane.class);
-                    view = (ContentViewInterface) constructor.newInstance(content);
-                }
+                constructor = viewClass.getDeclaredConstructor(Pane.class);
+                view = (ContentViewInterface) constructor.newInstance(content);
             } catch (NoSuchMethodException e) {
                 logger.log(Level.SEVERE, "Не задан конструктор с необходимымой сигнатурой.", e);
             } catch (IllegalAccessException e) {
@@ -236,7 +233,7 @@ public final class SceneFactory implements ViewEventListenerInterface {
         tray.setAlignment(Pos.BOTTOM_RIGHT);
 
         Timer timer = new Timer();
-        ProgressBarIndicator bar = new ProgressBarIndicator(6, 10);
+        ProgressBarIndicator bar = new ProgressBarIndicator(0, 1);
         MemoryStateBuilder timerTask = new MemoryStateBuilder(bar);
         timer.schedule(timerTask, 1000, 5000);
 
@@ -251,6 +248,7 @@ public final class SceneFactory implements ViewEventListenerInterface {
 
     private void setStyle(Scene scene) {
         try {
+            scene.getStylesheets().add(Class.forName(this.getClass().getName()).getResource("/com/github/kostrovik/styles/application-controls.css").toExternalForm());
             scene.getStylesheets().add(Class.forName(this.getClass().getName()).getResource(String.format("/com/github/kostrovik/styles/themes/%s", settings.getDefaultColorTheme())).toExternalForm());
         } catch (ClassNotFoundException error) {
             logger.log(Level.WARNING, "Ошибка загрузки стилей.", error);
@@ -258,7 +256,7 @@ public final class SceneFactory implements ViewEventListenerInterface {
     }
 
     @Override
-    public void handle(ViewEventInterface event) {
-        initScene(event.getModuleName(), event.getViewName(), event.getLayoutType(), new EventObject(event.getEventData()));
+    public ContentViewInterface handle(ViewEventInterface event) {
+        return initScene(event.getModuleName(), event.getViewName(), event.getLayoutType(), new EventObject(event.getEventData()));
     }
 }

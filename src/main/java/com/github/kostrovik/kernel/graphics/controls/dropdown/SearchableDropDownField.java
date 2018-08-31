@@ -1,18 +1,15 @@
 package com.github.kostrovik.kernel.graphics.controls.dropdown;
 
+import com.github.kostrovik.kernel.interfaces.controls.PaginationServiceInterface;
 import com.github.kostrovik.kernel.settings.Configurator;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.util.Callback;
 
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,44 +23,30 @@ public class SearchableDropDownField<T extends Comparable> extends Control {
     private static Logger logger = Configurator.getConfig().getLogger(SearchableDropDownField.class.getName());
 
     private final ObjectProperty<String> label;
-    private final ObjectProperty<List<T>> items;
+    //    private final ObjectProperty<List<T>> items;
     private final ObjectProperty<Boolean> showLabel;
     private final ObjectProperty<Callback<T, String>> listLabelCallback;
     private final ObjectProperty<ObservableList<T>> selectedItems;
 
     private final Callback<T, String> defaultCallBack = param -> param.toString();
 
-    private final EventHandler<ActionEvent> defauldAction = event -> {
-    };
-
-    private ObjectProperty<EventHandler<ActionEvent>> onOpenDictionaryAction = new ObjectPropertyBase<>() {
-        @Override
-        protected void invalidated() {
-            setEventHandler(ActionEvent.ACTION, get());
-        }
-
-        @Override
-        public Object getBean() {
-            return SearchableDropDownField.this;
-        }
-
-        @Override
-        public String getName() {
-            return "onOpenDictionaryAction";
-        }
-    };
-
     private final ObjectProperty<Boolean> isMultiple;
 
-    public SearchableDropDownField(String label) {
+    private final ObjectProperty<PaginationServiceInterface<T>> paginationService;
+    private String lookupAttribute;
+
+    public SearchableDropDownField(String label, String lookupAttribute) {
         this.label = new SimpleObjectProperty<>("");
-        this.items = new SimpleObjectProperty<>(FXCollections.<T>observableArrayList());
+//        this.items = new SimpleObjectProperty<>(FXCollections.observableArrayList());
         this.showLabel = new SimpleObjectProperty<>(true);
         this.listLabelCallback = new SimpleObjectProperty<>(defaultCallBack);
-        this.selectedItems = new SimpleObjectProperty<>(FXCollections.<T>observableArrayList());
+        this.selectedItems = new SimpleObjectProperty<>(FXCollections.observableArrayList());
         this.isMultiple = new SimpleObjectProperty<>(true);
 
-        setOnOpenDictionaryAction(defauldAction);
+        this.paginationService = new SimpleObjectProperty<>();
+
+        this.lookupAttribute = lookupAttribute;
+
         setLabel(label);
         getStyleClass().add("drop-down");
 
@@ -76,13 +59,14 @@ public class SearchableDropDownField<T extends Comparable> extends Control {
 
     public SearchableDropDownField(String label, boolean showLabel) {
         this.label = new SimpleObjectProperty<>();
-        this.items = new SimpleObjectProperty<>();
+//        this.items = new SimpleObjectProperty<>();
         this.showLabel = new SimpleObjectProperty<>(showLabel);
         this.listLabelCallback = new SimpleObjectProperty<>(defaultCallBack);
-        this.selectedItems = new SimpleObjectProperty<>(FXCollections.<T>observableArrayList());
+        this.selectedItems = new SimpleObjectProperty<>(FXCollections.observableArrayList());
         this.isMultiple = new SimpleObjectProperty<>(true);
 
-        setOnOpenDictionaryAction(defauldAction);
+        this.paginationService = new SimpleObjectProperty<>();
+
         setLabel(label);
         getStyleClass().add("drop-down");
 
@@ -108,7 +92,7 @@ public class SearchableDropDownField<T extends Comparable> extends Control {
     // -- свойсто название поля --
 
     // свойсто список значений
-    public ObjectProperty<List<T>> itemsProperty() {
+    /*public ObjectProperty<List<T>> itemsProperty() {
         return items;
     }
 
@@ -118,7 +102,7 @@ public class SearchableDropDownField<T extends Comparable> extends Control {
 
     public void setItems(List<T> items) {
         this.items.set(items);
-    }
+    }*/
     // -- свойсто список значений --
 
     // свойсто выводить подпись
@@ -162,8 +146,8 @@ public class SearchableDropDownField<T extends Comparable> extends Control {
         this.selectedItems.set(items);
     }
 
-    public void addSelectedItem(T item) {
-        getSelectedItems().add(item);
+    public void addSelectedItem(T... item) {
+        getSelectedItems().addAll(item);
     }
 
     public void clearSelectedItems() {
@@ -184,17 +168,20 @@ public class SearchableDropDownField<T extends Comparable> extends Control {
         this.isMultiple.set(multiple);
     }
 
-    // -- свойсто выводить подпись --
-    public final ObjectProperty<EventHandler<ActionEvent>> onOpenDictionaryActionProperty() {
-        return onOpenDictionaryAction;
+    public ObjectProperty<PaginationServiceInterface<T>> paginationServiceProperty() {
+        return paginationService;
     }
 
-    public final void setOnOpenDictionaryAction(EventHandler<ActionEvent> value) {
-        onOpenDictionaryActionProperty().set(value);
+    public PaginationServiceInterface<T> getPaginationService() {
+        return paginationService.get();
     }
 
-    public final EventHandler<ActionEvent> getOnOpenDictionaryAction() {
-        return onOpenDictionaryActionProperty().get();
+    public void setPaginationService(PaginationServiceInterface<T> service) {
+        paginationService.set(service);
+    }
+
+    public String getLookupAttribute() {
+        return lookupAttribute;
     }
 
     @Override
