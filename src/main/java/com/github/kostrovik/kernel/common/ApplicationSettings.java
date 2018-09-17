@@ -29,6 +29,9 @@ public class ApplicationSettings implements Observable {
     private static Logger logger = Configurator.getConfig().getLogger(ApplicationSettings.class.getName());
     private static volatile ApplicationSettings settings;
 
+    private static final String DEFAULT_HOST_PROPERTY = "defaultHost";
+    private static final String HOSTS_PROPERTY = "hosts";
+
     private Path applicationConfigPath;
     private ConfigParser parser;
     private ServerConnectionAddress defaultHost;
@@ -53,10 +56,10 @@ public class ApplicationSettings implements Observable {
 
     public List<ServerConnectionAddress> getHosts() {
         Map<String, Object> config = parser.getConfig();
-        String defaultAddress = (String) config.getOrDefault("defaultHost", "");
+        String defaultAddress = (String) config.getOrDefault(DEFAULT_HOST_PROPERTY, "");
         List<ServerConnectionAddress> addreses = new ArrayList<>();
 
-        List<String> hosts = Arrays.asList(((String) config.getOrDefault("hosts", "")).split(","));
+        List<String> hosts = Arrays.asList(((String) config.getOrDefault(HOSTS_PROPERTY, "")).split(","));
 
         for (String host : hosts) {
             ServerConnectionAddress address = createAddress(host);
@@ -88,9 +91,11 @@ public class ApplicationSettings implements Observable {
 
     public void saveHostsList(List<ServerConnectionAddress> hosts) {
         Map<String, Object> config = parser.getConfig();
-        config.put("hosts", String.join(",", hosts.stream().map(host -> {
+        config.remove(DEFAULT_HOST_PROPERTY);
+        defaultHost = null;
+        config.put(HOSTS_PROPERTY, String.join(",", hosts.stream().map(host -> {
             if (host.isDefault()) {
-                config.put("defaultHost", host.getUrl());
+                config.put(DEFAULT_HOST_PROPERTY, host.getUrl());
                 defaultHost = host;
             }
             return String.format("%s@%s", host.getUrl(), host.getLastUsage());
@@ -101,7 +106,7 @@ public class ApplicationSettings implements Observable {
 
     public void updateHostLastUsage() {
         Map<String, Object> config = parser.getConfig();
-        config.put("hosts", String.join(",", getHosts().stream().map(host -> {
+        config.put(HOSTS_PROPERTY, String.join(",", getHosts().stream().map(host -> {
             if (host.isDefault()) {
                 host.setLastUsage(LocalDateTime.now());
                 defaultHost = host;
@@ -124,8 +129,7 @@ public class ApplicationSettings implements Observable {
     }
 
     public boolean showMemoryUsage() {
-        Object show = parser.getConfigProperty("showMemoryUsage");
-        return show != null ? (boolean) show : false;
+        return (boolean) Objects.requireNonNullElse(parser.getConfigProperty("showMemoryUsage"), false);
     }
 
     public void saveShowMemoryUsage(boolean isShow) {

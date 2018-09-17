@@ -23,6 +23,16 @@ import java.util.List;
  * github:  https://github.com/kostrovik/kernel
  */
 public abstract class AbstractPopupWindow implements PopupWindowInterface {
+
+    /**
+     * Константа указывает ширину по умолчанию для всплывающих окон.
+     */
+    private static final int DEFAULT_WIDTH = 980;
+    /**
+     * Константа указывает высоту по умолчанию для всплывающих окон.
+     */
+    private static final int DEFAULT_HEIGHT = 760;
+
     protected List<EventListenerInterface> listeners;
     protected ControlBuilderFacadeInterface facade;
     protected Stage stage;
@@ -62,11 +72,11 @@ public abstract class AbstractPopupWindow implements PopupWindowInterface {
     }
 
     protected int getWindowWidth() {
-        return 980;
+        return DEFAULT_WIDTH;
     }
 
     protected int getWindowHeight() {
-        return 760;
+        return DEFAULT_HEIGHT;
     }
 
     protected void createView() {
@@ -96,7 +106,7 @@ public abstract class AbstractPopupWindow implements PopupWindowInterface {
         return titleBox;
     }
 
-    private void setDefaultWindowSize() {
+    protected void setDefaultWindowSize() {
         this.stage.setWidth(getWindowWidth());
         this.stage.setHeight(getWindowHeight());
     }

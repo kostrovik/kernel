@@ -1,5 +1,5 @@
 .list-control-panel .button {
-    -fx-padding: 4px 4px;
+    -fx-padding: 2px 2px;
     -fx-border-radius: 4px;
     -fx-background-color: transparent;
     -fx-text-fill: derive(-styleButtonText-color, -30%);;

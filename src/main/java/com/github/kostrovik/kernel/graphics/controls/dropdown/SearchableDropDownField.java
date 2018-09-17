@@ -23,7 +23,6 @@ public class SearchableDropDownField<T extends Comparable> extends Control {
     private static Logger logger = Configurator.getConfig().getLogger(SearchableDropDownField.class.getName());
 
     private final ObjectProperty<String> label;
-    //    private final ObjectProperty<List<T>> items;
     private final ObjectProperty<Boolean> showLabel;
     private final ObjectProperty<Callback<T, String>> listLabelCallback;
     private final ObjectProperty<ObservableList<T>> selectedItems;
@@ -37,7 +36,6 @@ public class SearchableDropDownField<T extends Comparable> extends Control {
 
     public SearchableDropDownField(String label, String lookupAttribute) {
         this.label = new SimpleObjectProperty<>("");
-//        this.items = new SimpleObjectProperty<>(FXCollections.observableArrayList());
         this.showLabel = new SimpleObjectProperty<>(true);
         this.listLabelCallback = new SimpleObjectProperty<>(defaultCallBack);
         this.selectedItems = new SimpleObjectProperty<>(FXCollections.observableArrayList());
@@ -57,15 +55,16 @@ public class SearchableDropDownField<T extends Comparable> extends Control {
         }
     }
 
-    public SearchableDropDownField(String label, boolean showLabel) {
+    public SearchableDropDownField(String label, boolean showLabel, String lookupAttribute) {
         this.label = new SimpleObjectProperty<>();
-//        this.items = new SimpleObjectProperty<>();
         this.showLabel = new SimpleObjectProperty<>(showLabel);
         this.listLabelCallback = new SimpleObjectProperty<>(defaultCallBack);
         this.selectedItems = new SimpleObjectProperty<>(FXCollections.observableArrayList());
         this.isMultiple = new SimpleObjectProperty<>(true);
 
         this.paginationService = new SimpleObjectProperty<>();
+
+        this.lookupAttribute = lookupAttribute;
 
         setLabel(label);
         getStyleClass().add("drop-down");
@@ -90,20 +89,6 @@ public class SearchableDropDownField<T extends Comparable> extends Control {
         label.set(labelValue);
     }
     // -- свойсто название поля --
-
-    // свойсто список значений
-    /*public ObjectProperty<List<T>> itemsProperty() {
-        return items;
-    }
-
-    public List<T> getItems() {
-        return items.get();
-    }
-
-    public void setItems(List<T> items) {
-        this.items.set(items);
-    }*/
-    // -- свойсто список значений --
 
     // свойсто выводить подпись
     public ObjectProperty<Boolean> showLabelProperty() {
@@ -186,6 +171,6 @@ public class SearchableDropDownField<T extends Comparable> extends Control {
 
     @Override
     protected Skin<?> createDefaultSkin() {
-        return new SearchableDropDownFieldSkin<T>(this);
+        return new SearchableDropDownFieldSkin<>(this);
     }
 }

@@ -1,13 +1,11 @@
 package com.github.kostrovik.kernel.interfaces.controls;
 
+import com.github.kostrovik.kernel.graphics.controls.base.columns.PagedColumn;
 import com.github.kostrovik.kernel.graphics.controls.dropdown.SearchableDropDownField;
 import javafx.scene.control.Button;
 import javafx.scene.control.Skinnable;
-import javafx.scene.control.TableColumn;
 import javafx.scene.layout.GridPane;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import javafx.util.Callback;
 
 /**
  * project: kernel
@@ -32,17 +30,9 @@ public interface ControlBuilderFacadeInterface {
 
     Skinnable createPasswordField(String labelValue);
 
-    <E, V> TableColumn<E, V> createTableColumn(String columnName);
+    <E, V> PagedColumn<E, V> createTableColumn(String columnName);
 
-    <E> TableColumn<E, String> createTableStringColumn(String columnName, String propertyName);
-
-    <E> TableColumn<E, String> createTableMultilineColumn(String columnName, String propertyName);
-
-    <E> TableColumn<E, Boolean> createTableBooleanColumn(String columnName, String propertyName);
-
-    <E> TableColumn<E, Integer> createTableIntegerColumn(String columnName, String propertyName);
-
-    <E> TableColumn<E, LocalDateTime> createTableLocalDateTimeColumn(String columnName, String propertyName, DateTimeFormatter formatter);
+    <E, V> PagedColumn<E, V> createTableColumn(String columnName, Callback<E, V> cellValueFactory);
 
     GridPane createTableFormLayout();
 
@@ -58,7 +48,7 @@ public interface ControlBuilderFacadeInterface {
 
     void addSeparator(GridPane formLayout);
 
-    <E extends Comparable> SearchableDropDownField<E> addDropDownField(GridPane formLayout, String label);
+    <E extends Comparable> SearchableDropDownField<E> addDropDownField(GridPane formLayout, String label, String attribute);
 
     <E extends Comparable> SearchableDropDownField<E> createDropDownField(String labelValue, String attribute);
 }

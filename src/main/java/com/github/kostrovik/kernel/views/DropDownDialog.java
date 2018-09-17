@@ -1,27 +1,28 @@
 package com.github.kostrovik.kernel.views;
 
+import com.github.kostrovik.kernel.dictionaries.SortDirection;
 import com.github.kostrovik.kernel.graphics.common.icons.SolidIcons;
-import com.github.kostrovik.kernel.graphics.controls.table.InfinityEntityTable;
-import com.github.kostrovik.kernel.graphics.controls.table.ScrollableTableView;
+import com.github.kostrovik.kernel.graphics.controls.base.InfinityTable;
+import com.github.kostrovik.kernel.graphics.controls.base.columns.PagedColumn;
+import com.github.kostrovik.kernel.interfaces.controls.ListFilterAndSorterInterface;
 import com.github.kostrovik.kernel.interfaces.controls.PaginationServiceInterface;
+import com.github.kostrovik.kernel.models.AbstractListFilter;
 import com.github.kostrovik.kernel.models.AbstractPopupWindow;
 import com.github.kostrovik.kernel.settings.Configurator;
-import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.*;
-import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
-import java.util.Collection;
-import java.util.EventObject;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * project: kernel
@@ -34,8 +35,8 @@ public class DropDownDialog<T> extends AbstractPopupWindow {
 
     private PaginationServiceInterface<T> paginationService;
     private Callback<T, String> listLabelCallback;
-    private InfinityEntityTable<T> table;
-    private ScrollableTableView<T> selectedItemsTable;
+    private InfinityTable<T> table;
+    private InfinityTable<T> selectedItemsTable;
 
     private ObservableList<T> selectedItems;
 
@@ -45,13 +46,19 @@ public class DropDownDialog<T> extends AbstractPopupWindow {
     }
 
     @Override
+    public void setStage(Stage stage) {
+        this.stage = stage;
+        super.setDefaultWindowSize();
+    }
+
+    @Override
     public void initView(EventObject event) {
         Map<String, Object> data = (Map<String, Object>) event.getSource();
         paginationService = (PaginationServiceInterface<T>) data.get("service");
         listLabelCallback = (Callback<T, String>) data.get("callback");
         selectedItems.setAll((Collection<? extends T>) data.get("selectedItems"));
 
-        table.setPaginationService(paginationService);
+        createView();
     }
 
     protected String getWindowTitle() {
@@ -64,11 +71,8 @@ public class DropDownDialog<T> extends AbstractPopupWindow {
         createSelectedItemsTable();
 
         Button button = facade.createButton("", SolidIcons.ARROW_ALT_RIGHT_LIGHT, SolidIcons.ARROW_ALT_RIGHT_SOLID, true);
-        button.setOnAction(event -> table.getSelectionModel().getSelectedItems().forEach(item -> {
-            if (!selectedItems.contains(item)) {
-                selectedItems.add(item);
-            }
-        }));
+
+        button.setOnAction(event -> selectedItems.addAll(table.getSelectedItems().stream().filter(item -> !selectedItems.contains(item)).collect(Collectors.toList())));
 
         button.setFocusTraversable(false);
         button.prefWidthProperty().bind(button.heightProperty());
@@ -76,6 +80,10 @@ public class DropDownDialog<T> extends AbstractPopupWindow {
         button.setMinWidth(0);
 
         GridPane formLayout = facade.createTableFormLayout();
+
+        table.prefWidthProperty().bind(view.widthProperty().divide(2).subtract(button.widthProperty()));
+        selectedItemsTable.prefWidthProperty().bind(view.widthProperty().divide(2).subtract(button.widthProperty()));
+
         formLayout.addRow(0, table, button, selectedItemsTable);
 
         formLayout.prefHeightProperty().bind(view.heightProperty());
@@ -117,81 +125,53 @@ public class DropDownDialog<T> extends AbstractPopupWindow {
     }
 
     private void createTable() {
-        table = new InfinityEntityTable<>();
-
-        TableColumn<T, String> name = facade.createTableColumn("Название");
-        name.setCellValueFactory(param -> {
-            T value = param.getValue();
-            TableColumn column = param.getTableColumn();
-
-            String data = listLabelCallback.call(value);
-
-            Text text = new Text(data);
-            text.applyCss();
-            if (column.getWidth() < text.getBoundsInLocal().getWidth()) {
-                column.setMinWidth(text.getBoundsInLocal().getWidth());
+        ListFilterAndSorterInterface defaultFilter = new AbstractListFilter() {
+            @Override
+            public Map<String, SortDirection> getSortBy() {
+                return new HashMap<>();
             }
 
-            return new ReadOnlyObjectWrapper<>(data);
-        });
+            @Override
+            public void setSortBy(Map<String, SortDirection> sortBy) {
+                // Обект фильтра является заглушкой. Поэтому реализация метода отсутсвует.
+            }
 
-        table.setTableColumns(name);
-        table.setPaginationService(paginationService);
-        table.selectionModelProperty().addListener((observable, oldValue, newValue) -> newValue.setSelectionMode(SelectionMode.MULTIPLE));
+            @Override
+            public List<Map<String, Object>> getFilters() {
+                return new ArrayList<>();
+            }
+
+            @Override
+            public void clear() {
+                // Обект фильтра является заглушкой. Поэтому реализация метода отсутсвует.
+            }
+        };
+
+        table = new InfinityTable<>(paginationService, defaultFilter);
+
+        PagedColumn<T, String> name = facade.createTableColumn("Название", listLabelCallback);
+        table.getColumns().addAll(name);
+        table.setMultiselection(true);
     }
 
     private void createSelectedItemsTable() {
-        selectedItemsTable = new ScrollableTableView<>(selectedItems);
+        selectedItemsTable = new InfinityTable<>(selectedItems);
 
-        TableColumn<T, String> name = facade.createTableColumn("Название");
-        name.setCellValueFactory(param -> {
-            T value = param.getValue();
-            TableColumn column = param.getTableColumn();
+        PagedColumn<T, String> name = facade.createTableColumn("Название", listLabelCallback);
 
-            String data = listLabelCallback.call(value);
+        PagedColumn<T, Button> action = facade.createTableColumn("Действие");
+        Callback<T, Button> actionValueCallback = param -> {
+            Button actionButton = facade.createButton("Удалить");
+            actionButton.setOnAction(event -> removeItem(param));
 
-            Text text = new Text(data);
-            text.applyCss();
-            if (column.getWidth() < text.getBoundsInLocal().getWidth()) {
-                column.setMinWidth(text.getBoundsInLocal().getWidth());
-            }
-
-            return new ReadOnlyObjectWrapper<>(data);
-        });
-
-        TableColumn<T, String> action = facade.createTableColumn("Действие");
-        action.setCellFactory(new Callback<>() {
-            @Override
-            public TableCell<T, String> call(TableColumn<T, String> param) {
-                TableCell<T, String> cell = new TableCell<>() {
-                    Button actionButton = facade.createButton("Удалить");
-
-                    @Override
-                    public void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (isEmpty()) {
-                            setGraphic(null);
-                            setText(null);
-                        } else {
-                            actionButton.setOnAction(event -> removeItem(selectedItemsTable.getItems().get(getIndex())));
-                            setGraphic(actionButton);
-                            Platform.runLater(() -> {
-                                if (action.getMinWidth() < actionButton.getBoundsInLocal().getWidth() + 10) {
-                                    action.setMinWidth(actionButton.getBoundsInLocal().getWidth() + 10);
-                                }
-                            });
-                            setText(null);
-                        }
-                    }
-                };
-                cell.setAlignment(Pos.CENTER_RIGHT);
-                return cell;
-            }
-        });
+            actionButton.setMinWidth(73);
+            return actionButton;
+        };
+        action.setCellValueFactory(actionValueCallback);
+        action.setColumnMaxWidth(93);
 
         selectedItemsTable.getColumns().addAll(name, action);
-        selectedItemsTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        selectedItemsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        selectedItemsTable.setSelectable(false);
     }
 
     private void removeItem(T item) {

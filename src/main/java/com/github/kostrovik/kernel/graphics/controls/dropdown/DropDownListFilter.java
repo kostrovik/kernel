@@ -1,7 +1,7 @@
 package com.github.kostrovik.kernel.graphics.controls.dropdown;
 
-import com.github.kostrovik.kernel.interfaces.EventListenerInterface;
-import com.github.kostrovik.kernel.interfaces.controls.ListFilterAndSorter;
+import com.github.kostrovik.kernel.dictionaries.SortDirection;
+import com.github.kostrovik.kernel.models.AbstractListFilter;
 
 import java.util.*;
 
@@ -11,50 +11,41 @@ import java.util.*;
  * date:    30/08/2018
  * github:  https://github.com/kostrovik/kernel
  */
-public class DropDownListFilter implements ListFilterAndSorter {
-    private String sortDirection;
-    private String sortBy;
-    private String defaultSortBy;
+public class DropDownListFilter extends AbstractListFilter {
+    private Map<String, SortDirection> sortBy;
+    private Map<String, SortDirection> defaultSortBy;
     private String attribute;
     private Map<String, Map<String, Object>> filters;
 
     private Map<String, Object> valueFilter;
 
-    private List<EventListenerInterface> listeners;
-
-    public DropDownListFilter(String sortBy, String attribute) {
-        this.sortBy = sortBy;
-        this.defaultSortBy = sortBy;
+    public DropDownListFilter(String attribute) {
+        super();
+        this.sortBy = new HashMap<>();
+        this.defaultSortBy = new HashMap<>();
         this.attribute = attribute;
-        this.sortDirection = "ASC";
         this.filters = new HashMap<>();
         this.valueFilter = new HashMap<>();
-
-        listeners = new ArrayList<>();
     }
 
-    public String getSortBy() {
+    @Override
+    public Map<String, SortDirection> getSortBy() {
+        if (sortBy.isEmpty()) {
+            sortBy.put(attribute, SortDirection.ASK);
+            defaultSortBy.put(attribute, SortDirection.ASK);
+        }
         return sortBy;
     }
 
-    public void setSortBy(String sortBy) {
-        this.sortBy = sortBy;
-        notifyListeners();
-    }
-
-    public String getSortDirection() {
-        return sortDirection;
-    }
-
-    public void setSortDirection(String sortDirection) {
-        if (sortDirection.equalsIgnoreCase("DESC")) {
-            this.sortDirection = "DESC";
-        } else {
-            this.sortDirection = "ASC";
+    @Override
+    public void setSortBy(Map<String, SortDirection> sortBy) {
+        if (Objects.nonNull(sortBy)) {
+            this.sortBy = sortBy;
+            notifyListeners();
         }
-        notifyListeners();
     }
 
+    @Override
     public List<Map<String, Object>> getFilters() {
         return new ArrayList<>(filters.values());
     }
@@ -62,7 +53,6 @@ public class DropDownListFilter implements ListFilterAndSorter {
     @Override
     public void clear() {
         this.sortBy = defaultSortBy;
-        this.sortDirection = "ASC";
         this.filters.clear();
         this.valueFilter.clear();
 
@@ -71,29 +61,19 @@ public class DropDownListFilter implements ListFilterAndSorter {
 
     public void setValueFilter(String value) {
         if (value == null || value.isEmpty()) {
-            filters.remove("valueFilter");
+            filters.remove(getFilterKey(attribute));
         } else {
             valueFilter.put(attribute, value);
-            filters.put("valueFilter", valueFilter);
+            filters.put(getFilterKey(attribute), valueFilter);
         }
         notifyListeners();
     }
 
     public String getValueFilter() {
-        return (String) filters.getOrDefault("valueFilter", new HashMap<>()).getOrDefault(attribute, "");
+        return (String) filters.getOrDefault(getFilterKey(attribute), new HashMap<>()).getOrDefault(attribute, "");
     }
 
-    @Override
-    public void addListener(EventListenerInterface listener) {
-        listeners.add(listener);
-    }
-
-    @Override
-    public void removeListener(EventListenerInterface listener) {
-        listeners.remove(listener);
-    }
-
-    private void notifyListeners() {
-        listeners.forEach(listener -> listener.handle(new EventObject(this)));
+    private String getFilterKey(String attribute) {
+        return attribute + "Filter";
     }
 }

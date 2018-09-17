@@ -36,7 +36,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -47,8 +51,8 @@ import java.util.stream.Collectors;
  */
 public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<SearchableDropDownField<T>> {
     private HBox inputGroup;
-    private Label label;
     private TextField textField;
+    private HBox fieldBlock;
     private Button openDictionary;
     private Button clear;
     private Button openList;
@@ -73,7 +77,7 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
         callback = getSkinnable().getListLabelCallback();
         pageInfo = new PageInfo();
 
-        listFilter = new DropDownListFilter(getSkinnable().getLookupAttribute(), getSkinnable().getLookupAttribute());
+        listFilter = new DropDownListFilter(getSkinnable().getLookupAttribute());
         listFilter.addListener(event -> downloadData());
 
 
@@ -99,6 +103,12 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
         });
 
         createSkin();
+
+        if (getSkinnable().getSelectedItems().isEmpty()) {
+            clearText();
+        } else {
+            prepareSelectedText();
+        }
 
         if (getSkinnable().getPaginationService() != null) {
             downloadData();
@@ -129,6 +139,7 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
 
                     @Override
                     public void dispose() {
+                        // нечего не делает при обновлени skin
                     }
                 });
             }
@@ -181,6 +192,14 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
                     } else {
                         itemsList.getSelectionModel().selectNext();
                     }
+                }
+            }
+            if (event.getCode() == KeyCode.ENTER && itemsList.getSelectionModel().getSelectedItem() != null) {
+                if (getSkinnable().isMultiple()) {
+                    addSelectedItem();
+                } else {
+                    addSelectedItem();
+                    isListVisible.set(false);
                 }
             }
         });
@@ -278,18 +297,16 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
         inputGroup = new HBox(10);
         inputGroup.setAlignment(Pos.CENTER_LEFT);
 
-        HBox fieldBlock = new HBox(0);
+        fieldBlock = new HBox(0);
         fieldBlock.setPadding(new Insets(1, 1, 1, 1));
         fieldBlock.getStyleClass().add("field-block");
 
-        label = new Label(getSkinnable().getLabel());
+        Label label = new Label(getSkinnable().getLabel());
         label.setFocusTraversable(false);
         label.visibleProperty().bind(getSkinnable().showLabelProperty());
         label.managedProperty().bind(getSkinnable().showLabelProperty());
 
-        Platform.runLater(() -> {
-            label.setMinWidth(label.getBoundsInLocal().getWidth());
-        });
+        Platform.runLater(() -> label.setMinWidth(label.getBoundsInLocal().getWidth()));
 
         textField = new TextField();
         textField.setEditable(false);
@@ -341,31 +358,29 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
                 isListVisible.set(false);
             } else {
                 isListVisible.set(true);
-                textField.requestFocus();
             }
         });
 
         fieldBlock.getChildren().addAll(textField);
-        if (getSkinnable().isMultiple()) {
-            fieldBlock.getChildren().addAll(openDictionary, clear);
-            fieldBlock.getStyleClass().add("multiple");
-        } else {
-            fieldBlock.getChildren().addAll(clear, openList);
-            fieldBlock.getStyleClass().remove("multiple");
-        }
+        checkIsMultiple();
 
         getSkinnable().isMultipleProperty().addListener((observable, oldValue, newValue) -> {
             fieldBlock.getChildren().setAll(textField);
-            if (getSkinnable().isMultiple()) {
-                fieldBlock.getChildren().addAll(openDictionary, clear);
-                fieldBlock.getStyleClass().add("multiple");
-            } else {
-                fieldBlock.getChildren().addAll(clear, openList);
-                fieldBlock.getStyleClass().remove("multiple");
-            }
+            checkIsMultiple();
         });
 
         inputGroup.getChildren().addAll(label, fieldBlock);
+    }
+
+    private void checkIsMultiple() {
+        String styleClass = "multiple";
+        if (getSkinnable().isMultiple()) {
+            fieldBlock.getChildren().addAll(openDictionary, clear);
+            fieldBlock.getStyleClass().add(styleClass);
+        } else {
+            fieldBlock.getChildren().addAll(clear, openList);
+            fieldBlock.getStyleClass().remove(styleClass);
+        }
     }
 
     private void clearSelectedValues() {
@@ -426,27 +441,19 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
             }
         });
 
-        view.addListener(new EventListenerInterface() {
-            @Override
-            public void handle(EventObject event) {
-                System.out.println("dialog event");
-                System.out.println(event);
-                System.out.println(event.getSource());
-
-                getSkinnable().getSelectedItems().setAll((List<T>) event.getSource());
-            }
-        });
+        view.addListener(event -> getSkinnable().getSelectedItems().setAll((List<T>) event.getSource()));
     }
 
     private void downloadData() {
         updatePageInfo();
 
-        ListPageDataLoader<T> downloadDataThread = new ListPageDataLoader<>(getSkinnable().getPaginationService(), pageInfo, event -> {
-            PagedList<T> list = (PagedList<T>) event.getSource();
-            Platform.runLater(() -> itemsList.getItems().setAll(list.getList()));
-        });
-        downloadDataThread.setDaemon(true);
-        downloadDataThread.start();
+        EventListenerInterface task = event -> {
+            Map<String, Object> result = (Map<String, Object>) event.getSource();
+            PagedList<T> dataList = (PagedList<T>) result.get("dataList");
+            itemsList.getItems().setAll(dataList.getList());
+        };
+
+        new Thread(new ListPageDataLoader<>(task, getSkinnable().getPaginationService(), pageInfo, LocalDateTime.now())).start();
     }
 
     private void updatePageInfo() {

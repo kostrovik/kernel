@@ -16,8 +16,6 @@ import javafx.scene.layout.Priority;
  * github:  https://github.com/kostrovik/kernel
  */
 public class LabeledTextFieldSkin extends SkinBase<LabeledTextField> {
-    private HBox group;
-    private Label label;
     private TextField textField;
 
     public LabeledTextFieldSkin(LabeledTextField control) {
@@ -44,15 +42,13 @@ public class LabeledTextFieldSkin extends SkinBase<LabeledTextField> {
     }
 
     private void createSkin() {
-        group = new HBox(10);
+        HBox group = new HBox(10);
         group.setAlignment(Pos.CENTER_LEFT);
 
-        label = new Label(getSkinnable().getLabel());
+        Label label = new Label(getSkinnable().getLabel());
         label.setFocusTraversable(false);
 
-        Platform.runLater(() -> {
-            label.setMinWidth(label.getBoundsInLocal().getWidth());
-        });
+        Platform.runLater(() -> label.setMinWidth(label.getBoundsInLocal().getWidth()));
 
         textField = getSkinnable().isPassoword() ? new PasswordField() : new TextField();
         textField.textProperty().addListener((observable, oldValue, newValue) -> getSkinnable().setText(newValue));

@@ -9,5 +9,5 @@ import com.github.kostrovik.kernel.models.PagedList;
  * github:  https://github.com/kostrovik/kernel
  */
 public interface PaginationServiceInterface<T> {
-    PagedList<T> getFilteredList(int offset, int pageSize, ListFilterAndSorter conditions);
+    PagedList<T> getFilteredList(int offset, int pageSize, ListFilterAndSorterInterface conditions);
 }

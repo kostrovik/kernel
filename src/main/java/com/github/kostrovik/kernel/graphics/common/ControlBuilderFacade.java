@@ -1,21 +1,21 @@
 package com.github.kostrovik.kernel.graphics.common;
 
-import com.github.kostrovik.kernel.graphics.builders.CellPropertyValueFactory;
-import com.github.kostrovik.kernel.graphics.controls.dropdown.SearchableDropDownField;
-import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
 import com.github.kostrovik.kernel.graphics.builders.ButtonBuilder;
-import com.github.kostrovik.kernel.graphics.builders.TableColumnBuilder;
 import com.github.kostrovik.kernel.graphics.builders.TableFormBuilder;
 import com.github.kostrovik.kernel.graphics.common.icons.SolidIcons;
+import com.github.kostrovik.kernel.graphics.controls.base.columns.PagedColumn;
+import com.github.kostrovik.kernel.graphics.controls.dropdown.SearchableDropDownField;
 import com.github.kostrovik.kernel.graphics.controls.field.LabeledTextField;
 import com.github.kostrovik.kernel.graphics.controls.notification.Notification;
 import com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface;
 import com.github.kostrovik.kernel.interfaces.controls.IconInterface;
 import com.github.kostrovik.kernel.interfaces.controls.IconPositionInterface;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
 
 /**
  * Класс представляющий фасад к различным билдерам контролов.
@@ -26,10 +26,12 @@ import java.time.format.DateTimeFormatter;
  * github:  https://github.com/kostrovik/kernel
  */
 public class ControlBuilderFacade implements ControlBuilderFacadeInterface {
+    @Override
     public Button createButton(String buttonTitle) {
         return createButton(buttonTitle, null);
     }
 
+    @Override
     public Button createButton(String buttonTitle, IconInterface icon) {
         ButtonBuilder builder = new ButtonBuilder();
         if (icon == null) {
@@ -39,6 +41,7 @@ public class ControlBuilderFacade implements ControlBuilderFacadeInterface {
         return builder.createButton((SolidIcons) icon, buttonTitle);
     }
 
+    @Override
     public Button createButton(String buttonTitle, IconInterface icon, IconPositionInterface iconPosition) {
         ButtonBuilder builder = new ButtonBuilder();
         Button button = builder.createButton((SolidIcons) icon, buttonTitle);
@@ -47,61 +50,44 @@ public class ControlBuilderFacade implements ControlBuilderFacadeInterface {
         return button;
     }
 
+    @Override
     public Button createButton(String buttonTitle, IconInterface icon, boolean bindFontSize) {
         ButtonBuilder builder = new ButtonBuilder();
-        Button button = builder.createButton((SolidIcons) icon, buttonTitle, bindFontSize);
-        return button;
+        return builder.createButton((SolidIcons) icon, buttonTitle, bindFontSize);
     }
 
+    @Override
     public Button createButton(String buttonTitle, IconInterface icon, IconInterface iconhover, boolean bindFontSize) {
         ButtonBuilder builder = new ButtonBuilder();
-        Button button = builder.createButton((SolidIcons) icon, (SolidIcons) iconhover, buttonTitle, bindFontSize);
-        return button;
+        return builder.createButton((SolidIcons) icon, (SolidIcons) iconhover, buttonTitle, bindFontSize);
     }
 
+    @Override
     public Notification createFormNotification() {
         return new Notification();
     }
 
+    @Override
     public LabeledTextField createTextField(String labelValue) {
         return new LabeledTextField(labelValue);
     }
 
+    @Override
     public LabeledTextField createPasswordField(String labelValue) {
         return new LabeledTextField(labelValue, true);
     }
 
-    public <E, V> TableColumn<E, V> createTableColumn(String columnName) {
-        TableColumnBuilder<E, V> builder = new TableColumnBuilder<>();
-        return builder.createColumn(columnName);
-    }
 
-    public <E> TableColumn<E, String> createTableStringColumn(String columnName, String propertyName) {
-        TableColumnBuilder<E, String> builder = new TableColumnBuilder<>();
-        return builder.createStringValueColumn(columnName, propertyName);
-    }
-
-    public <E> TableColumn<E, String> createTableMultilineColumn(String columnName, String propertyName) {
-        TableColumnBuilder<E, String> builder = new TableColumnBuilder<>();
-        return builder.createMultilineStringValueColumn(columnName, propertyName);
-    }
-
-    public <E> TableColumn<E, Boolean> createTableBooleanColumn(String columnName, String propertyName) {
-        TableColumnBuilder<E, Boolean> builder = new TableColumnBuilder<>();
-        return builder.createBooleanValueColumn(columnName, propertyName);
+    @Override
+    public <E, V> PagedColumn<E, V> createTableColumn(String columnName) {
+        return new PagedColumn<>(columnName);
     }
 
     @Override
-    public <E> TableColumn<E, Integer> createTableIntegerColumn(String columnName, String propertyName) {
-        TableColumnBuilder<E, Integer> builder = new TableColumnBuilder<>();
-        TableColumn<E, Integer> column = builder.createColumn(columnName);
-        column.setCellValueFactory(new CellPropertyValueFactory<>(propertyName));
+    public <E, V> PagedColumn<E, V> createTableColumn(String columnName, Callback<E, V> cellValueFactory) {
+        PagedColumn<E, V> column = createTableColumn(columnName);
+        column.setCellValueFactory(cellValueFactory);
         return column;
-    }
-
-    public <E> TableColumn<E, LocalDateTime> createTableLocalDateTimeColumn(String columnName, String propertyName, DateTimeFormatter formatter) {
-        TableColumnBuilder<E, LocalDateTime> builder = new TableColumnBuilder<>();
-        return builder.createLocalDateTimeValueColumn(columnName, propertyName, formatter);
     }
 
     @Override
@@ -147,13 +133,13 @@ public class ControlBuilderFacade implements ControlBuilderFacadeInterface {
     }
 
     @Override
-    public <E extends Comparable> SearchableDropDownField<E> addDropDownField(GridPane formLayout, String label) {
+    public <E extends Comparable> SearchableDropDownField<E> addDropDownField(GridPane formLayout, String label, String attribute) {
         TableFormBuilder builder = new TableFormBuilder();
-        return builder.createFormDropDownField(formLayout, label);
+        return builder.createFormDropDownField(formLayout, label, attribute);
     }
 
     @Override
     public <E extends Comparable> SearchableDropDownField<E> createDropDownField(String labelValue, String attribute) {
-        return new SearchableDropDownField<E>(labelValue, attribute);
+        return new SearchableDropDownField<>(labelValue, attribute);
     }
 }

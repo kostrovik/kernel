@@ -1,5 +1,8 @@
 package com.github.kostrovik.kernel.models;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+
 import java.time.LocalDateTime;
 
 /**
@@ -11,11 +14,11 @@ import java.time.LocalDateTime;
 public class ServerConnectionAddress {
     private String url;
     private LocalDateTime lastUsage;
-    private Boolean isDefault;
+    private BooleanProperty isDefault;
 
     public ServerConnectionAddress(String url) {
         this.url = url;
-        this.isDefault = false;
+        this.isDefault = new SimpleBooleanProperty(false);
     }
 
     public String getUrl() {
@@ -30,11 +33,15 @@ public class ServerConnectionAddress {
         this.lastUsage = lastUsage;
     }
 
-    public Boolean isDefault() {
+    public boolean isDefault() {
+        return isDefault.get();
+    }
+
+    public BooleanProperty defaultProperty() {
         return isDefault;
     }
 
     public void setDefault(boolean isDefault) {
-        this.isDefault = isDefault;
+        this.isDefault.set(isDefault);
     }
 }

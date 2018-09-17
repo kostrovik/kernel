@@ -56,7 +56,7 @@ public class ListControlPanelSkin extends SkinBase<ListControlPanel> {
             if (button != null) {
                 button.setFocusTraversable(false);
                 button.prefWidthProperty().bind(button.heightProperty());
-                button.setPrefHeight(14);
+                button.setPrefHeight(18);
                 button.setMinWidth(0);
 
                 getSkinnable().addButton(buttonType.getButtonKey(), button);

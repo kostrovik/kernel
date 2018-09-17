@@ -3,12 +3,12 @@ package com.github.kostrovik.kernel.graphics.helper;
 import com.github.kostrovik.kernel.interfaces.EventListenerInterface;
 import com.github.kostrovik.kernel.interfaces.controls.PaginationServiceInterface;
 import com.github.kostrovik.kernel.models.PagedList;
-import com.github.kostrovik.kernel.settings.Configurator;
+import javafx.application.Platform;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.EventObject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * project: kernel
@@ -16,33 +16,35 @@ import java.util.logging.Logger;
  * date:    28/08/2018
  * github:  https://github.com/kostrovik/kernel
  */
-public class ListPageDataLoader<T> extends Thread {
-    private static Logger logger = Configurator.getConfig().getLogger(ListPageDataLoader.class.getName());
-    private PageInfo pageInfo;
+public class ListPageDataLoader<T> implements Runnable {
+    private EventListenerInterface task;
     private PaginationServiceInterface<T> service;
-    private EventListenerInterface listener;
+    private PageInfo pageInfo;
+    private LocalDateTime threadStamp;
 
-    public ListPageDataLoader(PaginationServiceInterface<T> service, PageInfo pageInfo, EventListenerInterface listener) {
-        super("Download data thread");
-
+    public ListPageDataLoader(EventListenerInterface task, PaginationServiceInterface<T> service, PageInfo pageInfo, LocalDateTime threadOrder) {
+        this.task = task;
         this.service = service;
         this.pageInfo = pageInfo;
-        this.listener = listener;
+        this.threadStamp = threadOrder;
     }
 
     @Override
     public void run() {
-        PagedList<T> res = new PagedList<>(new ArrayList<>(), 0);
+        Map<String, Object> result = new HashMap<>();
+        result.put("offset", pageInfo.getOffset());
+        result.put("pageSize", pageInfo.getPageSize());
+        result.put("pageNumber", pageInfo.getPageNumber());
 
-        if (pageInfo.isHasNextPage()) {
-            try {
-                Thread.sleep(50);
-                res = service.getFilteredList(pageInfo.getOffset(), pageInfo.getPageSize(), pageInfo.getFilter());
-            } catch (InterruptedException e) {
-                logger.log(Level.WARNING, "Поток загрузки данных прерван", e);
-            }
-        }
+        PagedList<T> dataList = service.getFilteredList(pageInfo.getOffset(), pageInfo.getPageSize(), pageInfo.getFilter());
 
-        listener.handle(new EventObject(res));
+        result.put("dataList", dataList);
+        result.put("threadStamp", threadStamp);
+
+        Platform.runLater(() -> task.handle(new EventObject(result)));
+    }
+
+    public LocalDateTime getThreadStamp() {
+        return threadStamp;
     }
 }

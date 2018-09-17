@@ -74,9 +74,9 @@ public class TableFormBuilder {
         layout.add(separator, 0, layout.getRowCount(), layout.getColumnCount(), 1);
     }
 
-    public <E extends Comparable> SearchableDropDownField<E> createFormDropDownField(GridPane layout, String label) {
+    public <E extends Comparable> SearchableDropDownField<E> createFormDropDownField(GridPane layout, String label, String attribute) {
         Label fieldLabel = new Label(label);
-        SearchableDropDownField<E> field = new SearchableDropDownField<>(label, false);
+        SearchableDropDownField<E> field = new SearchableDropDownField<>(label, false, attribute);
 
         layout.addRow(layout.getRowCount(), fieldLabel, field);
 
