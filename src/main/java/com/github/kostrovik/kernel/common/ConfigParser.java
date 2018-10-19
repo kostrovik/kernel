@@ -75,7 +75,7 @@ public class ConfigParser {
             }
         }
 
-        logger.log(Level.WARNING, String.format("Не найден ключ конфигурации: %s", property));
+        logger.log(Level.WARNING, "Не найден ключ конфигурации: {0}", property);
 
         return null;
     }

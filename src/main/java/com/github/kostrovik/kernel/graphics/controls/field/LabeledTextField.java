@@ -1,8 +1,6 @@
 package com.github.kostrovik.kernel.graphics.controls.field;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ObjectPropertyBase;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Control;
@@ -19,6 +17,7 @@ public class LabeledTextField extends Control {
     private final ObjectProperty<String> text;
     private final ObjectProperty<Boolean> editable;
     private boolean isPassoword;
+    private BooleanProperty onlyInteger;
 
     private ObjectProperty<EventHandler<ActionEvent>> onAction = new ObjectPropertyBase<EventHandler<ActionEvent>>() {
         @Override
@@ -41,6 +40,7 @@ public class LabeledTextField extends Control {
         this.label = new SimpleObjectProperty<>();
         this.text = new SimpleObjectProperty<>("");
         this.editable = new SimpleObjectProperty<>();
+        this.onlyInteger = new SimpleBooleanProperty(false);
         setLabel(label);
     }
 
@@ -109,6 +109,18 @@ public class LabeledTextField extends Control {
 
     public boolean isPassoword() {
         return isPassoword;
+    }
+
+    public boolean isOnlyInteger() {
+        return onlyInteger.get();
+    }
+
+    public BooleanProperty onlyIntegerProperty() {
+        return onlyInteger;
+    }
+
+    public void setOnlyInteger(boolean onlyInteger) {
+        this.onlyInteger.set(onlyInteger);
     }
 
     @Override

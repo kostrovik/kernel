@@ -14,12 +14,17 @@ import java.util.logging.Logger;
  * date:    20/07/2018
  * github:  https://github.com/kostrovik/kernel
  */
-final public class SolidIconsSettings {
+public final class SolidIconsSettings {
     private static Logger logger = Configurator.getConfig().getLogger(SolidIconsSettings.class.getName());
 
     private static volatile SolidIconsSettings settings;
-    private static Properties config;
-    private final static String defaultConfigFilePath = "/com/github/kostrovik/icons/control_icons.properties";
+    private Properties config;
+    private static final String DEFAULT_CONFIG_FILE_PATH = "/com/github/kostrovik/icons/control_icons.properties";
+    private static final String ICONS_FONT_PATH = "icons.font.path";
+    private static final String ICONS_LIGHT_FONT_PATH = "icons.font.path.light";
+    private static final String ICONS_SOLID_FONT_PATH = "icons.font.path.solid";
+    private static final String ICONS_REGULAR_FONT_PATH = "icons.font.path.regular";
+    private static final String ICONS_BRAND_FONT_PATH = "icons.font.path.brand";
 
     private SolidIconsSettings() {
         config = getDefaultConfig();
@@ -39,15 +44,15 @@ final public class SolidIconsSettings {
     private Properties getDefaultConfig() {
         Properties result = new Properties();
 
-        try (InputStream inputStream = Class.forName(SolidIconsSettings.class.getName()).getResourceAsStream(defaultConfigFilePath)) {
+        try (InputStream inputStream = Class.forName(SolidIconsSettings.class.getName()).getResourceAsStream(DEFAULT_CONFIG_FILE_PATH)) {
             if (inputStream != null) {
                 result.load(inputStream);
 
-                result.setProperty("icons.font.path", preparePathForDefaultResource(result.getProperty("icons.font.path")));
-                result.setProperty("icons.font.path.light", preparePathForDefaultResource(result.getProperty("icons.font.path.light")));
-                result.setProperty("icons.font.path.solid", preparePathForDefaultResource(result.getProperty("icons.font.path.solid")));
-                result.setProperty("icons.font.path.regular", preparePathForDefaultResource(result.getProperty("icons.font.path.regular")));
-                result.setProperty("icons.font.path.brand", preparePathForDefaultResource(result.getProperty("icons.font.path.brand")));
+                result.setProperty(ICONS_FONT_PATH, preparePathForDefaultResource(result.getProperty(ICONS_FONT_PATH)));
+                result.setProperty(ICONS_LIGHT_FONT_PATH, preparePathForDefaultResource(result.getProperty(ICONS_LIGHT_FONT_PATH)));
+                result.setProperty(ICONS_SOLID_FONT_PATH, preparePathForDefaultResource(result.getProperty(ICONS_SOLID_FONT_PATH)));
+                result.setProperty(ICONS_REGULAR_FONT_PATH, preparePathForDefaultResource(result.getProperty(ICONS_REGULAR_FONT_PATH)));
+                result.setProperty(ICONS_BRAND_FONT_PATH, preparePathForDefaultResource(result.getProperty(ICONS_BRAND_FONT_PATH)));
             }
 
         } catch (FileNotFoundException error) {
@@ -72,23 +77,23 @@ final public class SolidIconsSettings {
     }
 
     public String getFontPath() {
-        return (String) config.getOrDefault("icons.font.path", "");
+        return (String) config.getOrDefault(ICONS_FONT_PATH, "");
     }
 
     public String getBrandFontPath() {
-        return (String) config.getOrDefault("icons.font.path.brand", "");
+        return (String) config.getOrDefault(ICONS_BRAND_FONT_PATH, "");
     }
 
     public String getLightFontPath() {
-        return (String) config.getOrDefault("icons.font.path.light", "");
+        return (String) config.getOrDefault(ICONS_LIGHT_FONT_PATH, "");
     }
 
     public String getRegularFontPath() {
-        return (String) config.getOrDefault("icons.font.path.regular", "");
+        return (String) config.getOrDefault(ICONS_REGULAR_FONT_PATH, "");
     }
 
     public String getSolidFontPath() {
-        return (String) config.getOrDefault("icons.font.path.solid", "");
+        return (String) config.getOrDefault(ICONS_SOLID_FONT_PATH, "");
     }
 
     public double getDefaultIconsFontSize() {

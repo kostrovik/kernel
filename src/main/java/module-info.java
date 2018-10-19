@@ -24,6 +24,7 @@ module kernel {
     exports com.github.kostrovik.kernel.graphics.controls.base.cells;
     exports com.github.kostrovik.kernel.graphics.controls.dropdown;
     exports com.github.kostrovik.kernel.graphics.controls.field;
+    exports com.github.kostrovik.kernel.graphics.controls.image;
     exports com.github.kostrovik.kernel.graphics.controls.list;
     exports com.github.kostrovik.kernel.graphics.controls.notification;
     exports com.github.kostrovik.kernel.graphics.controls.panel;

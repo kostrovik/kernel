@@ -253,6 +253,8 @@ public class ScrollingFlow<E, T extends PagedRow<E>> extends Region {
 
         if (hbar.isVisible()) {
             setHbarVisibleAmount();
+        }else{
+            hbar.setValue(0);
         }
     }
 

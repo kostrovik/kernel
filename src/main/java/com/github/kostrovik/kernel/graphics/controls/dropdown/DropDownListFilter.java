@@ -31,8 +31,8 @@ public class DropDownListFilter extends AbstractListFilter {
     @Override
     public Map<String, SortDirection> getSortBy() {
         if (sortBy.isEmpty()) {
-            sortBy.put(attribute, SortDirection.ASK);
-            defaultSortBy.put(attribute, SortDirection.ASK);
+            sortBy.put(attribute, SortDirection.ASC);
+            defaultSortBy.put(attribute, SortDirection.ASC);
         }
         return sortBy;
     }

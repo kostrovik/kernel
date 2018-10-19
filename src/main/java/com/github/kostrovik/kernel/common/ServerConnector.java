@@ -5,6 +5,7 @@ import com.github.kostrovik.kernel.models.ServerConnectionAddress;
 import com.github.kostrovik.kernel.settings.Configurator;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -40,7 +41,7 @@ public class ServerConnector implements ServerConnectionInterface {
     }
 
     @Override
-    public Map<String, Object> sendGet(String apiUrl, Map<String, String> headers, Map<String, String> urlParams) {
+    public Map<String, Object> sendGet(String apiUrl, Map<String, String> headers, Map<String, List<String>> urlParams) {
         return sendRequest("GET", apiUrl, headers, "", urlParams);
     }
 
@@ -50,17 +51,23 @@ public class ServerConnector implements ServerConnectionInterface {
     }
 
     @Override
-    public Map<String, Object> sendPost(String apiUrl, String data, Map<String, String> headers, Map<String, String> urlParams) {
+    public Map<String, Object> sendPost(String apiUrl, String data, Map<String, String> headers, Map<String, List<String>> urlParams) {
         return sendRequest("POST", apiUrl, headers, data, urlParams);
     }
 
-    private Map<String, Object> sendRequest(String method, String apiUrl, Map<String, String> headers, String data, Map<String, String> urlParams) {
+    private Map<String, Object> sendRequest(String method, String apiUrl, Map<String, String> headers, String data, Map<String, List<String>> urlParams) {
         StringBuilder response = new StringBuilder();
         StringBuilder responseResult = new StringBuilder();
         Map<String, Object> result = new HashMap<>();
 
         try {
-            String requestParams = urlParams.keySet().stream().map(key -> String.format("%s=%s", key, encodeValue(urlParams.get(key)))).collect(Collectors.joining("&"));
+            String requestParams = urlParams.keySet().stream().map(key -> {
+                if (urlParams.get(key).size() == 1) {
+                    return String.format("%s=%s", key, encodeValue(urlParams.get(key).get(0)));
+                } else {
+                    return urlParams.get(key).stream().map(val -> String.format("%s=%s", key, encodeValue(val))).collect(Collectors.joining("&"));
+                }
+            }).collect(Collectors.joining("&"));
 
             URL serverApiUrl = new URL(serverAddress.getUrl() + apiUrl + "?" + requestParams);
 
@@ -98,10 +105,18 @@ public class ServerConnector implements ServerConnectionInterface {
                 }
             }
         } else {
-            try (InputStreamReader input = new InputStreamReader(connection.getInputStream(), charset)) {
-                int character;
-                while (((character = input.read()) != -1)) {
-                    answer.append((char) character);
+            String contentType = connection.getContentType();
+            if (contentType.contains("application/json")) {
+                try (InputStreamReader input = new InputStreamReader(connection.getInputStream(), charset)) {
+                    int character;
+                    while (((character = input.read()) != -1)) {
+                        answer.append((char) character);
+                    }
+                }
+            } else {
+                try (InputStream inputStream = connection.getInputStream()) {
+                    byte[] imageRawData = inputStream.readAllBytes();
+                    result.put("file", imageRawData);
                 }
             }
         }
@@ -127,6 +142,7 @@ public class ServerConnector implements ServerConnectionInterface {
         builder.append(String.format("Запрос: %s%n", url.toExternalForm()));
         builder.append(String.format("Meтoд: %s%n", connection.getRequestMethod()));
         builder.append(String.format("Koд ответа: %s%n", connection.getResponseCode()));
+        builder.append(String.format("Тип содержимого: %s%n", connection.getContentType()));
         builder.append(String.format("Oтвeт: %s%n", connection.getResponseMessage()));
     }
 

@@ -87,10 +87,10 @@ public enum SolidIcons implements IconInterface {
 
         @Override
         public Font getFont() {
-            return prepareFont("light");
+            return prepareFont(FONT_LIGHT);
         }
     },
-    ARROW_ALT_RIGHT_SOLID("\uf356", "solid") {
+    ARROW_ALT_RIGHT_SOLID("\uf356", SolidIcons.FONT_SOLID) {
         @Override
         public String getFontPath() {
             return settings.getSolidFontPath();
@@ -103,13 +103,15 @@ public enum SolidIcons implements IconInterface {
 
         @Override
         public Font getFont() {
-            return prepareFont("solid");
+            return prepareFont(FONT_SOLID);
         }
     };
 
     private final String character;
     private final String type;
-    private final static SolidIconsSettings settings = SolidIconsSettings.getInstance();
+    private static final SolidIconsSettings settings = SolidIconsSettings.getInstance();
+    private static final String FONT_LIGHT = "light";
+    private static final String FONT_SOLID = "solid";
 
     private SolidIcons(String character) {
         this.character = character;
@@ -133,19 +135,19 @@ public enum SolidIcons implements IconInterface {
 
     @Override
     public Font getSolidFont() {
-        return prepareFont("solid");
+        return prepareFont(FONT_SOLID);
     }
 
     @Override
     public Font getLightFont() {
-        return prepareFont("light");
+        return prepareFont(FONT_LIGHT);
     }
 
     protected Font prepareFont(String type) {
         switch (type) {
-            case "solid":
+            case FONT_SOLID:
                 return Font.loadFont(getSolidFontPath(), settings.getDefaultIconsFontSize());
-            case "light":
+            case FONT_LIGHT:
                 return Font.loadFont(getLightFontPath(), settings.getDefaultIconsFontSize());
             default:
                 return Font.loadFont(getFontPath(), settings.getDefaultIconsFontSize());

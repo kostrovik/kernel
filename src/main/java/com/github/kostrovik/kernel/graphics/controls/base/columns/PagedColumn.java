@@ -4,6 +4,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.util.Callback;
 
@@ -25,6 +26,7 @@ public class PagedColumn<E, V> {
     private DoubleProperty columnMinWidth;
     private DoubleProperty columnMaxWidth;
     private ObjectProperty<Pos> alignment;
+    private ObjectProperty<Insets> padding;
 
     public PagedColumn(String columnName) {
         this.columnName = columnName;
@@ -32,6 +34,7 @@ public class PagedColumn<E, V> {
         this.columnMinWidth = new SimpleDoubleProperty(0);
         this.columnMaxWidth = new SimpleDoubleProperty(-1);
         this.alignment = new SimpleObjectProperty<>(Pos.CENTER);
+        this.padding = new SimpleObjectProperty<>(Insets.EMPTY);
     }
 
     public String getColumnName() {
@@ -96,5 +99,17 @@ public class PagedColumn<E, V> {
 
     public void setAlignment(Pos alignment) {
         this.alignment.set(alignment);
+    }
+
+    public Insets getPadding() {
+        return padding.get();
+    }
+
+    public ObjectProperty<Insets> paddingProperty() {
+        return padding;
+    }
+
+    public void setPadding(Insets padding) {
+        this.padding.set(padding);
     }
 }

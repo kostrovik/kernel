@@ -7,5 +7,5 @@ package com.github.kostrovik.kernel.dictionaries;
  * github:  https://github.com/kostrovik/kernel
  */
 public enum SortDirection {
-    ASK, DESK
+    ASC, DESC
 }

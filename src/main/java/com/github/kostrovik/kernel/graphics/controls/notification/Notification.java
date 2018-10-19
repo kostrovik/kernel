@@ -17,9 +17,9 @@ public class Notification extends Control {
     private final ObjectProperty<NotificationType> type;
 
     public Notification() {
-        this.isVisible = new SimpleObjectProperty<>();
-        this.message = new SimpleObjectProperty<>();
-        this.type = new SimpleObjectProperty<>();
+        this.isVisible = new SimpleObjectProperty<>(false);
+        this.message = new SimpleObjectProperty<>("");
+        this.type = new SimpleObjectProperty<>(NotificationType.INFO);
         setFocusTraversable(false);
     }
 

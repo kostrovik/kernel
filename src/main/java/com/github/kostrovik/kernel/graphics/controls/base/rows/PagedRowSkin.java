@@ -3,6 +3,8 @@ package com.github.kostrovik.kernel.graphics.controls.base.rows;
 import com.github.kostrovik.kernel.graphics.controls.base.cells.PagedCell;
 import com.github.kostrovik.kernel.graphics.controls.base.columns.PagedColumn;
 import com.github.kostrovik.kernel.graphics.controls.base.table.PagedTable;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.SkinBase;
 import javafx.scene.input.MouseEvent;
@@ -87,6 +89,19 @@ public class PagedRowSkin<E> extends SkinBase<PagedRow<E>> {
             HBox.setHgrow(cell, Priority.ALWAYS);
             cell.prefWidthProperty().bind(column.columnWidthProperty());
             cell.minWidthProperty().bind(column.columnMinWidthProperty());
+
+            if (column.getColumnMaxWidth() > 0) {
+                cell.setMaxWidth(column.getColumnMaxWidth());
+            }
+
+            column.columnMaxWidthProperty().addListener(new ChangeListener<Number>() {
+                @Override
+                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                    if (newValue.doubleValue() > 0) {
+                        cell.setMaxWidth(newValue.doubleValue());
+                    }
+                }
+            });
 
             cell.widthProperty().addListener((observable, oldValue, newValue) -> {
                 if (column.getColumnWidth() < newValue.doubleValue()) {

@@ -13,7 +13,6 @@ import javafx.scene.control.Skin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * project: kernel
@@ -22,7 +21,6 @@ import java.util.logging.Logger;
  * github:  https://github.com/kostrovik/kernel
  */
 public class ListControlPanel extends Control {
-    private static Logger logger = Configurator.getConfig().getLogger(ListControlPanel.class.getName());
     private final ObjectProperty<ObservableMap<String, Button>> buttons;
     private final ObjectProperty<List<ControlPanelButtons>> defaultButtons;
 
@@ -95,7 +93,7 @@ public class ListControlPanel extends Control {
         try {
             getStylesheets().add(Class.forName(this.getClass().getName()).getResource("/com/github/kostrovik/styles/controls/list-control-panel.css").toExternalForm());
         } catch (ClassNotFoundException error) {
-            logger.log(Level.WARNING, "Ошибка загрузки стилей.", error);
+            Configurator.getConfig().getLogger(ListControlPanel.class.getName()).log(Level.WARNING, "Ошибка загрузки стилей.", error);
         }
     }
 }

@@ -1,12 +1,12 @@
 package com.github.kostrovik.kernel.graphics.builders;
 
+import com.github.kostrovik.kernel.graphics.helper.PropertyReference;
 import com.github.kostrovik.kernel.settings.Configurator;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
-import com.github.kostrovik.kernel.graphics.helper.PropertyReference;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 /**
  * Служебный класс для получения значений из объектов разных типов.
  * Используется при создании ячеек таблицы.
- *
+ * <p>
  * project: kernel
  * author:  kostrovik
  * date:    25/07/2018
@@ -50,6 +50,7 @@ public class CellPropertyValueFactory<S, T> implements Callback<TableColumn.Cell
      *
      * @param param   the param
      * @param rowData the row data
+     *
      * @return the cell data reflectively
      */
     private ObservableValue<T> getCellDataReflectively(TableColumn.CellDataFeatures<S, T> param, S rowData) {
@@ -66,7 +67,7 @@ public class CellPropertyValueFactory<S, T> implements Callback<TableColumn.Cell
                 // create a new PropertyReference
                 this.columnClass = rowData.getClass();
                 this.previousProperty = getProperty();
-                this.propertyRef = new PropertyReference<T>(rowData.getClass(), getProperty());
+                this.propertyRef = new PropertyReference<>(rowData.getClass(), getProperty());
             }
 
             if (propertyRef != null) {

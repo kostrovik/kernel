@@ -258,6 +258,7 @@ public class InfinityScrollingFlow<E, T extends PagedRow<E>> extends ScrollingFl
             PagedRow<E> row = rows.get(i);
             row.setItem(null);
         }
+        vbar.setValue(0);
         initListData();
     }
 

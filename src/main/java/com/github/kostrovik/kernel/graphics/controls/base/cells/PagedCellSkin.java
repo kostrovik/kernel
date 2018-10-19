@@ -1,6 +1,7 @@
 package com.github.kostrovik.kernel.graphics.controls.base.cells;
 
 import com.github.kostrovik.kernel.graphics.controls.base.columns.PagedColumn;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.SkinBase;
@@ -38,8 +39,11 @@ public class PagedCellSkin<E, V> extends SkinBase<PagedCell<E, V>> {
 
         if (!isHeaderCell) {
             cell.setAlignment(column.getAlignment());
+            cell.alignmentProperty().bind(column.alignmentProperty());
+        } else {
+            cell.setAlignment(Pos.CENTER);
         }
-        cell.alignmentProperty().bind(column.alignmentProperty());
+        cell.paddingProperty().bind(column.paddingProperty());
 
         updateContent();
 
@@ -58,9 +62,23 @@ public class PagedCellSkin<E, V> extends SkinBase<PagedCell<E, V>> {
     }
 
     private void updateContent() {
-        Object content = isHeaderCell ? column.getColumnName() : Objects.requireNonNullElse(column.getCellValueFactory().call(getSkinnable().getItem()), "");
+        Object content;
+        if (Objects.isNull(getSkinnable().getItem())) {
+            content = isHeaderCell ? column.getColumnName() : "";
+        } else {
+            content = isHeaderCell ? column.getColumnName() : Objects.requireNonNullElse(column.getCellValueFactory().call(getSkinnable().getItem()), "");
+        }
+
+        if (content instanceof String) {
+            content = ((String) content).replaceAll("\r\n", "\n");
+        }
 
         Node cellContent = (content instanceof Node) ? (Node) content : new Label(content.toString());
+
+        if (cellContent instanceof Label) {
+            ((Label) cellContent).setWrapText(true);
+        }
+
         cellContent.addEventHandler(ScrollEvent.ANY, event -> getSkinnable().fireEvent(event.copyFor(getSkinnable(), getSkinnable())));
 
         cell.getChildren().setAll(cellContent);
