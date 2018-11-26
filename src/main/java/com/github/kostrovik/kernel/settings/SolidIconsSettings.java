@@ -1,5 +1,7 @@
 package com.github.kostrovik.kernel.settings;
 
+import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +17,7 @@ import java.util.logging.Logger;
  * github:  https://github.com/kostrovik/kernel
  */
 public final class SolidIconsSettings {
-    private static Logger logger = Configurator.getConfig().getLogger(SolidIconsSettings.class.getName());
+    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(SolidIconsSettings.class.getName());
 
     private static volatile SolidIconsSettings settings;
     private Properties config;

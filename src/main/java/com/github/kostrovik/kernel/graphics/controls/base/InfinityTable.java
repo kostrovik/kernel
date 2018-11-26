@@ -4,6 +4,7 @@ import com.github.kostrovik.kernel.graphics.controls.base.columns.PagedColumn;
 import com.github.kostrovik.kernel.interfaces.controls.ListFilterAndSorterInterface;
 import com.github.kostrovik.kernel.interfaces.controls.PaginationServiceInterface;
 import com.github.kostrovik.kernel.settings.Configurator;
+import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -30,7 +31,7 @@ import java.util.logging.Logger;
  * github:  https://github.com/kostrovik/kernel
  */
 public class InfinityTable<E> extends Control {
-    private static Logger logger = Configurator.getConfig().getLogger(InfinityTable.class.getName());
+    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(InfinityTable.class.getName());
 
     private ObservableList<PagedColumn<E, ?>> columns;
 

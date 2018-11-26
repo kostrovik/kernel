@@ -1,7 +1,7 @@
 package com.github.kostrovik.kernel.graphics.controls.panel;
 
 import com.github.kostrovik.kernel.dictionaries.ControlPanelButtons;
-import com.github.kostrovik.kernel.settings.Configurator;
+import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -93,7 +93,7 @@ public class ListControlPanel extends Control {
         try {
             getStylesheets().add(Class.forName(this.getClass().getName()).getResource("/com/github/kostrovik/styles/controls/list-control-panel.css").toExternalForm());
         } catch (ClassNotFoundException error) {
-            Configurator.getConfig().getLogger(ListControlPanel.class.getName()).log(Level.WARNING, "Ошибка загрузки стилей.", error);
+            InstanceLocatorUtil.getLocator().getLogger(ListControlPanel.class.getName()).log(Level.WARNING, "Ошибка загрузки стилей.", error);
         }
     }
 }

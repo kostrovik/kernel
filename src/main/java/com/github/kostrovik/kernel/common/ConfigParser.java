@@ -4,12 +4,13 @@ package com.github.kostrovik.kernel.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.github.kostrovik.kernel.settings.Configurator;
+import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
+import java.nio.file.Path;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,12 +22,12 @@ import java.util.logging.Logger;
  * github:  https://github.com/kostrovik/kernel
  */
 public class ConfigParser {
-    private static Logger logger = Configurator.getConfig().getLogger(ConfigParser.class.getName());
+    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(ConfigParser.class.getName());
 
-    private URI filePath;
+    private Path filePath;
     private Map<String, Object> config;
 
-    public ConfigParser(URI filePath) {
+    public ConfigParser(Path filePath) {
         this.filePath = filePath;
         this.config = parseConfig();
     }
@@ -42,10 +43,10 @@ public class ConfigParser {
     public void writeSettings(Map<String, Object> config) {
         try {
             ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-            mapper.writeValue(new File(filePath), config);
+            mapper.writeValue(new File(filePath.toString()), config);
             this.config = parseConfig();
         } catch (IOException error) {
-            logger.log(Level.WARNING, "Ошибка записи конфигурации", error);
+            logger.log(Level.SEVERE, "Ошибка записи конфигурации", error);
         }
     }
 
@@ -54,7 +55,7 @@ public class ConfigParser {
 
         try {
             ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-            result = mapper.readValue(filePath.toURL(), ConcurrentHashMap.class);
+            result = mapper.readValue(new File(filePath.toString()), ConcurrentHashMap.class);
         } catch (MismatchedInputException error) {
             logger.log(Level.WARNING, "Пустой файл конфигурации", error);
         } catch (IOException error) {
@@ -65,7 +66,12 @@ public class ConfigParser {
     }
 
     private Object findProperty(String property, Map properties) {
-        if (properties.keySet().contains(property)) {
+        if (Objects.isNull(property) || properties.isEmpty()) {
+            logger.log(Level.WARNING, "Не найден ключ, либо конфигурация не задана: {0}", String.format("ключ = %s, конфигурация пуста = %b", property, properties.isEmpty()));
+            return null;
+        }
+
+        if (properties.containsKey(property)) {
             return properties.get(property);
         }
 

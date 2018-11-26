@@ -13,6 +13,8 @@ module kernel {
 
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.dataformat.yaml;
+    requires com.github.kostrovik.useful.utils;
+    requires com.github.kostrovik.http.client;
 
     exports com.github.kostrovik.kernel.common;
     exports com.github.kostrovik.kernel.interfaces;
@@ -38,10 +40,9 @@ module kernel {
     uses com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
     uses com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;
     uses com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface;
-    uses com.github.kostrovik.kernel.interfaces.ApplicationLoggerInterface;
+    uses com.github.kostrovik.useful.interfaces.LoggerConfigInterface;
 
     provides com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface with Configurator;
-    provides com.github.kostrovik.kernel.interfaces.ServerConnectionInterface with com.github.kostrovik.kernel.common.ServerConnector;
     provides com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface with com.github.kostrovik.kernel.builders.SceneFactory;
     provides com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface with com.github.kostrovik.kernel.graphics.common.ControlBuilderFacade;
 }

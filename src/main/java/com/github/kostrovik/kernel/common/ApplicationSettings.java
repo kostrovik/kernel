@@ -2,22 +2,24 @@ package com.github.kostrovik.kernel.common;
 
 import com.github.kostrovik.kernel.builders.SceneFactory;
 import com.github.kostrovik.kernel.dictionaries.ColorThemeDictionary;
-import com.github.kostrovik.kernel.interfaces.EventListenerInterface;
-import com.github.kostrovik.kernel.interfaces.Observable;
 import com.github.kostrovik.kernel.models.ServerConnectionAddress;
-import com.github.kostrovik.kernel.settings.Configurator;
+import com.github.kostrovik.useful.models.AbstractObservable;
+import com.github.kostrovik.useful.utils.FileSystemUtil;
+import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * project: kernel
@@ -25,22 +27,28 @@ import java.util.stream.Collectors;
  * date:    26/07/2018
  * github:  https://github.com/kostrovik/kernel
  */
-public class ApplicationSettings implements Observable {
-    private static Logger logger = Configurator.getConfig().getLogger(ApplicationSettings.class.getName());
+public class ApplicationSettings extends AbstractObservable {
+    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(ApplicationSettings.class.getName());
     private static volatile ApplicationSettings settings;
 
     private static final String DEFAULT_HOST_PROPERTY = "defaultHost";
     private static final String HOSTS_PROPERTY = "hosts";
+    private static final String VERSION_PROPERTY = "version";
+    private static final String COLOR_THEME_PROPERTY = "colorTheme";
+    private static final String SHOW_MEMORY_USAGE_PROPERTY = "showMemoryUsage";
+    private static final String HOST_LAST_USAGE_PROPERTY = "lastUsage";
 
     private Path applicationConfigPath;
     private ConfigParser parser;
     private ServerConnectionAddress defaultHost;
-    private List<EventListenerInterface> listeners;
+
+    private FileSystemUtil fsUtil;
 
     private ApplicationSettings() {
-        setPath();
-        this.parser = new ConfigParser(applicationConfigPath.toUri());
-        this.listeners = new ArrayList<>();
+        this.defaultHost = new ServerConnectionAddress("");
+        this.fsUtil = new FileSystemUtil();
+        getConfigPath();
+        this.parser = new ConfigParser(applicationConfigPath);
     }
 
     public static ApplicationSettings getInstance() {
@@ -57,141 +65,135 @@ public class ApplicationSettings implements Observable {
     public List<ServerConnectionAddress> getHosts() {
         Map<String, Object> config = parser.getConfig();
         String defaultAddress = (String) config.getOrDefault(DEFAULT_HOST_PROPERTY, "");
-        List<ServerConnectionAddress> addreses = new ArrayList<>();
+        List<ServerConnectionAddress> addresses = new ArrayList<>();
 
-        List<String> hosts = Arrays.asList(((String) config.getOrDefault(HOSTS_PROPERTY, "")).split(","));
 
-        for (String host : hosts) {
-            ServerConnectionAddress address = createAddress(host);
+        List<Map> savedHosts = (List<Map>) config.getOrDefault(HOSTS_PROPERTY, new ArrayList<>());
+        savedHosts.forEach(savedHost -> {
+            Map<String, String> host = savedHost;
+            String url = host.getOrDefault("url", null);
+            String lastUsage = host.getOrDefault(HOST_LAST_USAGE_PROPERTY, null);
 
-            if (!defaultAddress.isEmpty() && address.getUrl().equals(defaultAddress)) {
-                address.setDefault(true);
+            if (Objects.nonNull(url) && !url.trim().isEmpty()) {
+                ServerConnectionAddress address = new ServerConnectionAddress(host.get("url"));
+                if (Objects.nonNull(lastUsage) && !lastUsage.equalsIgnoreCase("null") && !lastUsage.trim().isEmpty()) {
+                    address.setLastUsage(LocalDateTime.parse(host.get(HOST_LAST_USAGE_PROPERTY)));
+                }
+
+                if (!defaultAddress.trim().isEmpty() && address.getUrl().equals(defaultAddress)) {
+                    address.setDefault(true);
+                }
+                addresses.add(address);
             }
+        });
 
-            if (!address.getUrl().isEmpty()) {
-                addreses.add(address);
-            }
-        }
-
-        return addreses;
+        return addresses;
     }
 
     public ServerConnectionAddress getDefaultHost() {
-        if (defaultHost == null) {
+        if (Objects.isNull(defaultHost) || Objects.isNull(defaultHost.getUrl()) || defaultHost.getUrl().isEmpty()) {
             Optional<ServerConnectionAddress> host = getHosts().stream().filter(ServerConnectionAddress::isDefault).findFirst();
-            host.ifPresent(serverConnectionAddress -> defaultHost = serverConnectionAddress);
-        }
-
-        if (defaultHost == null) {
-            logger.log(Level.SEVERE, "Не найдено настроек для подключения к серверу.");
+            host.ifPresentOrElse(serverConnectionAddress -> defaultHost = serverConnectionAddress, () -> logger.log(Level.SEVERE, "Не найдено настроек для подключения к серверу."));
         }
 
         return defaultHost;
+    }
+
+    public String getVersion() {
+        Object version = parser.getConfigProperty(VERSION_PROPERTY);
+        return Objects.nonNull(version) ? (String) version : "";
+    }
+
+    public void saveVersion(String version) {
+        Map<String, Object> config = parser.getConfig();
+        config.put(VERSION_PROPERTY, version);
+        writeSettings(config);
     }
 
     public void saveHostsList(List<ServerConnectionAddress> hosts) {
         Map<String, Object> config = parser.getConfig();
         config.remove(DEFAULT_HOST_PROPERTY);
         defaultHost = null;
-        config.put(HOSTS_PROPERTY, String.join(",", hosts.stream().map(host -> {
+
+        List<Map<String, String>> preparedHosts = new ArrayList<>();
+        hosts.forEach(host -> {
             if (host.isDefault()) {
                 config.put(DEFAULT_HOST_PROPERTY, host.getUrl());
                 defaultHost = host;
             }
-            return String.format("%s@%s", host.getUrl(), host.getLastUsage());
-        }).collect(Collectors.toList())));
-
+            preparedHosts.add(prepareHostForSave(host));
+        });
+        config.put(HOSTS_PROPERTY, preparedHosts);
         writeSettings(config);
     }
 
     public void updateHostLastUsage() {
         Map<String, Object> config = parser.getConfig();
-        config.put(HOSTS_PROPERTY, String.join(",", getHosts().stream().map(host -> {
+
+        List<Map<String, String>> preparedHosts = new ArrayList<>();
+        getHosts().forEach(host -> {
             if (host.isDefault()) {
                 host.setLastUsage(LocalDateTime.now());
                 defaultHost = host;
             }
-            return String.format("%s@%s", host.getUrl(), host.getLastUsage());
-        }).collect(Collectors.toList())));
 
+            preparedHosts.add(prepareHostForSave(host));
+        });
+        config.put(HOSTS_PROPERTY, preparedHosts);
         writeSettings(config);
     }
 
     public String getDefaultColorTheme() {
-        Object colorTheme = parser.getConfigProperty("colorTheme");
-        return colorTheme != null ? (String) colorTheme : ColorThemeDictionary.LIGHT.getThemeName();
+        Object colorTheme = parser.getConfigProperty(COLOR_THEME_PROPERTY);
+        return Objects.nonNull(colorTheme) ? (String) colorTheme : ColorThemeDictionary.LIGHT.getThemeName();
     }
 
     public void saveDefaultColorTheme(String theme) {
         Map<String, Object> config = parser.getConfig();
-        config.put("colorTheme", theme);
+        config.put(COLOR_THEME_PROPERTY, theme);
         writeSettings(config);
     }
 
     public boolean showMemoryUsage() {
-        return (boolean) Objects.requireNonNullElse(parser.getConfigProperty("showMemoryUsage"), false);
+        return (boolean) Objects.requireNonNullElse(parser.getConfigProperty(SHOW_MEMORY_USAGE_PROPERTY), false);
     }
 
     public void saveShowMemoryUsage(boolean isShow) {
         Map<String, Object> config = parser.getConfig();
-        config.put("showMemoryUsage", isShow);
+        config.put(SHOW_MEMORY_USAGE_PROPERTY, isShow);
         writeSettings(config);
     }
 
-    private ServerConnectionAddress createAddress(String host) {
-        String[] hostParams = host.split("@");
-        ServerConnectionAddress address = new ServerConnectionAddress(hostParams[0]);
-
-        if (hostParams.length > 1 && !hostParams[1].equals("null")) {
-            address.setLastUsage(LocalDateTime.parse(hostParams[1]));
+    private Map<String, String> prepareHostForSave(ServerConnectionAddress host) {
+        Map<String, String> preparedHost = new HashMap<>();
+        if (Objects.nonNull(host.getUrl())) {
+            preparedHost.put("url", host.getUrl());
+        }
+        if (Objects.nonNull(host.getLastUsage())) {
+            preparedHost.put(HOST_LAST_USAGE_PROPERTY, host.getLastUsage().toString());
         }
 
-        return address;
+        return preparedHost;
     }
 
     private void writeSettings(Map<String, Object> config) {
         parser.writeSettings(config);
-        notifyListeners();
+        notifyLlisteners(getInstance());
     }
 
-    private void setPath() {
+    private void getConfigPath() {
         try {
-            URI applicationDirectory = ApplicationSettings.class.getProtectionDomain().getCodeSource().getLocation().toURI();
-
-            if (Paths.get(applicationDirectory).getParent().toString().equals("/")) {
-                applicationDirectory = URI.create(System.getProperty("java.home"));
-                applicationConfigPath = Paths.get(applicationDirectory.getPath());
-            } else {
-                applicationConfigPath = Paths.get(applicationDirectory.getPath()).getParent();
-            }
-
-            applicationConfigPath = Paths.get(applicationConfigPath + "/settings", "application.yaml");
+            Path applicationDirectory = fsUtil.getCurrentDirectory(ApplicationSettings.class);
+            applicationConfigPath = Paths.get(applicationDirectory.toString(), "settings", "application.yaml");
 
             if (Files.notExists(applicationConfigPath.getParent())) {
-                Files.createDirectory(applicationConfigPath.getParent());
-                Files.createFile(applicationConfigPath);
+                Files.createDirectories(applicationConfigPath.getParent());
             }
             if (Files.notExists(applicationConfigPath)) {
                 Files.createFile(applicationConfigPath);
             }
-        } catch (URISyntaxException e) {
-            logger.log(Level.SEVERE, "Нет доступа к директории с настройками.", e);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Нет возможно создать директорию с настройками.", e);
         }
-    }
-
-    @Override
-    public void addListener(EventListenerInterface listener) {
-        listeners.add(listener);
-    }
-
-    @Override
-    public void removeListener(EventListenerInterface listener) {
-        listeners.remove(listener);
-    }
-
-    private void notifyListeners() {
-        listeners.forEach(listener -> listener.handle(new EventObject(getInstance())));
     }
 }

@@ -128,6 +128,9 @@ public class ButtonBuilder {
             case BOTTOM:
                 button.setContentDisplay(ContentDisplay.BOTTOM);
                 break;
+            default:
+                button.setContentDisplay(ContentDisplay.LEFT);
+                break;
         }
         return button;
     }

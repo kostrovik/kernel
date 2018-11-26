@@ -5,7 +5,6 @@ import com.github.kostrovik.kernel.interfaces.views.MenuBuilderInterface;
 import com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;
 
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * project: kernel
@@ -21,6 +20,4 @@ public interface ModuleConfiguratorInterface {
     ViewEventListenerInterface getEventListener();
 
     ControlBuilderFacadeInterface getControlBuilder();
-
-    Logger getLogger(String className);
 }

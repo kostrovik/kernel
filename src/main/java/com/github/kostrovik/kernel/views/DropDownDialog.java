@@ -8,7 +8,6 @@ import com.github.kostrovik.kernel.interfaces.controls.ListFilterAndSorterInterf
 import com.github.kostrovik.kernel.interfaces.controls.PaginationServiceInterface;
 import com.github.kostrovik.kernel.models.AbstractListFilter;
 import com.github.kostrovik.kernel.models.AbstractPopupWindow;
-import com.github.kostrovik.kernel.settings.Configurator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -16,12 +15,20 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
-import javafx.scene.layout.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EventObject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -31,8 +38,6 @@ import java.util.stream.Collectors;
  * github:  https://github.com/kostrovik/kernel
  */
 public class DropDownDialog<T> extends AbstractPopupWindow {
-    private static Logger logger = Configurator.getConfig().getLogger(DropDownDialog.class.getName());
-
     private PaginationServiceInterface<T> paginationService;
     private Callback<T, String> listLabelCallback;
     private InfinityTable<T> table;

@@ -1,7 +1,7 @@
 package com.github.kostrovik.kernel.graphics.controls.dropdown;
 
 import com.github.kostrovik.kernel.interfaces.controls.PaginationServiceInterface;
-import com.github.kostrovik.kernel.settings.Configurator;
+import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  * github:  https://github.com/kostrovik/kernel
  */
 public class SearchableDropDownField<T extends Comparable> extends Control {
-    private static Logger logger = Configurator.getConfig().getLogger(SearchableDropDownField.class.getName());
+    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(SearchableDropDownField.class.getName());
 
     private final ObjectProperty<String> label;
     private final ObjectProperty<Boolean> showLabel;

@@ -1,8 +1,8 @@
 package com.github.kostrovik.kernel.graphics.controls.progress;
 
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.DoublePropertyBase;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
@@ -21,14 +21,21 @@ public class ProgressBarIndicator extends Control {
     private String defaultFormat = "%.2f / %.2f";
 
     public ProgressBarIndicator(double progress) {
-        this.format = new SimpleObjectProperty<>(defaultFormat);
+        this();
         setProgress(progress);
     }
 
     public ProgressBarIndicator(double done, double total) {
-        this.format = new SimpleObjectProperty<>(defaultFormat);
+        this();
         setDone(done);
         setTotal(total);
+    }
+
+    private ProgressBarIndicator() {
+        this.progress = new SimpleDoubleProperty(-1.0);
+        this.done = new SimpleDoubleProperty(-1.0);
+        this.total = new SimpleDoubleProperty(-1.0);
+        this.format = new SimpleObjectProperty<>(defaultFormat);
     }
 
     // свойсто прогресс
@@ -37,23 +44,10 @@ public class ProgressBarIndicator extends Control {
     }
 
     public double getProgress() {
-        return progress == null ? -1 : progress.get();
+        return progress.get();
     }
 
     public DoubleProperty progressProperty() {
-        if (progress == null) {
-            progress = new DoublePropertyBase(-1.0) {
-                @Override
-                public Object getBean() {
-                    return ProgressBarIndicator.this;
-                }
-
-                @Override
-                public String getName() {
-                    return "progress";
-                }
-            };
-        }
         return progress;
     }
     // -- свойсто прогресс --
@@ -64,23 +58,10 @@ public class ProgressBarIndicator extends Control {
     }
 
     public double getDone() {
-        return done == null ? -1 : done.get();
+        return done.get();
     }
 
     public DoubleProperty doneProperty() {
-        if (done == null) {
-            done = new DoublePropertyBase(-1.0) {
-                @Override
-                public Object getBean() {
-                    return ProgressBarIndicator.this;
-                }
-
-                @Override
-                public String getName() {
-                    return "done";
-                }
-            };
-        }
         return done;
     }
     // -- свойсто прогресс --
@@ -91,23 +72,10 @@ public class ProgressBarIndicator extends Control {
     }
 
     public double getTotal() {
-        return total == null ? -1 : total.get();
+        return total.get();
     }
 
     public DoubleProperty totalProperty() {
-        if (total == null) {
-            total = new DoublePropertyBase(-1.0) {
-                @Override
-                public Object getBean() {
-                    return ProgressBarIndicator.this;
-                }
-
-                @Override
-                public String getName() {
-                    return "total";
-                }
-            };
-        }
         return total;
     }
     // -- свойсто прогресс --

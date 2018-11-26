@@ -4,6 +4,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * project: kernel
@@ -17,6 +18,7 @@ public class ServerConnectionAddress {
     private BooleanProperty isDefault;
 
     public ServerConnectionAddress(String url) {
+        Objects.requireNonNull(url);
         this.url = url;
         this.isDefault = new SimpleBooleanProperty(false);
     }

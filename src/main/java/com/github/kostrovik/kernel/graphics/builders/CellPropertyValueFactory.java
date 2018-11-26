@@ -2,6 +2,7 @@ package com.github.kostrovik.kernel.graphics.builders;
 
 import com.github.kostrovik.kernel.graphics.helper.PropertyReference;
 import com.github.kostrovik.kernel.settings.Configurator;
+import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
@@ -21,7 +22,7 @@ import java.util.logging.Logger;
  * github:  https://github.com/kostrovik/kernel
  */
 public class CellPropertyValueFactory<S, T> implements Callback<TableColumn.CellDataFeatures<S, T>, ObservableValue<T>> {
-    private static Logger logger = Configurator.getConfig().getLogger(CellPropertyValueFactory.class.getName());
+    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(CellPropertyValueFactory.class.getName());
 
     /**
      * Название атрибута объекта значение которого необходимо получить.

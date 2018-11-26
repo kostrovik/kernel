@@ -3,14 +3,28 @@ package com.github.kostrovik.kernel.builders;
 import com.github.kostrovik.kernel.common.ApplicationSettings;
 import com.github.kostrovik.kernel.graphics.controls.progress.ProgressBarIndicator;
 import com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
-import com.github.kostrovik.kernel.interfaces.views.*;
-import com.github.kostrovik.kernel.settings.Configurator;
+import com.github.kostrovik.kernel.interfaces.views.ContentViewInterface;
+import com.github.kostrovik.kernel.interfaces.views.LayoutType;
+import com.github.kostrovik.kernel.interfaces.views.MenuBuilderInterface;
+import com.github.kostrovik.kernel.interfaces.views.PopupWindowInterface;
+import com.github.kostrovik.kernel.interfaces.views.ViewEventInterface;
+import com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;
+import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -34,7 +48,7 @@ import java.util.logging.Logger;
  * github:  https://github.com/kostrovik/kernel
  */
 public final class SceneFactory implements ViewEventListenerInterface {
-    private static Logger logger = Configurator.getConfig().getLogger(SceneFactory.class.getName());
+    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(SceneFactory.class.getName());
 
     private Stage mainWindow;
 

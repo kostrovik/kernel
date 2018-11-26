@@ -1,7 +1,7 @@
 package com.github.kostrovik.kernel.common;
 
 import com.github.kostrovik.kernel.dictionaries.FileSignatureDictionary;
-import com.github.kostrovik.kernel.settings.Configurator;
+import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  * github:  https://github.com/kostrovik/kernel
  */
 public class FileSignatureChecker {
-    private static Logger logger = Configurator.getConfig().getLogger(FileSignatureChecker.class.getName());
+    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(FileSignatureChecker.class.getName());
     private FileSignatureDictionary[] signatures;
 
     public FileSignatureChecker() {

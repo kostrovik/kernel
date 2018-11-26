@@ -1,13 +1,13 @@
 package com.github.kostrovik.kernel.settings;
 
 import com.github.kostrovik.kernel.dictionaries.ViewTypeDictionary;
-import com.github.kostrovik.kernel.interfaces.ApplicationLoggerInterface;
 import com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
 import com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface;
 import com.github.kostrovik.kernel.interfaces.views.MenuBuilderInterface;
 import com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;
 import com.github.kostrovik.kernel.views.DropDownDialog;
 import com.github.kostrovik.kernel.views.menu.MenuBuilder;
+import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,13 +23,11 @@ import java.util.logging.Logger;
  * github:  https://github.com/kostrovik/kernel
  */
 public final class Configurator implements ModuleConfiguratorInterface {
-    private static Logger logger;
+    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(Configurator.class.getName());
     private static volatile Configurator configurator;
-    private static Map<String, Class<?>> views;
+    private static Map<String, Class<?>> views = new HashMap<>();
 
     private Configurator() {
-        views = new HashMap<>();
-        logger = getLogger(Configurator.class.getName());
     }
 
     public static Configurator provider() {
@@ -87,13 +85,6 @@ public final class Configurator implements ModuleConfiguratorInterface {
         logger.log(Level.SEVERE, String.format("Не найден фасад для построения элементов интерфейса. Модуль: %s", this.getClass().getModule().getName()));
 
         return null;
-    }
-
-    @Override
-    public Logger getLogger(String className) {
-        Optional<ApplicationLoggerInterface> applicationLogger = getFirstLoadedImplementation(ApplicationLoggerInterface.class);
-
-        return applicationLogger.map(applicationLoggerInterface -> applicationLoggerInterface.getLogger(className)).orElse(Logger.getLogger(className));
     }
 
     private <E> Optional<E> getFirstLoadedImplementation(Class<E> type) {

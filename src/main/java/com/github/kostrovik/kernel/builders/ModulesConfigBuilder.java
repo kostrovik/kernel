@@ -1,9 +1,13 @@
 package com.github.kostrovik.kernel.builders;
 
-import com.github.kostrovik.kernel.settings.Configurator;
 import com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
+import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -14,7 +18,7 @@ import java.util.logging.Logger;
  * github:  https://github.com/kostrovik/kernel
  */
 public class ModulesConfigBuilder {
-    private static Logger logger = Configurator.getConfig().getLogger(ModulesConfigBuilder.class.getName());
+    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(ModulesConfigBuilder.class.getName());
 
     private static volatile ModulesConfigBuilder builder;
     private static Map<String, ModuleConfiguratorInterface> modulesConfig;

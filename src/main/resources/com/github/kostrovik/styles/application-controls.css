@@ -198,6 +198,76 @@
     -fx-fill: -styleTextFieldText-color;
 }
 
+.progress-bar .track {
+    -fx-background-color: -styleTextFieldBackground-color;
+    -fx-border-color: derive(-styleTextFieldBorder-color, +30%);
+    -fx-border-width: 1;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
 .progress-bar .bar {
     -fx-background-color: -styleProgressBar-color;
+    -fx-background-color: linear-gradient(to left, derive(-styleProgressBar-color, -30%), -styleProgressBar-color);
+}
+
+.tab-pane {
+
+}
+
+.tab-pane:top .tab-header-area {
+    -fx-padding: 0 0 10 0;
+}
+
+.tab-pane:left .tab-header-area {
+    -fx-padding: 0 10 0 0;
+}
+
+.tab-pane:right .tab-header-area {
+    -fx-padding: 0 0 0 10;
+}
+
+.tab-pane:bottom .tab-header-area {
+    -fx-padding: 10 0 0 0;
+}
+
+.tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.tab-header-area .tab {
+    -fx-background-color: transparent;
+    -fx-border-color: derive(-styleTextFieldBorder-color, +30%);
+    -fx-border-width: 1;
+    -fx-text-fill: derive(-styleButtonText-color, +10%);
+}
+
+.tab-header-area .tab:selected {
+    -fx-background-color: -styleButtonHover-color;
+    -fx-border-color: -styleButtonHover-color;
+}
+
+.tab-header-area .tab .tab-label {
+    -fx-text-fill: -styleTextFieldText-color;
+}
+
+.tab-pane .control-buttons-tab {
+    -fx-background-color: transparent;
+}
+
+.tab-pane .tab-down-button {
+    -fx-background-color: -styleButtonBackground-color;
+}
+
+.tab-pane .tab-down-button:hover {
+    -fx-background-color: -styleButtonHover-color;
+    -fx-color: #ffffff;
+}
+
+.tab-down-button .arrow {
+    -fx-background-color: derive(-styleButtonText-color, +10%);
+}
+
+.tab-pane .tab-down-button .label {
+    -fx-text-fill: -styleMenuTextColor-color;
 }

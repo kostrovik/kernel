@@ -1,12 +1,18 @@
 package com.github.kostrovik.kernel.graphics.controls.image;
 
-import com.github.kostrovik.kernel.settings.Configurator;
+import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.SkinBase;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
 import java.io.ByteArrayInputStream;
@@ -23,7 +29,7 @@ import java.util.logging.Logger;
  * github:  https://github.com/kostrovik/kernel
  */
 public class ImageControlSkin extends SkinBase<ImageControl> {
-    private static Logger logger = Configurator.getConfig().getLogger(ImageControlSkin.class.getName());
+    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(ImageControlSkin.class.getName());
 
     private StackPane control;
     private ImageView imageView;

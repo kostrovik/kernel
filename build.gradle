@@ -25,6 +25,8 @@ dependencies {
     testRuntime("org.junit.jupiter:junit-jupiter-engine:5.2.0")
 
     compile('jackson:jackson-dataformat-yaml:2.9.6')
+    compile 'com.github.kostrovik:useful-utils:1.0-SNAPSHOT'
+    compile 'com.github.kostrovik:http-client:1.0-SNAPSHOT'
 }
 
 test {
@@ -54,6 +56,11 @@ compileJava {
         ]
         classpath = files()
     }
+}
+
+configurations.all {
+    // Check for updates every build
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
 /**
