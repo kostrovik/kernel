@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  * github:  https://github.com/kostrovik/kernel
  */
 public class FileSignatureChecker {
-    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(FileSignatureChecker.class.getName());
+    private Logger logger = InstanceLocatorUtil.getLocator().getLogger(FileSignatureChecker.class);
     private FileSignatureDictionary[] signatures;
 
     public FileSignatureChecker() {

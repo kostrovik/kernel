@@ -1,7 +1,7 @@
 package com.github.kostrovik.kernel.interfaces.controls;
 
 import com.github.kostrovik.kernel.dictionaries.SortDirection;
-import com.github.kostrovik.kernel.interfaces.Observable;
+import com.github.kostrovik.useful.interfaces.Observable;
 
 import java.util.List;
 import java.util.Map;

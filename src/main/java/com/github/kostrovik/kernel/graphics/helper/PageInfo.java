@@ -1,10 +1,9 @@
 package com.github.kostrovik.kernel.graphics.helper;
 
-import com.github.kostrovik.kernel.dictionaries.SortDirection;
 import com.github.kostrovik.kernel.interfaces.controls.ListFilterAndSorterInterface;
-import com.github.kostrovik.kernel.models.AbstractListFilter;
+import com.github.kostrovik.kernel.models.EmptyListFilter;
 
-import java.util.*;
+import java.util.Objects;
 
 /**
  * project: kernel
@@ -14,18 +13,18 @@ import java.util.*;
  */
 public class PageInfo {
     private int offset;
+    private int pageNumber;
     private int pageSize;
+    private boolean hasNextPage;
     private ListFilterAndSorterInterface filter;
     private ListFilterAndSorterInterface defaultFilter;
-    private boolean hasNextPage;
-    private int pageNumber;
 
     public PageInfo() {
         this.offset = 0;
         this.pageSize = 0;
-        this.filter = createDefaultFilter();
-        this.hasNextPage = false;
         this.pageNumber = 0;
+        this.hasNextPage = false;
+        this.filter = getDefaultFilter();
     }
 
     public int getOffset() {
@@ -49,7 +48,7 @@ public class PageInfo {
     }
 
     public void setFilter(ListFilterAndSorterInterface filter) {
-        this.filter = Objects.requireNonNullElse(filter, createDefaultFilter());
+        this.filter = Objects.requireNonNullElse(filter, getDefaultFilter());
         defaultFilter = filter;
     }
 
@@ -69,29 +68,9 @@ public class PageInfo {
         this.pageNumber = pageNumber;
     }
 
-    private ListFilterAndSorterInterface createDefaultFilter() {
+    private ListFilterAndSorterInterface getDefaultFilter() {
         if (defaultFilter == null) {
-            return new AbstractListFilter() {
-                @Override
-                public Map<String, SortDirection> getSortBy() {
-                    return new HashMap<>();
-                }
-
-                @Override
-                public void setSortBy(Map<String, SortDirection> sortBy) {
-                    // Обект фильтра является заглушкой. Поэтому реализация метода отсутсвует.
-                }
-
-                @Override
-                public List<Map<String, Object>> getFilters() {
-                    return new ArrayList<>();
-                }
-
-                @Override
-                public void clear() {
-                    // Обект фильтра является заглушкой. Поэтому реализация метода отсутсвует.
-                }
-            };
+            return new EmptyListFilter();
         }
         return defaultFilter;
     }

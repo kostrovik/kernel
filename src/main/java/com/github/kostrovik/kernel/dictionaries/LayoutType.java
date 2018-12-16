@@ -1,4 +1,4 @@
-package com.github.kostrovik.kernel.interfaces.views;
+package com.github.kostrovik.kernel.dictionaries;
 
 /**
  * project: kernel
@@ -9,5 +9,6 @@ package com.github.kostrovik.kernel.interfaces.views;
 public enum LayoutType {
     DEFAULT,
     TAB,
-    POPUP
+    POPUP,
+    POPUP_MESSAGE
 }

@@ -1,5 +1,7 @@
 package com.github.kostrovik.kernel.interfaces.views;
 
+import com.github.kostrovik.kernel.dictionaries.LayoutType;
+
 /**
  * project: kernel
  * author:  kostrovik

@@ -70,13 +70,7 @@ public class PagedRowSkin<E> extends SkinBase<PagedRow<E>> {
             table.fireEvent(event.copyFor(getSkinnable(), getSkinnable()));
         });
 
-        table.getSelectionModel().getSelectedItems().addListener((ListChangeListener<E>) c -> {
-            if (c.getList().contains(getSkinnable().getItem())) {
-                getSkinnable().selectedProperty().set(true);
-            } else {
-                getSkinnable().selectedProperty().set(false);
-            }
-        });
+        table.getSelectionModel().getSelectedItems().addListener((ListChangeListener<E>) c -> getSkinnable().selectedProperty().set(c.getList().contains(getSkinnable().getItem())));
 
         getSkinnable().addEventHandler(MouseEvent.ANY, event -> table.fireEvent(event.copyFor(getSkinnable(), getSkinnable())));
     }

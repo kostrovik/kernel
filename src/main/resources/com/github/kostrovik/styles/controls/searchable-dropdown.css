@@ -8,6 +8,10 @@
     -fx-effect: none;
 }
 
+.drop-down .label {
+    -fx-fill: -styleTextFieldText-color;
+}
+
 .drop-down .button {
     -fx-padding: 0px 5px;
     -fx-border-radius: 0;

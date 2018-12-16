@@ -1,15 +1,13 @@
 package com.github.kostrovik.kernel.builders;
 
 import com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
-import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ServiceLoader;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * project: kernel
@@ -18,22 +16,15 @@ import java.util.logging.Logger;
  * github:  https://github.com/kostrovik/kernel
  */
 public class ModulesConfigBuilder {
-    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(ModulesConfigBuilder.class.getName());
-
     private static volatile ModulesConfigBuilder builder;
-    private static Map<String, ModuleConfiguratorInterface> modulesConfig;
+    private Map<String, ModuleConfiguratorInterface> modulesConfig = prepareConfig();
 
     private ModulesConfigBuilder() {
-        modulesConfig = prepareConfig();
     }
 
-    public static ModulesConfigBuilder getInstance() {
+    public static synchronized ModulesConfigBuilder getInstance() {
         if (builder == null) {
-            synchronized (SceneFactory.class) {
-                if (builder == null) {
-                    builder = new ModulesConfigBuilder();
-                }
-            }
+            builder = new ModulesConfigBuilder();
         }
         return builder;
     }
@@ -46,16 +37,12 @@ public class ModulesConfigBuilder {
         return new ArrayList<>(modulesConfig.keySet());
     }
 
-    private Map<String, ModuleConfiguratorInterface> prepareConfig() {
-        Map<String, ModuleConfiguratorInterface> config = new ConcurrentHashMap<>();
-
-        ServiceLoader<ModuleConfiguratorInterface> serviceLoader = ServiceLoader.load(ModuleLayer.boot(), ModuleConfiguratorInterface.class);
-        Iterator<ModuleConfiguratorInterface> iterator = serviceLoader.iterator();
-        while (iterator.hasNext()) {
-            ModuleConfiguratorInterface item = iterator.next();
-            config.put(item.getClass().getModule().getName(), item);
-        }
-
-        return config;
+    private static Map<String, ModuleConfiguratorInterface> prepareConfig() {
+        return ServiceLoader
+                .load(ModuleLayer.boot(), ModuleConfiguratorInterface.class)
+                .stream()
+                .map(ServiceLoader.Provider::get)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toConcurrentMap(o -> o.getClass().getModule().getName(), item -> item));
     }
 }

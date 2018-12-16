@@ -6,7 +6,7 @@ import com.github.kostrovik.kernel.graphics.controls.base.InfinityTable;
 import com.github.kostrovik.kernel.graphics.controls.base.columns.PagedColumn;
 import com.github.kostrovik.kernel.interfaces.controls.ListFilterAndSorterInterface;
 import com.github.kostrovik.kernel.interfaces.controls.PaginationServiceInterface;
-import com.github.kostrovik.kernel.models.AbstractListFilter;
+import com.github.kostrovik.kernel.models.EmptyListFilter;
 import com.github.kostrovik.kernel.models.AbstractPopupWindow;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -130,7 +130,7 @@ public class DropDownDialog<T> extends AbstractPopupWindow {
     }
 
     private void createTable() {
-        ListFilterAndSorterInterface defaultFilter = new AbstractListFilter() {
+        ListFilterAndSorterInterface defaultFilter = new EmptyListFilter() {
             @Override
             public Map<String, SortDirection> getSortBy() {
                 return new HashMap<>();

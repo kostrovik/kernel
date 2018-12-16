@@ -2,8 +2,12 @@ package com.github.kostrovik.kernel.graphics.controls.dropdown;
 
 import com.github.kostrovik.kernel.interfaces.controls.PaginationServiceInterface;
 import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Control;
@@ -22,51 +26,32 @@ import java.util.logging.Logger;
 public class SearchableDropDownField<T extends Comparable> extends Control {
     private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(SearchableDropDownField.class.getName());
 
-    private final ObjectProperty<String> label;
-    private final ObjectProperty<Boolean> showLabel;
-    private final ObjectProperty<Callback<T, String>> listLabelCallback;
-    private final ObjectProperty<ObservableList<T>> selectedItems;
+    private StringProperty label;
+    private BooleanProperty showLabel;
+    private Callback<T, String> listLabelCallback;
+    private ObservableList<T> selectedItems;
+    private BooleanProperty multiple;
 
-    private final Callback<T, String> defaultCallBack = param -> param.toString();
-
-    private final ObjectProperty<Boolean> isMultiple;
-
-    private final ObjectProperty<PaginationServiceInterface<T>> paginationService;
+    private ObjectProperty<PaginationServiceInterface<T>> paginationService;
     private String lookupAttribute;
 
     public SearchableDropDownField(String label, String lookupAttribute) {
-        this.label = new SimpleObjectProperty<>("");
-        this.showLabel = new SimpleObjectProperty<>(true);
-        this.listLabelCallback = new SimpleObjectProperty<>(defaultCallBack);
-        this.selectedItems = new SimpleObjectProperty<>(FXCollections.observableArrayList());
-        this.isMultiple = new SimpleObjectProperty<>(true);
-
-        this.paginationService = new SimpleObjectProperty<>();
-
-        this.lookupAttribute = lookupAttribute;
-
-        setLabel(label);
-        getStyleClass().add("drop-down");
-
-        try {
-            getStylesheets().add(Class.forName(this.getClass().getName()).getResource("/com/github/kostrovik/styles/controls/searchable-dropdown.css").toExternalForm());
-        } catch (ClassNotFoundException error) {
-            logger.log(Level.WARNING, "Ошибка загрузки стилей.", error);
-        }
+        this(label, true, lookupAttribute);
     }
 
     public SearchableDropDownField(String label, boolean showLabel, String lookupAttribute) {
-        this.label = new SimpleObjectProperty<>();
-        this.showLabel = new SimpleObjectProperty<>(showLabel);
-        this.listLabelCallback = new SimpleObjectProperty<>(defaultCallBack);
-        this.selectedItems = new SimpleObjectProperty<>(FXCollections.observableArrayList());
-        this.isMultiple = new SimpleObjectProperty<>(true);
+        this(label);
+        this.showLabel = new SimpleBooleanProperty(showLabel);
+        this.lookupAttribute = lookupAttribute;
+    }
 
+    private SearchableDropDownField(String label) {
+        this.label = new SimpleStringProperty(label);
+        this.listLabelCallback = param -> param.toString();
+        this.selectedItems = FXCollections.observableArrayList();
+        this.multiple = new SimpleBooleanProperty(true);
         this.paginationService = new SimpleObjectProperty<>();
 
-        this.lookupAttribute = lookupAttribute;
-
-        setLabel(label);
         getStyleClass().add("drop-down");
 
         try {
@@ -74,95 +59,66 @@ public class SearchableDropDownField<T extends Comparable> extends Control {
         } catch (ClassNotFoundException error) {
             logger.log(Level.WARNING, "Ошибка загрузки стилей.", error);
         }
-    }
-
-    // свойсто название поля
-    public ObjectProperty<String> labelProperty() {
-        return label;
     }
 
     public String getLabel() {
         return label.get();
     }
 
-    public void setLabel(String labelValue) {
-        label.set(labelValue);
+    public StringProperty labelProperty() {
+        return label;
     }
-    // -- свойсто название поля --
 
-    // свойсто выводить подпись
-    public ObjectProperty<Boolean> showLabelProperty() {
-        return showLabel;
+    public void setLabel(String label) {
+        this.label.set(label);
     }
 
     public boolean isShowLabel() {
         return showLabel.get();
     }
 
-    public void setShowLabel(boolean show) {
-        this.showLabel.set(show);
+    public BooleanProperty showLabelProperty() {
+        return showLabel;
     }
-    // -- свойсто выводить подпись --
 
-    // свойсто callback для получения строки для выпадающего списка
-    public ObjectProperty<Callback<T, String>> listLabelCallbackProperty() {
-        return listLabelCallback;
+    public void setShowLabel(boolean showLabel) {
+        this.showLabel.set(showLabel);
     }
 
     public Callback<T, String> getListLabelCallback() {
-        return listLabelCallback.get();
+        return listLabelCallback;
     }
 
-    public void setListLabelCallback(Callback<T, String> callback) {
-        this.listLabelCallback.set(callback);
-    }
-    // -- свойсто выводить подпись --
-
-    // свойсто список выбранных значений
-    public ObjectProperty<ObservableList<T>> selectedItemsProperty() {
-        return selectedItems;
+    public void setListLabelCallback(Callback<T, String> listLabelCallback) {
+        this.listLabelCallback = listLabelCallback;
     }
 
     public ObservableList<T> getSelectedItems() {
-        return selectedItems.get();
-    }
-
-    public void setSelectedItems(ObservableList<T> items) {
-        this.selectedItems.set(items);
-    }
-
-    public void addSelectedItem(T... item) {
-        getSelectedItems().addAll(item);
-    }
-
-    public void clearSelectedItems() {
-        getSelectedItems().clear();
-    }
-    // -- свойсто список выбранных значений --
-
-    // свойсто множественный выбор
-    public ObjectProperty<Boolean> isMultipleProperty() {
-        return isMultiple;
+        return selectedItems;
     }
 
     public boolean isMultiple() {
-        return isMultiple.get();
+        return multiple.get();
     }
 
-    public void setIsMultiple(boolean multiple) {
-        this.isMultiple.set(multiple);
+    public BooleanProperty multipleProperty() {
+        return multiple;
+    }
+
+    public void setMultiple(boolean multiple) {
+        this.multiple.set(multiple);
+    }
+
+    public PaginationServiceInterface getPaginationService() {
+        return paginationService.get();
     }
 
     public ObjectProperty<PaginationServiceInterface<T>> paginationServiceProperty() {
         return paginationService;
     }
 
-    public PaginationServiceInterface<T> getPaginationService() {
-        return paginationService.get();
-    }
-
-    public void setPaginationService(PaginationServiceInterface<T> service) {
-        paginationService.set(service);
+    public void setPaginationService(PaginationServiceInterface paginationService) {
+        this.paginationService.set(paginationService);
     }
 
     public String getLookupAttribute() {

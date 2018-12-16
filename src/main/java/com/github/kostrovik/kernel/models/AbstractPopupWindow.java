@@ -4,6 +4,7 @@ import com.github.kostrovik.kernel.interfaces.EventListenerInterface;
 import com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface;
 import com.github.kostrovik.kernel.interfaces.views.PopupWindowInterface;
 import com.github.kostrovik.kernel.settings.Configurator;
+import com.github.kostrovik.useful.interfaces.Listener;
 import javafx.geometry.Insets;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -33,7 +34,7 @@ public abstract class AbstractPopupWindow implements PopupWindowInterface {
      */
     private static final int DEFAULT_HEIGHT = 760;
 
-    protected List<EventListenerInterface> listeners;
+    protected List<Listener<EventObject>> listeners;
     protected ControlBuilderFacadeInterface facade;
     protected Stage stage;
     protected Pane parent;
@@ -58,12 +59,12 @@ public abstract class AbstractPopupWindow implements PopupWindowInterface {
     }
 
     @Override
-    public void addListener(EventListenerInterface listener) {
+    public void addListener(Listener<EventObject> listener) {
         listeners.add(listener);
     }
 
     @Override
-    public void removeListener(EventListenerInterface listener) {
+    public void removeListener(Listener<EventObject> listener) {
         listeners.remove(listener);
     }
 

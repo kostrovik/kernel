@@ -1,6 +1,6 @@
 package com.github.kostrovik.kernel.common;
 
-import com.github.kostrovik.kernel.builders.SceneFactory;
+import com.github.kostrovik.kernel.builders.SceneBuilder;
 import com.github.kostrovik.kernel.dictionaries.ColorThemeDictionary;
 import com.github.kostrovik.kernel.models.ServerConnectionAddress;
 import com.github.kostrovik.useful.models.AbstractObservable;
@@ -53,7 +53,7 @@ public class ApplicationSettings extends AbstractObservable {
 
     public static ApplicationSettings getInstance() {
         if (settings == null) {
-            synchronized (SceneFactory.class) {
+            synchronized (SceneBuilder.class) {
                 if (settings == null) {
                     settings = new ApplicationSettings();
                 }

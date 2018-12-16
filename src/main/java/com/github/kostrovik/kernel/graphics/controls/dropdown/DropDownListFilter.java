@@ -1,9 +1,13 @@
 package com.github.kostrovik.kernel.graphics.controls.dropdown;
 
 import com.github.kostrovik.kernel.dictionaries.SortDirection;
-import com.github.kostrovik.kernel.models.AbstractListFilter;
+import com.github.kostrovik.kernel.models.EmptyListFilter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * project: kernel
@@ -11,7 +15,7 @@ import java.util.*;
  * date:    30/08/2018
  * github:  https://github.com/kostrovik/kernel
  */
-public class DropDownListFilter extends AbstractListFilter {
+public class DropDownListFilter extends EmptyListFilter {
     private Map<String, SortDirection> sortBy;
     private Map<String, SortDirection> defaultSortBy;
     private String attribute;
@@ -41,7 +45,7 @@ public class DropDownListFilter extends AbstractListFilter {
     public void setSortBy(Map<String, SortDirection> sortBy) {
         if (Objects.nonNull(sortBy)) {
             this.sortBy = sortBy;
-            notifyListeners();
+//            notifyListeners();
         }
     }
 
@@ -56,7 +60,7 @@ public class DropDownListFilter extends AbstractListFilter {
         this.filters.clear();
         this.valueFilter.clear();
 
-        notifyListeners();
+//        notifyListeners();
     }
 
     public void setValueFilter(String value) {
@@ -66,7 +70,7 @@ public class DropDownListFilter extends AbstractListFilter {
             valueFilter.put(attribute, value);
             filters.put(getFilterKey(attribute), valueFilter);
         }
-        notifyListeners();
+//        notifyListeners();
     }
 
     public String getValueFilter() {

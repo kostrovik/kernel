@@ -1,3 +1,4 @@
+import com.github.kostrovik.kernel.builders.SceneBuilder;
 import com.github.kostrovik.kernel.settings.Configurator;
 
 /**
@@ -17,6 +18,8 @@ module kernel {
     requires com.github.kostrovik.http.client;
 
     exports com.github.kostrovik.kernel.common;
+    exports com.github.kostrovik.kernel.dictionaries;
+    exports com.github.kostrovik.kernel.exceptions;
     exports com.github.kostrovik.kernel.interfaces;
     exports com.github.kostrovik.kernel.interfaces.controls;
     exports com.github.kostrovik.kernel.interfaces.views;
@@ -26,8 +29,8 @@ module kernel {
     exports com.github.kostrovik.kernel.graphics.controls.base.cells;
     exports com.github.kostrovik.kernel.graphics.controls.dropdown;
     exports com.github.kostrovik.kernel.graphics.controls.field;
+    exports com.github.kostrovik.kernel.graphics.controls.form;
     exports com.github.kostrovik.kernel.graphics.controls.image;
-    exports com.github.kostrovik.kernel.graphics.controls.list;
     exports com.github.kostrovik.kernel.graphics.controls.notification;
     exports com.github.kostrovik.kernel.graphics.controls.panel;
     exports com.github.kostrovik.kernel.graphics.controls.progress;
@@ -35,7 +38,6 @@ module kernel {
     exports com.github.kostrovik.kernel.graphics.common.icons;
 
     exports com.github.kostrovik.kernel.models;
-    exports com.github.kostrovik.kernel.dictionaries;
 
     uses com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
     uses com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;
@@ -43,6 +45,6 @@ module kernel {
     uses com.github.kostrovik.useful.interfaces.LoggerConfigInterface;
 
     provides com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface with Configurator;
-    provides com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface with com.github.kostrovik.kernel.builders.SceneFactory;
+    provides com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface with SceneBuilder;
     provides com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface with com.github.kostrovik.kernel.graphics.common.ControlBuilderFacade;
 }

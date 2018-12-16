@@ -1,13 +1,11 @@
 plugins {
     id 'java'
     id 'idea'
-    id 'maven-publish'
 }
 
 group 'com.github.kostrovik'
-version '1.0-SNAPSHOT'
+version '2.0.0'
 def moduleName = 'kernel'
-def artifactRepository = 'http://server.ru/repositories/kostrovik'
 
 sourceCompatibility = 10
 targetCompatibility = 10
@@ -15,7 +13,7 @@ compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
 
 repositories {
-    maven { url "http://repositories/libs" }
+    maven { url 'https://jitpack.io' }
     jcenter()
     mavenCentral()
 }
@@ -24,13 +22,33 @@ dependencies {
     testCompile("org.junit.jupiter:junit-jupiter-api:5.2.0")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:5.2.0")
 
-    compile('jackson:jackson-dataformat-yaml:2.9.6')
-    compile 'com.github.kostrovik:useful-utils:1.0-SNAPSHOT'
-    compile 'com.github.kostrovik:http-client:1.0-SNAPSHOT'
+    compile files('libs/jackson-annotations-2.9.0.jar')
+    compile files('libs/jackson-core-2.9.6.jar')
+    compile files('libs/jackson-databind-2.9.6.jar')
+    compile files('libs/jackson-dataformat-yaml-2.9.2.jar')
+    compile files('libs/snakeyaml-1.18.jar')
+    implementation 'com.github.kostrovik:useful-utils:1.1.0'
+    implementation 'com.github.kostrovik:http-client:1.1.0'
 }
 
 test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        includeEngines 'junit-jupiter'
+    }
+
+    testLogging {
+        events 'PASSED', 'FAILED', 'SKIPPED'
+    }
+
+    afterSuite { desc, result ->
+        if (!desc.parent) {
+            println "\nTest result: ${result.resultType}"
+            println "Test summary: ${result.testCount} tests, " +
+                    "${result.successfulTestCount} succeeded, " +
+                    "${result.failedTestCount} failed, " +
+                    "${result.skippedTestCount} skipped"
+        }
+    }
 }
 
 idea {
@@ -59,28 +77,7 @@ compileJava {
 }
 
 configurations.all {
-    // Check for updates every build
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-}
-
-/**
- * Задание на выгрузку артефакта в указанный репозиторий
- * */
-publishing {
-    repositories {
-        maven {
-            url artifactRepository
-        }
-    }
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-
-            artifact sourceJar {
-                classifier "sources"
-            }
-        }
-    }
 }
 
 task sourceJar(type: Jar) {

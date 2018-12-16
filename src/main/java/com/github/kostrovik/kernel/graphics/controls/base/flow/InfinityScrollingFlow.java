@@ -9,6 +9,7 @@ import com.github.kostrovik.kernel.interfaces.EventListenerInterface;
 import com.github.kostrovik.kernel.interfaces.controls.ListFilterAndSorterInterface;
 import com.github.kostrovik.kernel.interfaces.controls.PaginationServiceInterface;
 import com.github.kostrovik.kernel.models.PagedList;
+import com.github.kostrovik.useful.interfaces.Listener;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -19,6 +20,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 
 import java.time.LocalDateTime;
+import java.util.EventObject;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -41,7 +43,18 @@ public class InfinityScrollingFlow<E, T extends PagedRow<E>> extends ScrollingFl
         super(table, header);
         this.paginationService = paginationService;
         this.filter = filter;
-        this.filter.addListener(event -> clearItems());
+        this.filter.addListener(new Listener<EventObject>() {
+            @Override
+            public void handle(EventObject result) {
+                clearItems();
+            }
+
+            @Override
+            public void error(Throwable error) {
+
+            }
+        });
+//        this.filter.addListener(event -> clearItems());
 
         downloadTasks = new LinkedList<>();
     }

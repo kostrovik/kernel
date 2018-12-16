@@ -1,6 +1,6 @@
 package com.github.kostrovik.kernel.interfaces.views;
 
-import com.github.kostrovik.kernel.interfaces.Observable;
+import com.github.kostrovik.useful.interfaces.Observable;
 import javafx.scene.layout.Region;
 
 import java.util.EventObject;

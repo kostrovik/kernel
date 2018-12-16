@@ -1,3 +1,10 @@
+.label {
+    -fx-text-fill: -styleTableText-color;
+}
+.text {
+    -fx-fill: -styleTableText-color;
+}
+
 .menu-bar {
     -fx-background-color: derive(-styleMainBackground-color, -5%);
     -fx-border-width: 0 0 1 0;
@@ -270,4 +277,83 @@
 
 .tab-pane .tab-down-button .label {
     -fx-text-fill: -styleMenuTextColor-color;
+}
+
+.date-picker:focused {
+    -fx-effect: none;
+}
+
+.date-picker .text-field {
+    -fx-background-insets: 0 0 0 0;
+    -fx-background-radius: 4 0 0 4;
+    -fx-border-radius: 4 0 0 4;
+}
+
+.date-picker .text-field:focused {
+    -fx-effect: none;
+}
+
+.date-picker .date-picker-popup .button {
+    -fx-background-color: -styleButtonBackground-color;
+    -fx-text-fill: derive(-styleButtonText-color, +10%);
+}
+
+.date-picker .calendar-grid {
+    -fx-background-color: -styleTableBackground-color;
+    -fx-border-color: derive(-styleTableBackground-color, -50%);
+    -fx-text-fill: -styleTextFieldText-color;
+}
+
+.date-picker .month-year-pane {
+    -fx-background-color: -styleTableBackground-color;
+    -fx-border-color: derive(-styleTableBackground-color, -50%);
+    -fx-text-fill: -styleTextFieldText-color;
+}
+
+.date-picker .left-button {
+    -fx-background-color: -styleButtonBackground-color;
+    -fx-text-fill: derive(-styleButtonText-color, +10%);
+}
+
+.date-picker .right-button {
+    -fx-background-color: -styleButtonBackground-color;
+    -fx-text-fill: derive(-styleButtonText-color, +10%);
+}
+
+.date-picker .left-arrow {
+    -fx-background-color: derive(-styleButtonText-color, +10%);
+}
+
+.date-picker .right-arrow {
+    -fx-background-color: derive(-styleButtonText-color, +10%);
+}
+
+.date-picker .cell {
+    -fx-background-color: -styleTableBackground-color;
+    -fx-text-fill: -styleTextFieldText-color;
+}
+
+.date-picker .cell:hover {
+    -fx-background-color: -styleButtonHover-color;
+}
+
+.date-picker .today {
+    -fx-background-color: derive(-styleButtonBackground-color, -20%);
+}
+
+.date-picker .selected {
+    -fx-background-color: -styleButtonBackground-color;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: -styleButtonBackground-color;
+    -fx-text-fill: derive(-styleButtonText-color, +10%);
+}
+
+.date-picker .arrow-button:hover {
+    -fx-background-color: -styleButtonHover-color;
+}
+
+.date-picker .arrow-button .arrow {
+    -fx-background-color: derive(-styleButtonText-color, +10%);
 }

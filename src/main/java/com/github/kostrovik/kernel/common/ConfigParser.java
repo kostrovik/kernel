@@ -4,14 +4,14 @@ package com.github.kostrovik.kernel.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.github.kostrovik.kernel.exceptions.ParseException;
 import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,18 +22,20 @@ import java.util.logging.Logger;
  * github:  https://github.com/kostrovik/kernel
  */
 public class ConfigParser {
-    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(ConfigParser.class.getName());
+    private Logger logger = InstanceLocatorUtil.getLocator().getLogger(ConfigParser.class);
 
     private Path filePath;
     private Map<String, Object> config;
+    private ObjectMapper mapper;
 
     public ConfigParser(Path filePath) {
         this.filePath = filePath;
+        this.mapper = new ObjectMapper(new YAMLFactory());
         this.config = parseConfig();
     }
 
     public Map<String, Object> getConfig() {
-        return config;
+        return new HashMap<>(config);
     }
 
     public Object getConfigProperty(String property) {
@@ -42,27 +44,24 @@ public class ConfigParser {
 
     public void writeSettings(Map<String, Object> config) {
         try {
-            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-            mapper.writeValue(new File(filePath.toString()), config);
+            mapper.writeValue(filePath.toFile(), config);
             this.config = parseConfig();
         } catch (IOException error) {
             logger.log(Level.SEVERE, "Ошибка записи конфигурации", error);
+            throw new ParseException(error);
         }
     }
 
     private Map<String, Object> parseConfig() {
-        ConcurrentHashMap result = new ConcurrentHashMap<>();
-
         try {
-            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-            result = mapper.readValue(new File(filePath.toString()), ConcurrentHashMap.class);
+            return mapper.readValue(filePath.toFile(), Map.class);
         } catch (MismatchedInputException error) {
             logger.log(Level.WARNING, "Пустой файл конфигурации", error);
+            return new HashMap<>();
         } catch (IOException error) {
-            logger.log(Level.WARNING, "Ошибка чтения конфигурации", error);
+            logger.log(Level.SEVERE, "Ошибка чтения конфигурации", error);
+            throw new ParseException(error);
         }
-
-        return result;
     }
 
     private Object findProperty(String property, Map properties) {
@@ -82,7 +81,6 @@ public class ConfigParser {
         }
 
         logger.log(Level.WARNING, "Не найден ключ конфигурации: {0}", property);
-
         return null;
     }
 }

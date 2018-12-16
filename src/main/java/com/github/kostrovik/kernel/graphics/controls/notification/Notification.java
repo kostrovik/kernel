@@ -2,6 +2,8 @@ package com.github.kostrovik.kernel.graphics.controls.notification;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 
@@ -12,62 +14,42 @@ import javafx.scene.control.Skin;
  * github:  https://github.com/kostrovik/kernel
  */
 public class Notification extends Control {
-    private final ObjectProperty<Boolean> isVisible;
-    private final ObjectProperty<String> message;
-    private final ObjectProperty<NotificationType> type;
+    private StringProperty message;
+    private ObjectProperty<NotificationType> type;
 
     public Notification() {
-        this.isVisible = new SimpleObjectProperty<>(false);
-        this.message = new SimpleObjectProperty<>("");
+        this.message = new SimpleStringProperty("");
         this.type = new SimpleObjectProperty<>(NotificationType.INFO);
         setFocusTraversable(false);
-    }
-
-    @Override
-    protected Skin<?> createDefaultSkin() {
-        return new NotificationSkin(this);
-    }
-
-    // свойсто видимости
-    public ObjectProperty<Boolean> showProperty() {
-        return isVisible;
-    }
-
-    public boolean getIsVisible() {
-        return isVisible.get();
-    }
-
-    public void setIsVisible(boolean visible) {
-        isVisible.set(visible);
-    }
-    // -- свойсто видимости --
-
-    // свойсто текст
-    public ObjectProperty<String> messageProperty() {
-        return message;
+        setVisible(false);
     }
 
     public String getMessage() {
         return message.get();
     }
 
-    public void setMessage(String text) {
-        message.set(text);
-        isVisible.set(true);
+    public StringProperty messageProperty() {
+        return message;
     }
-    // -- свойсто текст --
 
-    // свойсто тип
-    public ObjectProperty<NotificationType> typeProperty() {
-        return type;
+    public void setMessage(String message) {
+        this.message.set(message);
     }
 
     public NotificationType getType() {
         return type.get();
     }
 
-    public void setType(NotificationType notificationType) {
-        type.set(notificationType);
+    public ObjectProperty<NotificationType> typeProperty() {
+        return type;
     }
-    // -- свойсто тип --
+
+    public void setType(NotificationType type) {
+        this.type.set(type);
+    }
+
+    @Override
+    protected Skin<?> createDefaultSkin() {
+        return new NotificationSkin(this);
+    }
 }
