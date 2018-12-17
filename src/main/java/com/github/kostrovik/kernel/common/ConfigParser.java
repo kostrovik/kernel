@@ -27,6 +27,7 @@ public class ConfigParser {
     private Path filePath;
     private Map<String, Object> config;
     private ObjectMapper mapper;
+    private Object lock = new Object();
 
     public ConfigParser(Path filePath) {
         this.filePath = filePath;
@@ -35,20 +36,26 @@ public class ConfigParser {
     }
 
     public Map<String, Object> getConfig() {
-        return new HashMap<>(config);
+        synchronized (lock) {
+            return new HashMap<>(config);
+        }
     }
 
     public Object getConfigProperty(String property) {
-        return findProperty(property, config);
+        synchronized (lock) {
+            return findProperty(property, config);
+        }
     }
 
     public void writeSettings(Map<String, Object> config) {
-        try {
-            mapper.writeValue(filePath.toFile(), config);
-            this.config = parseConfig();
-        } catch (IOException error) {
-            logger.log(Level.SEVERE, "Ошибка записи конфигурации", error);
-            throw new ParseException(error);
+        synchronized (lock) {
+            try {
+                mapper.writeValue(filePath.toFile(), config);
+                this.config = parseConfig();
+            } catch (IOException error) {
+                logger.log(Level.SEVERE, "Ошибка записи конфигурации", error);
+                throw new ParseException(error);
+            }
         }
     }
 
