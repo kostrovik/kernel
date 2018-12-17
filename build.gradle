@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'idea'
+    id 'org.openjfx.javafxplugin' version '0.0.5'
 }
 
 group 'com.github.kostrovik'
@@ -29,6 +30,11 @@ dependencies {
     compile files('libs/snakeyaml-1.18.jar')
     implementation 'com.github.kostrovik:useful-utils:1.1.0'
     implementation 'com.github.kostrovik:http-client:1.1.0'
+}
+
+javafx {
+    version = "11.0.+"
+    modules = [ 'javafx.controls' ]
 }
 
 test {
