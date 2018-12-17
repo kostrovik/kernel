@@ -3,6 +3,7 @@ package com.github.kostrovik.kernel.common;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
@@ -18,10 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class ConfigParserTest {
     private ConfigParser parser;
+    private Path configFile;
 
     @BeforeEach
     void init() {
-        parser = new ConfigParser(Paths.get(this.getClass().getResource("/com/github/kostrovik/kernel/common/test_config.yaml").getPath()));
+        configFile = Paths.get(this.getClass().getResource("/com/github/kostrovik/kernel/common/test_config.yaml").getPath());
+        parser = new ConfigParser(configFile);
     }
 
     @Test

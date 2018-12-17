@@ -41,11 +41,13 @@ public class ApplicationSettings extends AbstractObservable {
     private ConfigParser parser;
     private FileSystemUtil fsUtil;
     private ServerConnectionAddress defaultHost;
+    private Path configFile;
 
     private ApplicationSettings() {
         this.defaultHost = new ServerConnectionAddress("");
         this.fsUtil = new FileSystemUtil();
-        this.parser = new ConfigParser(getConfigPath());
+        this.configFile = getConfigPath();
+        this.parser = new ConfigParser(configFile);
     }
 
     public static synchronized ApplicationSettings getInstance() {
@@ -190,7 +192,7 @@ public class ApplicationSettings extends AbstractObservable {
     }
 
     private void writeSettings(Map<String, Object> config) {
-        parser.writeSettings(config);
+        parser.writeSettings(config, configFile);
         notifyLlisteners(getInstance());
     }
 

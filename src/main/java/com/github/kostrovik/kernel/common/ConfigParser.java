@@ -8,6 +8,8 @@ import com.github.kostrovik.kernel.exceptions.ParseException;
 import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,15 +26,18 @@ import java.util.logging.Logger;
 public class ConfigParser {
     private Logger logger = InstanceLocatorUtil.getLocator().getLogger(ConfigParser.class);
 
-    private Path filePath;
     private Map<String, Object> config;
     private ObjectMapper mapper;
     private Object lock = new Object();
 
     public ConfigParser(Path filePath) {
-        this.filePath = filePath;
         this.mapper = new ObjectMapper(new YAMLFactory());
-        this.config = parseConfig();
+        this.config = parseConfig(filePath);
+    }
+
+    public ConfigParser(InputStream stream) {
+        this.mapper = new ObjectMapper(new YAMLFactory());
+        this.config = parseConfig(stream);
     }
 
     public Map<String, Object> getConfig() {
@@ -47,11 +52,11 @@ public class ConfigParser {
         }
     }
 
-    public void writeSettings(Map<String, Object> config) {
+    public void writeSettings(Map<String, Object> config, Path path) {
         synchronized (lock) {
             try {
-                mapper.writeValue(filePath.toFile(), config);
-                this.config = parseConfig();
+                mapper.writeValue(path.toFile(), config);
+                this.config = config;
             } catch (IOException error) {
                 logger.log(Level.SEVERE, "Ошибка записи конфигурации", error);
                 throw new ParseException(error);
@@ -59,9 +64,33 @@ public class ConfigParser {
         }
     }
 
-    private Map<String, Object> parseConfig() {
+    public void writeSettings(Map<String, Object> config, OutputStream stream) {
+        synchronized (lock) {
+            try {
+                mapper.writeValue(stream, config);
+                this.config = config;
+            } catch (IOException error) {
+                logger.log(Level.SEVERE, "Ошибка записи конфигурации", error);
+                throw new ParseException(error);
+            }
+        }
+    }
+
+    private Map<String, Object> parseConfig(Path path) {
         try {
-            return mapper.readValue(filePath.toFile(), Map.class);
+            return mapper.readValue(path.toFile(), Map.class);
+        } catch (MismatchedInputException error) {
+            logger.log(Level.WARNING, "Пустой файл конфигурации", error);
+            return new HashMap<>();
+        } catch (IOException error) {
+            logger.log(Level.SEVERE, "Ошибка чтения конфигурации", error);
+            throw new ParseException(error);
+        }
+    }
+
+    private Map<String, Object> parseConfig(InputStream stream) {
+        try {
+            return mapper.readValue(stream, Map.class);
         } catch (MismatchedInputException error) {
             logger.log(Level.WARNING, "Пустой файл конфигурации", error);
             return new HashMap<>();
