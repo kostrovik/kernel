@@ -24,6 +24,7 @@ module kernel {
     exports com.github.kostrovik.kernel.interfaces.controls;
     exports com.github.kostrovik.kernel.interfaces.views;
 
+    exports com.github.kostrovik.kernel.graphics.builders;
     exports com.github.kostrovik.kernel.graphics.controls.base;
     exports com.github.kostrovik.kernel.graphics.controls.base.columns;
     exports com.github.kostrovik.kernel.graphics.controls.base.cells;
@@ -41,10 +42,8 @@ module kernel {
 
     uses com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
     uses com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;
-    uses com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface;
     uses com.github.kostrovik.useful.interfaces.LoggerConfigInterface;
 
     provides com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface with Configurator;
     provides com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface with SceneBuilder;
-    provides com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface with com.github.kostrovik.kernel.graphics.common.ControlBuilderFacade;
 }

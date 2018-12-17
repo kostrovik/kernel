@@ -2,7 +2,6 @@ package com.github.kostrovik.kernel.settings;
 
 import com.github.kostrovik.kernel.dictionaries.ViewTypeDictionary;
 import com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
-import com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface;
 import com.github.kostrovik.kernel.interfaces.views.MenuBuilderInterface;
 import com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;
 import com.github.kostrovik.kernel.views.DropDownDialog;
@@ -71,18 +70,6 @@ public final class Configurator implements ModuleConfiguratorInterface {
             return applicationSettings.get();
         }
         logger.log(Level.SEVERE, String.format("Не найден контейнер view приложения. Модуль: %s", this.getClass().getModule().getName()));
-
-        return null;
-    }
-
-    @Override
-    public ControlBuilderFacadeInterface getControlBuilder() {
-        Optional<ControlBuilderFacadeInterface> controlBuilderFacade = getFirstLoadedImplementation(ControlBuilderFacadeInterface.class);
-
-        if (controlBuilderFacade.isPresent()) {
-            return controlBuilderFacade.get();
-        }
-        logger.log(Level.SEVERE, String.format("Не найден фасад для построения элементов интерфейса. Модуль: %s", this.getClass().getModule().getName()));
 
         return null;
     }

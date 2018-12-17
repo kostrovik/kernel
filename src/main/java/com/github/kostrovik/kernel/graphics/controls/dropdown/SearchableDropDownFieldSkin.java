@@ -1,13 +1,13 @@
 package com.github.kostrovik.kernel.graphics.controls.dropdown;
 
+import com.github.kostrovik.kernel.dictionaries.LayoutType;
 import com.github.kostrovik.kernel.dictionaries.ViewTypeDictionary;
+import com.github.kostrovik.kernel.graphics.builders.ButtonBuilder;
 import com.github.kostrovik.kernel.graphics.common.icons.SolidIcons;
 import com.github.kostrovik.kernel.graphics.helper.ListPageDataLoader;
 import com.github.kostrovik.kernel.graphics.helper.PageInfo;
 import com.github.kostrovik.kernel.interfaces.EventListenerInterface;
-import com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface;
 import com.github.kostrovik.kernel.interfaces.views.ContentViewInterface;
-import com.github.kostrovik.kernel.dictionaries.LayoutType;
 import com.github.kostrovik.kernel.interfaces.views.ViewEventInterface;
 import com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;
 import com.github.kostrovik.kernel.models.PagedList;
@@ -66,7 +66,7 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
     private PopupControl popupControl;
 
     private ObjectProperty<Boolean> isListVisible;
-    private ControlBuilderFacadeInterface facade;
+    private ButtonBuilder buttonBuilder;
     private Callback<T, String> callback;
 
     private PageInfo pageInfo;
@@ -75,14 +75,14 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
 
     public SearchableDropDownFieldSkin(SearchableDropDownField<T> control) {
         super(control);
+        buttonBuilder = new ButtonBuilder();
         selectedItems = getSkinnable().getSelectedItems();
         this.isListVisible = new SimpleObjectProperty<>(false);
-        this.facade = Configurator.getConfig().getControlBuilder();
         callback = getSkinnable().getListLabelCallback();
         pageInfo = new PageInfo();
 
         listFilter = new DropDownListFilter(getSkinnable().getLookupAttribute());
-        listFilter.addListener(new Listener<EventObject>() {
+        listFilter.addListener(new Listener<>() {
             @Override
             public void handle(EventObject result) {
                 downloadData();
@@ -308,19 +308,19 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
 
         HBox.setHgrow(textField, Priority.ALWAYS);
 
-        Button openDictionary = facade.createButton("", SolidIcons.ELIPSIS);
+        Button openDictionary = buttonBuilder.createButton(SolidIcons.ELIPSIS);
         openDictionary.setFocusTraversable(false);
         openDictionary.prefHeightProperty().bind(textField.heightProperty());
 
         openDictionary.setOnAction(event -> openDialog());
 
-        Button clear = facade.createButton("", SolidIcons.CROSS);
+        Button clear = buttonBuilder.createButton(SolidIcons.CROSS);
         clear.setOnAction(event -> clearSelectedValues());
         clear.setFocusTraversable(false);
         clear.prefHeightProperty().bind(textField.heightProperty());
         clear.getStyleClass().add("clear-button");
 
-        Button openList = facade.createButton("", SolidIcons.CARET_DOWN);
+        Button openList = buttonBuilder.createButton(SolidIcons.CARET_DOWN);
         openList.setFocusTraversable(false);
         openList.prefHeightProperty().bind(textField.heightProperty());
         openList.getStyleClass().add("open-list-button");

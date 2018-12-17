@@ -1,8 +1,7 @@
 package com.github.kostrovik.kernel.graphics.controls.panel;
 
+import com.github.kostrovik.kernel.graphics.builders.ButtonBuilder;
 import com.github.kostrovik.kernel.graphics.common.icons.SolidIcons;
-import com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface;
-import com.github.kostrovik.kernel.settings.Configurator;
 import javafx.collections.MapChangeListener;
 import javafx.scene.control.Button;
 import javafx.scene.control.SkinBase;
@@ -16,13 +15,11 @@ import javafx.scene.layout.HBox;
  */
 public class ListControlPanelSkin extends SkinBase<ListControlPanel> {
     private HBox panel;
-
-    private ControlBuilderFacadeInterface facade;
+    private ButtonBuilder builder;
 
     protected ListControlPanelSkin(ListControlPanel control) {
         super(control);
-        this.facade = Configurator.getConfig().getControlBuilder();
-
+        builder = new ButtonBuilder();
         createSkin();
 
         getSkinnable().getButtons().addListener((MapChangeListener<String, Button>) change -> panel.getChildren().setAll(change.getMap().values()));
@@ -42,13 +39,13 @@ public class ListControlPanelSkin extends SkinBase<ListControlPanel> {
             Button button = null;
             switch (buttonType) {
                 case ADD:
-                    button = facade.createButton("", SolidIcons.PLUS, true);
+                    button = builder.createButton(SolidIcons.PLUS, "", true);
                     break;
                 case REMOVE:
-                    button = facade.createButton("", SolidIcons.MINUS, true);
+                    button = builder.createButton(SolidIcons.MINUS, "", true);
                     break;
                 case EDIT:
-                    button = facade.createButton("", SolidIcons.PEN, true);
+                    button = builder.createButton(SolidIcons.PEN, "", true);
                     break;
                 default:
                     break;
