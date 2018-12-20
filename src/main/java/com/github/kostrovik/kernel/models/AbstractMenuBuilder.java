@@ -22,11 +22,11 @@ public abstract class AbstractMenuBuilder implements MenuBuilderInterface {
     private String actionAttribute;
     private String titleAttribute;
 
-    private AbstractMenuBuilder() {
+    protected AbstractMenuBuilder() {
         this("items", "action", "title");
     }
 
-    private AbstractMenuBuilder(String listAttribute, String actionAttribute, String titleAttribute) {
+    protected AbstractMenuBuilder(String listAttribute, String actionAttribute, String titleAttribute) {
         Objects.requireNonNull(listAttribute);
         this.listAttribute = listAttribute;
         Objects.requireNonNull(actionAttribute);
