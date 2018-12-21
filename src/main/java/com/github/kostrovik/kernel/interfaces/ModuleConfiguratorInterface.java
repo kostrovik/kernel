@@ -17,4 +17,6 @@ public interface ModuleConfiguratorInterface {
     Map<String, Class<?>> getModuleViews();
 
     ViewEventListenerInterface getEventListener();
+
+    int getModuleOrder();
 }

@@ -1,11 +1,10 @@
 package com.github.kostrovik.kernel.builders;
 
 import com.github.kostrovik.kernel.common.ApplicationSettings;
+import com.github.kostrovik.kernel.dictionaries.LayoutType;
 import com.github.kostrovik.kernel.exceptions.SceneBuilderException;
 import com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
 import com.github.kostrovik.kernel.interfaces.views.ContentViewInterface;
-import com.github.kostrovik.kernel.dictionaries.LayoutType;
-import com.github.kostrovik.kernel.interfaces.views.MenuBuilderInterface;
 import com.github.kostrovik.kernel.interfaces.views.PopupWindowInterface;
 import com.github.kostrovik.kernel.interfaces.views.ViewEventInterface;
 import com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;
@@ -14,9 +13,7 @@ import com.github.kostrovik.kernel.views.SystemTrayView;
 import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -27,7 +24,6 @@ import javafx.stage.Stage;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.EventObject;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -193,19 +189,7 @@ public final class SceneBuilder implements ViewEventListenerInterface {
     private MenuBar getSceneMenu() {
         MenuBar menuBar = new MenuBar();
         menuBar.setPadding(new Insets(0, 0, 0, 0));
-
-        for (String module : config.moduleKeys()) {
-            MenuBuilderInterface menu = config.getConfigForModule(module).getMenuBuilder();
-            List<MenuItem> menuItems = menu.getMenuList();
-
-            if (!menuItems.isEmpty()) {
-                Menu addDataMenu = new Menu(menu.getModuleMenuName());
-                addDataMenu.getItems().addAll(menuItems);
-
-                menuBar.getMenus().add(addDataMenu);
-            }
-        }
-
+        config.getModulesConfig().forEach(moduleConfig -> menuBar.getMenus().addAll(moduleConfig.getMenuBuilder().getMenuList()));
         return menuBar;
     }
 

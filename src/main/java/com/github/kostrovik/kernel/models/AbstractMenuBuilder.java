@@ -16,16 +16,40 @@ import java.util.Objects;
  * author:  kostrovik
  * date:    2018-12-20
  * github:  https://github.com/kostrovik/kernel
+ *
+ * Абстракция для конструирования меню модуля. Экспортируется наружу для других модулей. Позволяет создавать
+ * древовидное вложенное меню с подкатегориями.
+ * Стоит учитывать, что для создания вложенного дерева используется рекурсия. Поэтому вложенность дерева является
+ * "условно безграничной". Вложенность ограничена размером стека вызовов.
  */
 public abstract class AbstractMenuBuilder implements MenuBuilderInterface {
+    /**
+     * Название атрибута содержащего список пунктов меню.
+     */
     private String listAttribute;
+    /**
+     * Название атрибута содержащего путь к классу Action для пункта меню.
+     */
     private String actionAttribute;
+    /**
+     * Атрибут содержащий название пункта меню.
+     */
     private String titleAttribute;
 
+    /**
+     * Constructor for Abstract menu builder.
+     */
     protected AbstractMenuBuilder() {
         this("items", "action", "title");
     }
 
+    /**
+     * Constructor for Abstract menu builder.
+     *
+     * @param listAttribute   the list attribute
+     * @param actionAttribute the action attribute
+     * @param titleAttribute  the title attribute
+     */
     protected AbstractMenuBuilder(String listAttribute, String actionAttribute, String titleAttribute) {
         Objects.requireNonNull(listAttribute);
         this.listAttribute = listAttribute;
@@ -35,6 +59,13 @@ public abstract class AbstractMenuBuilder implements MenuBuilderInterface {
         this.titleAttribute = titleAttribute;
     }
 
+    /**
+     * Парсер для списка пунктов меню. Используется рекурсивно.
+     *
+     * @param menuList the menu list
+     *
+     * @return the list
+     */
     protected List<MenuItem> parseItemsMap(Map<String, Object> menuList) {
         List<MenuItem> menuItems = new ArrayList<>();
         for (Map.Entry<String, Object> entry : menuList.entrySet()) {
@@ -43,6 +74,15 @@ public abstract class AbstractMenuBuilder implements MenuBuilderInterface {
         return menuItems;
     }
 
+    /**
+     * Парсер пункта меню. Либо создает и возвращает объект MenuItem. Либо если action для пункта меню null то
+     * вызывает парсер списка и передает ему объект items. По итогам возвращает дерево Menu.
+     * Используется рекурсивно.
+     *
+     * @param itemMap the item map
+     *
+     * @return the menu item
+     */
     protected MenuItem parseMap(Map<String, Object> itemMap) {
         String action = (String) itemMap.getOrDefault(actionAttribute, null);
         String title = (String) itemMap.getOrDefault(titleAttribute, null);
@@ -59,5 +99,12 @@ public abstract class AbstractMenuBuilder implements MenuBuilderInterface {
         return submenu;
     }
 
+    /**
+     * Реализация должна уметь рефлективно создать объект по полученному имени класса.
+     *
+     * @param actionClass the action class
+     *
+     * @return the event handler
+     */
     protected abstract EventHandler<ActionEvent> prepareAction(String actionClass);
 }

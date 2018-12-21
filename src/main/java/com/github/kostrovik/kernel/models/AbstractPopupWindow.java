@@ -1,7 +1,7 @@
 package com.github.kostrovik.kernel.models;
 
 import com.github.kostrovik.kernel.interfaces.views.PopupWindowInterface;
-import com.github.kostrovik.useful.interfaces.Listener;
+import com.github.kostrovik.useful.models.AbstractObservable;
 import javafx.geometry.Insets;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -11,8 +11,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
-import java.util.EventObject;
-import java.util.List;
 
 /**
  * project: kernel
@@ -20,7 +18,7 @@ import java.util.List;
  * date:    31/08/2018
  * github:  https://github.com/kostrovik/kernel
  */
-public abstract class AbstractPopupWindow implements PopupWindowInterface {
+public abstract class AbstractPopupWindow extends AbstractObservable implements PopupWindowInterface {
 
     /**
      * Константа указывает ширину по умолчанию для всплывающих окон.
@@ -31,7 +29,6 @@ public abstract class AbstractPopupWindow implements PopupWindowInterface {
      */
     private static final int DEFAULT_HEIGHT = 760;
 
-    protected List<Listener<EventObject>> listeners;
     protected Stage stage;
     protected Pane parent;
     protected VBox view;
@@ -51,20 +48,6 @@ public abstract class AbstractPopupWindow implements PopupWindowInterface {
     @Override
     public Region getView() {
         return view;
-    }
-
-    @Override
-    public void addListener(Listener<EventObject> listener) {
-        listeners.add(listener);
-    }
-
-    @Override
-    public void removeListener(Listener<EventObject> listener) {
-        listeners.remove(listener);
-    }
-
-    protected void notifyListeners(Object eventObject) {
-        listeners.forEach(listener -> listener.handle(new EventObject(eventObject)));
     }
 
     protected int getWindowWidth() {
