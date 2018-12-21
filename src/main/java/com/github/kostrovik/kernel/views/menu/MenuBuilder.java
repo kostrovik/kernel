@@ -3,7 +3,7 @@ package com.github.kostrovik.kernel.views.menu;
 import com.github.kostrovik.kernel.models.AbstractMenuBuilder;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.Menu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class MenuBuilder extends AbstractMenuBuilder {
     @Override
-    public List<MenuItem> getMenuList() {
+    public List<Menu> getMenuList() {
         return new ArrayList<>();
     }
 

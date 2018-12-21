@@ -193,7 +193,7 @@ public class ApplicationSettings extends AbstractObservable {
 
     private void writeSettings(Map<String, Object> config) {
         parser.writeSettings(config, configFile);
-        notifyLlisteners(getInstance());
+        notifyListeners(getInstance());
     }
 
     private Path getConfigPath() {

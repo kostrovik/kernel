@@ -74,6 +74,11 @@ public final class Configurator implements ModuleConfiguratorInterface {
         return null;
     }
 
+    @Override
+    public int getModuleOrder() {
+        return 0;
+    }
+
     private <E> Optional<E> getFirstLoadedImplementation(Class<E> type) {
         return ServiceLoader.load(ModuleLayer.boot(), type).findFirst();
     }
