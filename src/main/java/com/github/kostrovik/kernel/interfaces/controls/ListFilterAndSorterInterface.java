@@ -3,7 +3,6 @@ package com.github.kostrovik.kernel.interfaces.controls;
 import com.github.kostrovik.kernel.dictionaries.SortDirection;
 import com.github.kostrovik.useful.interfaces.Observable;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,7 +16,7 @@ public interface ListFilterAndSorterInterface extends Observable {
 
     void setSortBy(Map<String, SortDirection> sortBy);
 
-    List<Map<String, Object>> getFilters();
+    Map<String, Object> getFilter();
 
     void clear();
 }

@@ -3,9 +3,7 @@ package com.github.kostrovik.kernel.graphics.controls.dropdown;
 import com.github.kostrovik.kernel.dictionaries.SortDirection;
 import com.github.kostrovik.kernel.models.EmptyListFilter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -19,7 +17,7 @@ public class DropDownListFilter extends EmptyListFilter {
     private Map<String, SortDirection> sortBy;
     private Map<String, SortDirection> defaultSortBy;
     private String attribute;
-    private Map<String, Map<String, Object>> filters;
+    private Map<String, Object> filters;
 
     private Map<String, Object> valueFilter;
 
@@ -45,13 +43,13 @@ public class DropDownListFilter extends EmptyListFilter {
     public void setSortBy(Map<String, SortDirection> sortBy) {
         if (Objects.nonNull(sortBy)) {
             this.sortBy = sortBy;
-//            notifyListeners();
+            notifyListeners(this);
         }
     }
 
     @Override
-    public List<Map<String, Object>> getFilters() {
-        return new ArrayList<>(filters.values());
+    public Map<String, Object> getFilter() {
+        return filters;
     }
 
     @Override
@@ -60,24 +58,19 @@ public class DropDownListFilter extends EmptyListFilter {
         this.filters.clear();
         this.valueFilter.clear();
 
-//        notifyListeners();
+        notifyListeners(this);
     }
 
     public void setValueFilter(String value) {
-        if (value == null || value.isEmpty()) {
-            filters.remove(getFilterKey(attribute));
+        if (Objects.isNull(value) || value.isEmpty()) {
+            filters.remove(attribute);
         } else {
-            valueFilter.put(attribute, value);
-            filters.put(getFilterKey(attribute), valueFilter);
+            filters.put(attribute, value);
         }
-//        notifyListeners();
+        notifyListeners(this);
     }
 
     public String getValueFilter() {
-        return (String) filters.getOrDefault(getFilterKey(attribute), new HashMap<>()).getOrDefault(attribute, "");
-    }
-
-    private String getFilterKey(String attribute) {
-        return attribute + "Filter";
+        return (String) filters.getOrDefault(attribute, "");
     }
 }

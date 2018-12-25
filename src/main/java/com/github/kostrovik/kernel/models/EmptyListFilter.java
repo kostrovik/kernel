@@ -27,8 +27,8 @@ public class EmptyListFilter extends AbstractObservable implements ListFilterAnd
     }
 
     @Override
-    public List<Map<String, Object>> getFilters() {
-        return new ArrayList<>();
+    public Map<String, Object> getFilter() {
+        return new HashMap<>();
     }
 
     @Override
