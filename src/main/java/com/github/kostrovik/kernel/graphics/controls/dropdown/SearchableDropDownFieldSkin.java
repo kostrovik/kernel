@@ -6,7 +6,6 @@ import com.github.kostrovik.kernel.graphics.builders.ButtonBuilder;
 import com.github.kostrovik.kernel.graphics.common.icons.SolidIcons;
 import com.github.kostrovik.kernel.graphics.helper.ListPageDataLoader;
 import com.github.kostrovik.kernel.graphics.helper.PageInfo;
-import com.github.kostrovik.kernel.interfaces.EventListenerInterface;
 import com.github.kostrovik.kernel.interfaces.views.ContentViewInterface;
 import com.github.kostrovik.kernel.interfaces.views.ViewEventInterface;
 import com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;
@@ -426,10 +425,17 @@ public class SearchableDropDownFieldSkin<T extends Comparable> extends SkinBase<
     private void downloadData() {
         updatePageInfo();
 
-        EventListenerInterface task = event -> {
-            Map<String, Object> result = (Map<String, Object>) event.getSource();
-            PagedList<T> dataList = (PagedList<T>) result.get("dataList");
-            itemsList.getItems().setAll(dataList.getList());
+        Listener<Map> task = new Listener<Map>() {
+            @Override
+            public void handle(Map result) {
+                PagedList<T> dataList = (PagedList<T>) result.get("dataList");
+                itemsList.getItems().setAll(dataList.getList());
+            }
+
+            @Override
+            public void error(Throwable error) {
+
+            }
         };
 
         new Thread(new ListPageDataLoader<>(task, getSkinnable().getPaginationService(), pageInfo, LocalDateTime.now())).start();

@@ -1,12 +1,11 @@
 package com.github.kostrovik.kernel.graphics.helper;
 
-import com.github.kostrovik.kernel.interfaces.EventListenerInterface;
 import com.github.kostrovik.kernel.interfaces.controls.PaginationServiceInterface;
 import com.github.kostrovik.kernel.models.PagedList;
+import com.github.kostrovik.useful.interfaces.Listener;
 import javafx.application.Platform;
 
 import java.time.LocalDateTime;
-import java.util.EventObject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,12 +16,12 @@ import java.util.Map;
  * github:  https://github.com/kostrovik/kernel
  */
 public class ListPageDataLoader<T> implements Runnable {
-    private EventListenerInterface task;
+    private Listener<Map> task;
     private PaginationServiceInterface<T> service;
     private PageInfo pageInfo;
     private LocalDateTime threadStamp;
 
-    public ListPageDataLoader(EventListenerInterface task, PaginationServiceInterface<T> service, PageInfo pageInfo, LocalDateTime threadOrder) {
+    public ListPageDataLoader(Listener<Map> task, PaginationServiceInterface<T> service, PageInfo pageInfo, LocalDateTime threadOrder) {
         this.task = task;
         this.service = service;
         this.pageInfo = pageInfo;
@@ -41,7 +40,7 @@ public class ListPageDataLoader<T> implements Runnable {
         result.put("dataList", dataList);
         result.put("threadStamp", threadStamp);
 
-        Platform.runLater(() -> task.handle(new EventObject(result)));
+        Platform.runLater(() -> task.handle(result));
     }
 
     public LocalDateTime getThreadStamp() {

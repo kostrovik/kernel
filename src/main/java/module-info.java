@@ -15,7 +15,6 @@ module kernel {
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.dataformat.yaml;
     requires com.github.kostrovik.useful.utils;
-    requires com.github.kostrovik.http.client;
 
     exports com.github.kostrovik.kernel.common;
     exports com.github.kostrovik.kernel.dictionaries;

@@ -5,7 +5,6 @@ import com.github.kostrovik.kernel.graphics.controls.base.rows.PagedRow;
 import com.github.kostrovik.kernel.graphics.controls.base.table.PagedTable;
 import com.github.kostrovik.kernel.graphics.helper.ListPageDataLoader;
 import com.github.kostrovik.kernel.graphics.helper.PageInfo;
-import com.github.kostrovik.kernel.interfaces.EventListenerInterface;
 import com.github.kostrovik.kernel.interfaces.controls.ListFilterAndSorterInterface;
 import com.github.kostrovik.kernel.interfaces.controls.PaginationServiceInterface;
 import com.github.kostrovik.kernel.models.PagedList;
@@ -86,29 +85,35 @@ public class InfinityScrollingFlow<E, T extends PagedRow<E>> extends ScrollingFl
 
         hasNextPage = true;
 
-        EventListenerInterface task = event -> {
-            Map<String, Object> result = (Map<String, Object>) event.getSource();
+        Listener<Map> task = new Listener<Map>() {
+            @Override
+            public void handle(Map result) {
+                LocalDateTime stamp = (LocalDateTime) result.get("threadStamp");
 
-            LocalDateTime stamp = (LocalDateTime) result.get("threadStamp");
+                if (stamp.equals(lastRunningTask)) {
+                    PagedList<E> dataList = (PagedList<E>) result.get("dataList");
+                    totalCount.set(dataList.getTotal());
 
-            if (stamp.equals(lastRunningTask)) {
-                PagedList<E> dataList = (PagedList<E>) result.get("dataList");
-                totalCount.set(dataList.getTotal());
+                    if (listOffset == 0 && dataList.getTotal() == dataList.getList().size()) {
+                        hasNextPage = false;
+                    }
 
-                if (listOffset == 0 && dataList.getTotal() == dataList.getList().size()) {
-                    hasNextPage = false;
+                    if (listOffset + dataList.getList().size() == dataList.getTotal()) {
+                        hasNextPage = false;
+                    }
+
+                    if (hasNextPage) {
+                        listOffset = dataList.getList().size();
+                    }
+                    pageNumber.set((int) result.get("pageNumber"));
+
+                    table.getItems().setAll(dataList.getList());
                 }
+            }
 
-                if (listOffset + dataList.getList().size() == dataList.getTotal()) {
-                    hasNextPage = false;
-                }
+            @Override
+            public void error(Throwable error) {
 
-                if (hasNextPage) {
-                    listOffset = dataList.getList().size();
-                }
-                pageNumber.set((int) result.get("pageNumber"));
-
-                table.getItems().setAll(dataList.getList());
             }
         };
 
