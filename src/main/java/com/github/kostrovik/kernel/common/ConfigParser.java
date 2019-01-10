@@ -1,6 +1,7 @@
 package com.github.kostrovik.kernel.common;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -78,7 +79,8 @@ public class ConfigParser {
 
     private Map<String, Object> parseConfig(Path path) {
         try {
-            return mapper.readValue(path.toFile(), Map.class);
+            return mapper.readValue(path.toFile(), new TypeReference<Map>() {
+            });
         } catch (MismatchedInputException error) {
             logger.log(Level.WARNING, "Пустой файл конфигурации", error);
             return new HashMap<>();
@@ -90,7 +92,8 @@ public class ConfigParser {
 
     private Map<String, Object> parseConfig(InputStream stream) {
         try {
-            return mapper.readValue(stream, Map.class);
+            return mapper.readValue(stream, new TypeReference<Map>() {
+            });
         } catch (MismatchedInputException error) {
             logger.log(Level.WARNING, "Пустой файл конфигурации", error);
             return new HashMap<>();

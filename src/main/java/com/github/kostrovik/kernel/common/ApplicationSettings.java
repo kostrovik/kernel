@@ -59,7 +59,6 @@ public class ApplicationSettings extends AbstractObservable {
 
     public List<ServerConnectionAddress> getHosts() {
         Object defaultAddress = parser.getConfigProperty(DEFAULT_HOST_PROPERTY);
-        String defaultHostAddress = Objects.isNull(defaultAddress) ? "" : (String) defaultAddress;
         List<ServerConnectionAddress> addresses = new ArrayList<>();
 
         Object savedHosts = parser.getConfigProperty(HOSTS_PROPERTY);
@@ -76,7 +75,12 @@ public class ApplicationSettings extends AbstractObservable {
                         address.setLastUsage(LocalDateTime.parse(lastUsage));
                     }
 
-                    if (!defaultHostAddress.trim().isEmpty() && address.getUrl().equals(defaultHostAddress)) {
+                    if (defaultAddress instanceof ServerConnectionAddress
+                            && !((ServerConnectionAddress) defaultAddress).getUrl().isBlank()
+                            && ((ServerConnectionAddress) defaultAddress).getUrl().equals(address.getUrl())) {
+                        address = (ServerConnectionAddress) defaultAddress;
+                    }
+                    if (defaultAddress instanceof String && !((String) defaultAddress).isBlank() && address.getUrl().equals(defaultAddress)) {
                         address.setDefault(true);
                     }
                     return address;
