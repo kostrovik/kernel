@@ -1,21 +1,18 @@
 package com.github.kostrovik.kernel.graphics.controls.dropdown;
 
-import com.github.kostrovik.kernel.interfaces.controls.PaginationServiceInterface;
-import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
+import com.github.kostrovik.kernel.graphics.controls.common.SelectionModel;
+import com.github.kostrovik.kernel.interfaces.PaginationServiceInterface;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.util.Callback;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Objects;
 
 /**
  * project: kernel
@@ -23,42 +20,29 @@ import java.util.logging.Logger;
  * date:    22/08/2018
  * github:  https://github.com/kostrovik/kernel
  */
-public class SearchableDropDownField<T extends Comparable> extends Control {
-    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(SearchableDropDownField.class.getName());
-
+public class SearchableDropDownField<E extends Comparable> extends Control {
     private StringProperty label;
     private BooleanProperty showLabel;
-    private Callback<T, String> listLabelCallback;
-    private ObservableList<T> selectedItems;
-    private BooleanProperty multiple;
-
-    private ObjectProperty<PaginationServiceInterface<T>> paginationService;
+    private ObjectProperty<Callback<E, String>> listLabelCallback;
+    private PaginationServiceInterface<E> paginationService;
     private String lookupAttribute;
+    private SelectionModel<E> selectionModel;
 
-    public SearchableDropDownField(String label, String lookupAttribute) {
-        this(label, true, lookupAttribute);
+    public SearchableDropDownField(PaginationServiceInterface<E> paginationService, String label, String lookupAttribute) {
+        this(label, lookupAttribute);
+        Objects.requireNonNull(paginationService);
+        this.paginationService = paginationService;
     }
 
-    public SearchableDropDownField(String label, boolean showLabel, String lookupAttribute) {
-        this(label);
-        this.showLabel = new SimpleBooleanProperty(showLabel);
-        this.lookupAttribute = lookupAttribute;
-    }
-
-    private SearchableDropDownField(String label) {
+    private SearchableDropDownField(String label, String lookupAttribute) {
         this.label = new SimpleStringProperty(label);
-        this.listLabelCallback = param -> param.toString();
-        this.selectedItems = FXCollections.observableArrayList();
-        this.multiple = new SimpleBooleanProperty(true);
-        this.paginationService = new SimpleObjectProperty<>();
+        this.showLabel = new SimpleBooleanProperty(true);
+        this.listLabelCallback = new SimpleObjectProperty<>(Object::toString);
+        this.selectionModel = new SelectionModel<>();
+        this.lookupAttribute = lookupAttribute;
 
         getStyleClass().add("drop-down");
-
-        try {
-            getStylesheets().add(Class.forName(this.getClass().getName()).getResource("/com/github/kostrovik/styles/controls/searchable-dropdown.css").toExternalForm());
-        } catch (ClassNotFoundException error) {
-            logger.log(Level.WARNING, "Ошибка загрузки стилей.", error);
-        }
+        getStylesheets().add(this.getClass().getResource("/com/github/kostrovik/styles/controls/searchable-dropdown.css").toExternalForm());
     }
 
     public String getLabel() {
@@ -85,44 +69,28 @@ public class SearchableDropDownField<T extends Comparable> extends Control {
         this.showLabel.set(showLabel);
     }
 
-    public Callback<T, String> getListLabelCallback() {
+    public Callback<E, String> getListLabelCallback() {
+        return listLabelCallback.get();
+    }
+
+    public ObjectProperty<Callback<E, String>> listLabelCallbackProperty() {
         return listLabelCallback;
     }
 
-    public void setListLabelCallback(Callback<T, String> listLabelCallback) {
-        this.listLabelCallback = listLabelCallback;
+    public void setListLabelCallback(Callback<E, String> listLabelCallback) {
+        this.listLabelCallback.set(listLabelCallback);
     }
 
-    public ObservableList<T> getSelectedItems() {
-        return selectedItems;
-    }
-
-    public boolean isMultiple() {
-        return multiple.get();
-    }
-
-    public BooleanProperty multipleProperty() {
-        return multiple;
-    }
-
-    public void setMultiple(boolean multiple) {
-        this.multiple.set(multiple);
-    }
-
-    public PaginationServiceInterface getPaginationService() {
-        return paginationService.get();
-    }
-
-    public ObjectProperty<PaginationServiceInterface<T>> paginationServiceProperty() {
+    public PaginationServiceInterface<E> getPaginationService() {
         return paginationService;
-    }
-
-    public void setPaginationService(PaginationServiceInterface paginationService) {
-        this.paginationService.set(paginationService);
     }
 
     public String getLookupAttribute() {
         return lookupAttribute;
+    }
+
+    public SelectionModel<E> getSelectionModel() {
+        return selectionModel;
     }
 
     @Override

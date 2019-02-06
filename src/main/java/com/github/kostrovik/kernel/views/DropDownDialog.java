@@ -1,23 +1,22 @@
 package com.github.kostrovik.kernel.views;
 
-import com.github.kostrovik.kernel.dictionaries.SortDirection;
 import com.github.kostrovik.kernel.graphics.builders.ButtonBuilder;
 import com.github.kostrovik.kernel.graphics.common.icons.SolidIcons;
-import com.github.kostrovik.kernel.graphics.controls.base.InfinityTable;
-import com.github.kostrovik.kernel.graphics.controls.base.columns.PagedColumn;
-import com.github.kostrovik.kernel.interfaces.controls.ListFilterAndSorterInterface;
-import com.github.kostrovik.kernel.interfaces.controls.PaginationServiceInterface;
+import com.github.kostrovik.kernel.graphics.controls.common.columns.CommonColumn;
+import com.github.kostrovik.kernel.graphics.controls.dropdown.SearchableDropDownField;
+import com.github.kostrovik.kernel.graphics.controls.paged.InfinityTable;
+import com.github.kostrovik.kernel.interfaces.FilterAttributeSetter;
 import com.github.kostrovik.kernel.models.AbstractPopupWindow;
-import com.github.kostrovik.kernel.models.EmptyListFilter;
-import javafx.collections.FXCollections;
+import com.github.kostrovik.kernel.models.ListFilterAndSorter;
+import com.github.kostrovik.kernel.services.DropDownSelectedService;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -25,11 +24,11 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EventObject;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -38,39 +37,73 @@ import java.util.stream.Collectors;
  * date:    29/08/2018
  * github:  https://github.com/kostrovik/kernel
  */
-public class DropDownDialog<T> extends AbstractPopupWindow {
-    private PaginationServiceInterface<T> paginationService;
-    private Callback<T, String> listLabelCallback;
-    private InfinityTable<T> table;
-    private InfinityTable<T> selectedItemsTable;
+public class DropDownDialog<T extends Comparable<T>> extends AbstractPopupWindow {
+    private InfinityTable<T> items;
+    private InfinityTable<T> selected;
+    private ButtonBuilder buttonBuilder;
+    private SearchableDropDownField<T> dropDownField;
+
+    private ListFilterAndSorter defaultFilter;
+    private ListFilterAndSorter defaultFilterSelected;
 
     private ObservableList<T> selectedItems;
-    private ButtonBuilder buttonBuilder;
+    private List<T> selectedItemsCache;
 
     public DropDownDialog(Pane parent) {
         super(parent);
-        this.selectedItems = FXCollections.observableArrayList();
         this.buttonBuilder = new ButtonBuilder();
     }
 
     @Override
     public void setStage(Stage stage) {
         this.stage = stage;
-        super.setDefaultWindowSize();
+        super.setWindowSize();
     }
 
     @Override
     public void initView(EventObject event) {
-        Map<String, Object> data = (Map<String, Object>) event.getSource();
-        paginationService = (PaginationServiceInterface<T>) data.get("service");
-        listLabelCallback = (Callback<T, String>) data.get("callback");
-        selectedItems.setAll((Collection<? extends T>) data.get("selectedItems"));
+        dropDownField = (SearchableDropDownField<T>) event.getSource();
+        if (dropDownField instanceof SearchableDropDownField) {
+            selectedItems = dropDownField.getSelectionModel().getItems();
+            selectedItemsCache = new ArrayList<>(dropDownField.getSelectionModel().getItems());
 
+            defaultFilter = new ListFilterAndSorter(dropDownField.getLookupAttribute());
+            defaultFilter.addFilterAttribute(new FilterAttributeSetter<String>() {
+                @Override
+                public String getAttributeName() {
+                    return dropDownField.getLookupAttribute();
+                }
+
+                @Override
+                public Object prepareValue(String value) {
+                    if (Objects.isNull(value) || value.isBlank()) {
+                        return null;
+                    }
+                    return value;
+                }
+            });
+
+            defaultFilterSelected = new ListFilterAndSorter(dropDownField.getLookupAttribute());
+            defaultFilterSelected.addFilterAttribute(new FilterAttributeSetter<String>() {
+                @Override
+                public String getAttributeName() {
+                    return dropDownField.getLookupAttribute();
+                }
+
+                @Override
+                public Object prepareValue(String value) {
+                    if (Objects.isNull(value) || value.isBlank()) {
+                        return null;
+                    }
+                    return value;
+                }
+            });
+        }
         createView();
     }
 
     protected String getWindowTitle() {
-        return "Список множественного выбора.";
+        return "Диалог выбора.";
     }
 
     @Override
@@ -79,8 +112,7 @@ public class DropDownDialog<T> extends AbstractPopupWindow {
         createSelectedItemsTable();
 
         Button button = buttonBuilder.createButton(SolidIcons.ARROW_ALT_RIGHT_LIGHT, SolidIcons.ARROW_ALT_RIGHT_SOLID, "", true);
-
-        button.setOnAction(event -> selectedItems.addAll(table.getSelectedItems().stream().filter(item -> !selectedItems.contains(item)).collect(Collectors.toList())));
+        button.setOnAction(event -> selectedItems.addAll(items.getSelectionModel().getSelectedItems().stream().filter(item -> !selectedItems.contains(item)).collect(Collectors.toList())));
 
         button.setFocusTraversable(false);
         button.prefWidthProperty().bind(button.heightProperty());
@@ -92,99 +124,79 @@ public class DropDownDialog<T> extends AbstractPopupWindow {
         formLayout.setVgap(10);
         formLayout.setPadding(new Insets(10, 0, 0, 0));
 
-        table.prefWidthProperty().bind(view.widthProperty().divide(2).subtract(button.widthProperty()));
-        selectedItemsTable.prefWidthProperty().bind(view.widthProperty().divide(2).subtract(button.widthProperty()));
+        items.prefWidthProperty().bind(view.widthProperty().divide(2).subtract(button.widthProperty()));
+        selected.prefWidthProperty().bind(view.widthProperty().divide(2).subtract(button.widthProperty()));
 
-        formLayout.addRow(0, table, button, selectedItemsTable);
+        formLayout.addRow(0, items, button, selected);
 
         formLayout.prefHeightProperty().bind(view.heightProperty());
         formLayout.prefWidthProperty().bind(view.widthProperty());
 
-        GridPane.setVgrow(table, Priority.ALWAYS);
-        GridPane.setVgrow(selectedItemsTable, Priority.ALWAYS);
+        GridPane.setVgrow(items, Priority.ALWAYS);
+        GridPane.setVgrow(selected, Priority.ALWAYS);
 
-        GridPane.setHgrow(table, Priority.ALWAYS);
-        GridPane.setHgrow(selectedItemsTable, Priority.ALWAYS);
+        GridPane.setHgrow(items, Priority.ALWAYS);
+        GridPane.setHgrow(selected, Priority.ALWAYS);
 
         return formLayout;
     }
 
     @Override
-    protected Region getWindowButtons() {
+    protected Collection<Node> getWindowButtons() {
         Button clearButton = buttonBuilder.createButton("Очистить");
+
         Separator separator = new Separator();
         separator.setOrientation(Orientation.VERTICAL);
 
         Button saveButton = buttonBuilder.createButton("Сохранить");
         Button cancelButton = buttonBuilder.createButton("Отмена");
 
-        clearButton.setOnAction(event -> selectedItems.clear());
+        clearButton.setOnAction(event -> {
+            if (dropDownField instanceof SearchableDropDownField) {
+                selectedItems.clear();
+            }
+        });
 
         saveButton.setOnAction(event -> {
             notifyListeners(selectedItems);
             stage.close();
         });
 
-        cancelButton.setOnAction(event -> stage.close());
+        cancelButton.setOnAction(event -> {
+            selectedItems.setAll(selectedItemsCache);
+            stage.close();
+        });
 
-        HBox buttonView = new HBox(10);
-        buttonView.setPadding(new Insets(10, 10, 10, 10));
-        buttonView.getChildren().addAll(clearButton, separator, saveButton, cancelButton);
-        buttonView.setAlignment(Pos.CENTER_RIGHT);
-
-        return buttonView;
+        return Arrays.asList(clearButton, separator, saveButton, cancelButton);
     }
 
     private void createTable() {
-        ListFilterAndSorterInterface defaultFilter = new EmptyListFilter() {
-            @Override
-            public Map<String, SortDirection> getSortBy() {
-                return new HashMap<>();
-            }
+        items = new InfinityTable<>(dropDownField.getPaginationService(), defaultFilter, false);
 
-            @Override
-            public void setSortBy(Map<String, SortDirection> sortBy) {
-                // Обект фильтра является заглушкой. Поэтому реализация метода отсутсвует.
-            }
-
-            @Override
-            public Map<String, Object> getFilter() {
-                return new HashMap<>();
-            }
-
-            @Override
-            public void clear() {
-                // Обект фильтра является заглушкой. Поэтому реализация метода отсутсвует.
-            }
-        };
-
-        table = new InfinityTable<>(paginationService, defaultFilter);
-
-        PagedColumn<T, String> name = new PagedColumn<>("Название");
-        name.setCellValueFactory(listLabelCallback);
-        table.getColumns().addAll(name);
-        table.setMultiselection(true);
+        CommonColumn<T, String> name = new CommonColumn<>("Название");
+        name.setCellValueFactory(dropDownField.getListLabelCallback());
+        items.getColumns().addAll(name);
+        items.getSelectionModel().setMultiSelect(dropDownField.getSelectionModel().isMultiSelect());
     }
 
     private void createSelectedItemsTable() {
-        selectedItemsTable = new InfinityTable<>(selectedItems);
+        selected = new InfinityTable<>(new DropDownSelectedService<>(dropDownField), defaultFilterSelected, false);
 
-        PagedColumn<T, String> name = new PagedColumn<>("Название");
-        name.setCellValueFactory(listLabelCallback);
+        CommonColumn<T, String> name = new CommonColumn<>("Название");
+        name.setCellValueFactory(dropDownField.getListLabelCallback());
 
-        PagedColumn<T, Button> action = new PagedColumn<>("Действие");
+        CommonColumn<T, Button> action = new CommonColumn<>("Действие");
         Callback<T, Button> actionValueCallback = param -> {
             Button actionButton = buttonBuilder.createButton("Удалить");
             actionButton.setOnAction(event -> removeItem(param));
-
-            actionButton.setMinWidth(73);
             return actionButton;
         };
         action.setCellValueFactory(actionValueCallback);
-        action.setColumnMaxWidth(93);
 
-        selectedItemsTable.getColumns().addAll(name, action);
-        selectedItemsTable.setSelectable(false);
+        selected.getColumns().addAll(name, action);
+        selected.setSelectable(false);
+
+        selectedItems.addListener((ListChangeListener<T>) c -> defaultFilterSelected.clear());
     }
 
     private void removeItem(T item) {

@@ -20,7 +20,7 @@ public class ProgressBarIndicator extends Control {
     private DoubleProperty done;
     private DoubleProperty total;
     private StringProperty format;
-    private final String defaultFormat = "%.2f / %.2f";
+    private String defaultFormat = "%.2f / %.2f";
     private List<Object> formatAttributes;
 
     public ProgressBarIndicator(double done) {

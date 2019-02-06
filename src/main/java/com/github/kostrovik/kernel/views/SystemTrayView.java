@@ -22,6 +22,7 @@ import java.util.TimerTask;
  */
 public class SystemTrayView extends AbstractObservable implements ContentViewInterface {
     private Region view;
+    private ProgressBarIndicator bar;
 
     public SystemTrayView() {
         view = createView();
@@ -29,7 +30,9 @@ public class SystemTrayView extends AbstractObservable implements ContentViewInt
 
     @Override
     public void initView(EventObject event) {
-        // при инициализации не требуется делать каких либо установок
+        bar.setDone(0);
+        bar.setTotal(1);
+        initMemoryListener();
     }
 
     @Override
@@ -42,16 +45,15 @@ public class SystemTrayView extends AbstractObservable implements ContentViewInt
         tray.setPadding(new Insets(5, 5, 5, 5));
         tray.setAlignment(Pos.BOTTOM_RIGHT);
 
-        ProgressBarIndicator bar = new ProgressBarIndicator(0);
-        bar.setFormat("%.2f %s / %.2f %s");
-        initMemoryListener(bar);
+        bar = new ProgressBarIndicator(0);
+        bar.setFormat("%s / %s");
 
         tray.getChildren().setAll(bar);
 
         return tray;
     }
 
-    private void initMemoryListener(ProgressBarIndicator bar) {
+    private void initMemoryListener() {
         Timer timer = new Timer();
 
         TimerTask task = new TimerTask() {
@@ -59,32 +61,27 @@ public class SystemTrayView extends AbstractObservable implements ContentViewInt
             public void run() {
                 long total = Runtime.getRuntime().totalMemory();
                 long free = Runtime.getRuntime().freeMemory();
-
-                List<Object> attributes = new ArrayList<>();
-                attributes.add(bar.getDone());
-                attributes.add(getDimension(total - free));
-                attributes.add(bar.getTotal());
-                attributes.add(getDimension(total));
-
-                bar.setFormatAttributes(attributes);
-
-                bar.setDone(formatValue(total - free));
-                bar.setTotal(formatValue(total));
-            }
-
-            private double formatValue(long v) {
-                if (v < 1024) return v;
-                int z = (63 - Long.numberOfLeadingZeros(v)) / 10;
-                return (double) v / (1L << (z * 10));
-            }
-
-            private String getDimension(long v) {
-                if (v < 1024) return "B";
-                int z = (63 - Long.numberOfLeadingZeros(v)) / 10;
-                return String.format("%sB", " KMGTPE".charAt(z));
+                setMemoryBarValues(total, free);
             }
         };
 
         timer.schedule(task, 0, 5000);
+    }
+
+    private void setMemoryBarValues(long total, long free) {
+        List<Object> attributes = new ArrayList<>();
+        attributes.add(formatValue(total - free));
+        attributes.add(formatValue(total));
+
+        bar.setFormatAttributes(attributes);
+
+        bar.setTotal(total);
+        bar.setDone((double) total - free);
+    }
+
+    private String formatValue(long v) {
+        if (v < 1024) return String.format("%d B", v);
+        int z = (63 - Long.numberOfLeadingZeros(v)) / 10;
+        return String.format("%.2f %sB", (double) v / (1L << (z * 10)), " KMGTPE".charAt(z));
     }
 }

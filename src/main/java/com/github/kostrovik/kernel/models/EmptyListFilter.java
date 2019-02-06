@@ -1,12 +1,10 @@
 package com.github.kostrovik.kernel.models;
 
 import com.github.kostrovik.kernel.dictionaries.SortDirection;
-import com.github.kostrovik.kernel.interfaces.controls.ListFilterAndSorterInterface;
+import com.github.kostrovik.kernel.interfaces.ListFilterAndSorterInterface;
 import com.github.kostrovik.useful.models.AbstractObservable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

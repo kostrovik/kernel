@@ -1,6 +1,7 @@
 package com.github.kostrovik.kernel.graphics.controls.form;
 
 import com.github.kostrovik.kernel.graphics.controls.dropdown.SearchableDropDownField;
+import com.github.kostrovik.kernel.interfaces.PaginationServiceInterface;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -53,7 +54,7 @@ public class SimpleForm extends Control {
     public SimpleFormControl<CheckBox> addCheckBoxField(String label, boolean showLabel) {
         CheckBox field = new CheckBox(label);
         SimpleFormControl<CheckBox> formControl = new SimpleFormControl<>(label, field);
-        formControl.setShowLabel(false);
+        formControl.setShowLabel(showLabel);
         formControls.add(formControl);
         return formControl;
     }
@@ -63,8 +64,8 @@ public class SimpleForm extends Control {
         addField("", separator);
     }
 
-    public <E extends Comparable> SimpleFormControl<SearchableDropDownField<E>> addDropDownField(String label, String attribute) {
-        SearchableDropDownField<E> field = new SearchableDropDownField<>(label, false, attribute);
+    public <E extends Comparable<E>> SimpleFormControl<SearchableDropDownField<E>> addDropDownField(PaginationServiceInterface<E> service, String label, String attribute) {
+        SearchableDropDownField<E> field = new SearchableDropDownField<>(service, label, attribute);
         return addField(label, field);
     }
 

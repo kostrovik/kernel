@@ -11,10 +11,16 @@ import java.util.List;
 public class PagedList<T> {
     private List<T> list;
     private int total;
+    private int offset;
 
-    public PagedList(List<T> list, int total) {
+    public PagedList(List<T> list) {
+        this(list, list.size(), 0);
+    }
+
+    public PagedList(List<T> list, int total, int offset) {
         this.list = list;
         this.total = total;
+        this.offset = offset;
     }
 
     public List<T> getList() {
@@ -23,5 +29,13 @@ public class PagedList<T> {
 
     public int getTotal() {
         return total;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public int getSize() {
+        return list.size();
     }
 }

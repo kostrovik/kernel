@@ -10,9 +10,9 @@ import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.ServiceLoader;
-import java.util.logging.Level;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 /**
@@ -24,22 +24,19 @@ import java.util.logging.Logger;
 public final class Configurator implements ModuleConfiguratorInterface {
     private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(Configurator.class.getName());
     private static volatile Configurator configurator;
-    private static Map<String, Class<?>> views = new HashMap<>();
+    private Map<String, Class<?>> views;
 
     private Configurator() {
+        this.views = prepareViews();
     }
 
     public static Configurator provider() {
         return getConfig();
     }
 
-    public static Configurator getConfig() {
-        if (configurator == null) {
-            synchronized (Configurator.class) {
-                if (configurator == null) {
-                    configurator = new Configurator();
-                }
-            }
+    public static synchronized Configurator getConfig() {
+        if (Objects.isNull(configurator)) {
+            configurator = new Configurator();
         }
         return configurator;
     }
@@ -51,27 +48,18 @@ public final class Configurator implements ModuleConfiguratorInterface {
 
     @Override
     public Map<String, Class<?>> getModuleViews() {
-        if (views.isEmpty()) {
-            synchronized (Configurator.class) {
-                if (views.isEmpty()) {
-                    views.put(ViewTypeDictionary.DROPDOWN_DIALOG.name(), DropDownDialog.class);
-                }
-            }
-        }
-
-        return views;
+        return new ConcurrentHashMap<>(views);
     }
 
     @Override
     public ViewEventListenerInterface getEventListener() {
-        Optional<ViewEventListenerInterface> applicationSettings = getFirstLoadedImplementation(ViewEventListenerInterface.class);
+        ViewEventListenerInterface settings = ServiceLoader.load(ModuleLayer.boot(), ViewEventListenerInterface.class).findFirst().orElse(null);
 
-        if (applicationSettings.isPresent()) {
-            return applicationSettings.get();
+        if (Objects.isNull(settings)) {
+            logger.severe(String.format("Не найден контейнер view приложения. Модуль: %s", this.getClass().getModule().getName()));
         }
-        logger.log(Level.SEVERE, String.format("Не найден контейнер view приложения. Модуль: %s", this.getClass().getModule().getName()));
 
-        return null;
+        return settings;
     }
 
     @Override
@@ -79,7 +67,10 @@ public final class Configurator implements ModuleConfiguratorInterface {
         return 0;
     }
 
-    private <E> Optional<E> getFirstLoadedImplementation(Class<E> type) {
-        return ServiceLoader.load(ModuleLayer.boot(), type).findFirst();
+    private Map<String, Class<?>> prepareViews() {
+        Map<String, Class<?>> viewsMap = new HashMap<>();
+        viewsMap.put(ViewTypeDictionary.DROPDOWN_DIALOG.name(), DropDownDialog.class);
+
+        return viewsMap;
     }
 }

@@ -32,7 +32,6 @@ public class ProgressBarIndicatorSkin extends SkinBase<ProgressBarIndicator> {
     private void addListeners() {
         getSkinnable().doneProperty().addListener((observable, oldValue, newValue) -> setProgress(newValue.doubleValue()));
         getSkinnable().formatProperty().addListener((observable, oldValue, newValue) -> setProgress(getSkinnable().getDone()));
-        getSkinnable().totalProperty().addListener((observable, oldValue, newValue) -> setProgress(getSkinnable().getDone()));
     }
 
     private void setProgress(double done) {

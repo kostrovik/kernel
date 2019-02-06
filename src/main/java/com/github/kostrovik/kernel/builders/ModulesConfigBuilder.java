@@ -3,7 +3,6 @@ package com.github.kostrovik.kernel.builders;
 import com.github.kostrovik.kernel.interfaces.ModuleConfiguratorInterface;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -21,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * интерфейса ModuleConfiguratorInterface и формирует из них общую карту. Используется в конструкторе отображений.
  * Реализует один из вариантов потокобезопасного Singleton.
  */
-public class ModulesConfigBuilder {
+public final class ModulesConfigBuilder {
     private static volatile ModulesConfigBuilder builder;
     /**
      * Общая конфигурация подключенных модулей.
@@ -40,7 +39,7 @@ public class ModulesConfigBuilder {
      *
      * @return the instance
      */
-    public static synchronized ModulesConfigBuilder getInstance() {
+    static synchronized ModulesConfigBuilder getInstance() {
         if (Objects.isNull(builder)) {
             builder = new ModulesConfigBuilder();
         }
@@ -48,31 +47,31 @@ public class ModulesConfigBuilder {
     }
 
     /**
-     * Gets config for module.
+     * Получение конфигурации конкретного модуля.
      *
      * @param moduleName the module name
      *
      * @return the config for module
      */
-    public ModuleConfiguratorInterface getConfigForModule(String moduleName) {
-        return modulesConfig.getOrDefault(moduleName, null);
+    ModuleConfiguratorInterface getConfigForModule(String moduleName) {
+        return modulesConfig.get(moduleName);
     }
 
     /**
-     * Module keys list.
+     * Возвращает список названий модулей подключенных к ядру.
      *
      * @return the list
      */
-    public List<String> moduleKeys() {
+    List<String> modulesKeys() {
         return new ArrayList<>(modulesConfig.keySet());
     }
 
     /**
-     * Gets modules config.
+     * Получение конфигураций всех подключенных модулей.
      *
      * @return the modules config
      */
-    public List<ModuleConfiguratorInterface> getModulesConfig() {
+    List<ModuleConfiguratorInterface> getModulesConfig() {
         return new ArrayList<>(modulesConfig.values());
     }
 
@@ -83,7 +82,7 @@ public class ModulesConfigBuilder {
      *
      * @return the map
      */
-    private static Map<String, ModuleConfiguratorInterface> prepareConfig() {
+    private Map<String, ModuleConfiguratorInterface> prepareConfig() {
         TreeMap<Integer, ModuleConfiguratorInterface> configTree = new TreeMap<>();
         for (ModuleConfiguratorInterface item : ServiceLoader.load(ModuleLayer.boot(), ModuleConfiguratorInterface.class)) {
             configTree.put(item.getModuleOrder(), item);

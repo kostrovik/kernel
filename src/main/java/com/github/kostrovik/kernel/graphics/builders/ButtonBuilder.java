@@ -8,6 +8,8 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+import java.util.Objects;
+
 /**
  * Класс конструктор для создания кнопок приложения.
  * Используется для создания обычных кнопок и кнопок с иконками.
@@ -79,14 +81,15 @@ public class ButtonBuilder {
     }
 
     private void setIcon(Button button, SolidIcons buttonIcon, boolean bindFontSize) {
-        Text icon = new Text(buttonIcon.getSymbol());
-        icon.setFont(buttonIcon.getFont());
+        Text icon = new Text(Objects.nonNull(buttonIcon) ? buttonIcon.getSymbol() : "");
+        if (Objects.nonNull(buttonIcon)) {
+            icon.setFont(buttonIcon.getFont());
+        }
         icon.getStyleClass().add("icon");
         button.setGraphic(icon);
 
         if (bindFontSize) {
             setIcontFont(button, buttonIcon, icon);
-
             button.heightProperty().addListener((observable, oldValue, newValue) -> setIcontFont(button, buttonIcon, icon));
         }
     }
@@ -110,8 +113,10 @@ public class ButtonBuilder {
     private void setIcontFont(Button button, SolidIcons buttonIcon, Text icon) {
         Insets paddings = button.getPadding();
         int size = (int) (button.getPrefHeight() - paddings.getTop() - paddings.getBottom());
-        Font font = Font.loadFont(buttonIcon.getFontPath(), size);
-        icon.setFont(font);
+        if (Objects.nonNull(buttonIcon)) {
+            Font font = Font.loadFont(buttonIcon.getFontPath(), size);
+            icon.setFont(font);
+        }
     }
 
     public Button setIconPosition(Button button, ButtonIconPosition position) {

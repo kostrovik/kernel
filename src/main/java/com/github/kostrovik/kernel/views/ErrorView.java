@@ -31,7 +31,7 @@ public class ErrorView extends AbstractObservable implements ContentViewInterfac
 
     @Override
     public void initView(EventObject event) {
-
+        // Страница не имеет параметров для инициализации.
     }
 
     @Override
@@ -46,7 +46,7 @@ public class ErrorView extends AbstractObservable implements ContentViewInterfac
 
         Text value = new Text();
         value.setFill(Color.ORANGE);
-        value.setText("Не возможно создать страницу.");
+        value.setText("Произошла ошибка при создании страницы.");
         value.setFont(Font.font(18));
 
         StackPane textHolder = new StackPane(value);
