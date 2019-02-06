@@ -1,0 +1,23 @@
+attribute_1:
+  level_1: value_1
+  items:
+    dictionaries:
+      title: Справочники
+      action: null
+      items:
+        citiesList:
+          title: Города
+          action: ru.glance.matrix.commodity.management.views.menu.actions.CityListAction
+        itemTypeList:
+          title: Типы номенклатуры
+          action: ru.glance.matrix.commodity.management.views.menu.actions.ItemTypeListAction
+        itemKindList:
+          title: Виды номенклатуры
+          action: ru.glance.matrix.commodity.management.views.menu.actions.ItemKindListAction
+    shops:
+      title: Магазины
+      action: ru.glance.matrix.commodity.management.views.menu.actions.ShopListAction
+attribute_2: attr_value_2
+nomenclature:
+  title: Номеклатура
+  action: null

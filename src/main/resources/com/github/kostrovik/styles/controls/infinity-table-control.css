@@ -1,48 +1,58 @@
 .infinity-table-control {
 }
 
-.paged-table {
-    -fx-background-color: -styleTableBackground-color;
-
-    -fx-border-width: 2 2 2 1;
+.paged-table .paged-table-header-row {
+    -fx-border-width: 0 1 1 0;
     -fx-border-color: -styleTableCellBorder-color;
 }
 
-.paged-table-header-row {
-    -fx-border-width: 0 0 1 0;
-    -fx-border-color: -styleTableCellBorder-color;
-}
-
-.paged-table-row {
-    -fx-border-width: 0 0 1 0;
-    -fx-border-color: -styleTableCellBorder-color;
-}
-
-.even {
-    -fx-background-color: derive(-styleTableBackground-color, -10%);
-}
-
-.odd {
-    -fx-background-color: -styleTableBackground-color;
-}
-
-.selected {
-    -fx-background-color: -styleTableSelectedRow-color;
-}
-
-.selected * {
-    -fx-fill: -styleTableSelectedText-color;
-    -fx-text-fill: -styleTableSelectedText-color;
-}
-
-.paged-table-cell {
+.paged-table .paged-table-header-row .paged-table-cell {
     -fx-border-width: 0 0 0 1;
     -fx-border-color: -styleTableCellBorder-color;
     -fx-text-fill: -styleTableText-color;
 }
 
-.paged-table-cell .button {
+.paged-table .table-body {
+    -fx-background-color: -styleTableBackground-color;
+    -fx-border-width: 1 0 1 0;
+    -fx-border-color: -styleTableCellBorder-color;
+}
+
+.paged-table .paged-table-row {
+    -fx-border-width: 0 1 1 0;
+    -fx-border-color: -styleTableCellBorder-color;
+}
+
+.paged-table .even {
+    -fx-background-color: derive(-styleTableBackground-color, -10%);
+}
+
+.paged-table .odd {
+    -fx-background-color: -styleTableBackground-color;
+}
+
+.paged-table .selected {
+    -fx-background-color: -styleTableSelectedRow-color;
+}
+
+.paged-table .selected * {
+    -fx-fill: -styleTableSelectedText-color;
+    -fx-text-fill: -styleTableSelectedText-color;
+}
+
+.paged-table .paged-table-cell {
+    -fx-border-width: 0 0 0 1;
+    -fx-border-color: -styleTableCellBorder-color;
+    -fx-text-fill: -styleTableText-color;
+}
+
+.paged-table .paged-table-cell .button {
     -fx-pref-height: 18px;
-    -fx-padding: 0, 2px, 0, 2px;
+    -fx-padding: 0, 5px, 0, 5px;
     -fx-font-size: 10px;
+}
+
+.paged-table .paged-table .list-panel {
+    -fx-border-width: 2 0 0 0;
+    -fx-border-color: -styleTableCellBorder-color;
 }

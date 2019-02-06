@@ -14,6 +14,12 @@ import javafx.scene.text.Font;
  * github:  https://github.com/kostrovik/kernel
  */
 public enum SolidIcons implements IconInterface {
+    EMPTY_ICON(""){
+        @Override
+        public String getFontPath() {
+            return settings.getFontPath();
+        }
+    },
     CARET_DOWN("\uf0d7") {
         @Override
         public String getFontPath() {

@@ -1,6 +1,6 @@
 package com.github.kostrovik.kernel.interfaces.views;
 
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.Menu;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  * github:  https://github.com/kostrovik/kernel
  */
 public interface MenuBuilderInterface {
-    List<MenuItem> getMenuList();
+    List<Menu> getMenuList();
 
     String getModuleMenuName();
 }

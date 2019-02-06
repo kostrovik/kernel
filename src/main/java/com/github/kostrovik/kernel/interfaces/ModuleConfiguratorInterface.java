@@ -1,6 +1,5 @@
 package com.github.kostrovik.kernel.interfaces;
 
-import com.github.kostrovik.kernel.interfaces.controls.ControlBuilderFacadeInterface;
 import com.github.kostrovik.kernel.interfaces.views.MenuBuilderInterface;
 import com.github.kostrovik.kernel.interfaces.views.ViewEventListenerInterface;
 
@@ -19,5 +18,5 @@ public interface ModuleConfiguratorInterface {
 
     ViewEventListenerInterface getEventListener();
 
-    ControlBuilderFacadeInterface getControlBuilder();
+    int getModuleOrder();
 }

@@ -1,10 +1,14 @@
-.drop-down .field-block .text-field {
+.drop-down .label {
+    -fx-fill: -styleTextFieldText-color;
+}
+
+.drop-down .field .text-field {
     -fx-border-width: 1 0 1 1;
     -fx-background-radius: 4px 0 0 4px;
     -fx-border-radius: 4px 0 0 4px;
 }
 
-.drop-down .field-block .text-field:focused {
+.drop-down .field .text-field:focused {
     -fx-effect: none;
 }
 
@@ -21,11 +25,7 @@
     -fx-background-insets: 0;
 }
 
-.drop-down .open-list-button {
-    -fx-border-radius: 0 4px 4px 0;
-    -fx-background-radius: 0 4px 4px 0;
-}
-
+.drop-down .open-list-button,
 .drop-down .multiple .clear-button {
     -fx-border-radius: 0 4px 4px 0;
     -fx-background-radius: 0 4px 4px 0;
@@ -50,12 +50,12 @@
     -fx-fill: -styleTextFieldText-color;
 }
 
-.drop-down .popup-block {
+.data-block {
     -fx-background-color: -styleTableBackground-color;
     -fx-border-color: derive(-styleTableBackground-color, -50%);
 }
 
-.drop-down .popup-block .text-field {
+.data-block .text-field {
     -fx-background-color: -styleTableBackground-color;
     -fx-border-width: 0 0 0 0;
     -fx-text-fill: -styleTextFieldText-color;
@@ -63,47 +63,37 @@
     -fx-background-radius: 0;
 }
 
-.drop-down .popup-block .text-field:focused {
+.data-block .text-field:focused {
     -fx-effect: none;
 }
 
-.drop-down .popup-block .items-count {
+.data-block .items-count {
     -fx-fill: -styleTextFieldText-color;
 }
 
-.drop-down .list-view {
+.data-block .list-block {
     -fx-border-radius: 0;
     -fx-background-color: -styleTableBackground-color;
     -fx-border-width: 1;
     -fx-border-color: -styleTextFieldBorder-color;
+    -fx-padding: 2 2 0 2;
 }
 
-.drop-down .list-cell {
+.data-block .list-row {
     -fx-text-fill: derive(-styleTextFieldText-color, -20%);
     -fx-background-color: -styleTableBackground-color;
-}
-
-.drop-down .list-cell:filled {
     -fx-border-width: 0 0 1 0;
-    -fx-border-color: derive(-styleTableBackground-color, -40%);
+    -fx-border-color: -styleTextFieldBorder-color;
 }
 
-.drop-down .list-cell:empty {
-    -fx-background-color: -styleTableBackground-color;
-}
-
-.drop-down .list-cell:hover {
-    -fx-text-fill: -styleTextFieldText-color;
-}
-
-.drop-down .list-view .list-cell:filled:selected, .drop-down .list-view .list-cell:filled:selected:hover {
-    -fx-background: derive(-styleTableSelectedRow-color, 30%);
-    -fx-background-color: derive(-styleTableSelectedRow-color, 30%);
+.data-block .focused,
+.data-block .list-row:hover {
+    -fx-background-color: derive(-styleTableSelectedRow-color, 60%);
     -fx-text-fill: -styleTableText-color;
 }
 
-.drop-down .list-view .list-cell:filled:hover {
-    -fx-background: derive(-styleTableSelectedRow-color, 30%);
+.data-block .selected,
+.data-block .selected:hover {
     -fx-background-color: derive(-styleTableSelectedRow-color, 30%);
     -fx-text-fill: -styleTableText-color;
 }

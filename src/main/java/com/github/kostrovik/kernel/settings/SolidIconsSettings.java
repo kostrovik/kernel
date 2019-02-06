@@ -1,5 +1,6 @@
 package com.github.kostrovik.kernel.settings;
 
+import com.github.kostrovik.kernel.exceptions.ParseException;
 import com.github.kostrovik.useful.utils.InstanceLocatorUtil;
 
 import java.io.FileNotFoundException;
@@ -17,9 +18,10 @@ import java.util.logging.Logger;
  * github:  https://github.com/kostrovik/kernel
  */
 public final class SolidIconsSettings {
-    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(SolidIconsSettings.class.getName());
+    private static Logger logger = InstanceLocatorUtil.getLocator().getLogger(SolidIconsSettings.class);
 
     private static volatile SolidIconsSettings settings;
+
     private Properties config;
     private static final String DEFAULT_CONFIG_FILE_PATH = "/com/github/kostrovik/icons/control_icons.properties";
     private static final String ICONS_FONT_PATH = "icons.font.path";
@@ -32,21 +34,16 @@ public final class SolidIconsSettings {
         config = getDefaultConfig();
     }
 
-    public static SolidIconsSettings getInstance() {
+    public static synchronized SolidIconsSettings getInstance() {
         if (settings == null) {
-            synchronized (SolidIconsSettings.class) {
-                if (settings == null) {
-                    settings = new SolidIconsSettings();
-                }
-            }
+            settings = new SolidIconsSettings();
         }
         return settings;
     }
 
     private Properties getDefaultConfig() {
         Properties result = new Properties();
-
-        try (InputStream inputStream = Class.forName(SolidIconsSettings.class.getName()).getResourceAsStream(DEFAULT_CONFIG_FILE_PATH)) {
+        try (InputStream inputStream = this.getClass().getResourceAsStream(DEFAULT_CONFIG_FILE_PATH)) {
             if (inputStream != null) {
                 result.load(inputStream);
 
@@ -56,20 +53,18 @@ public final class SolidIconsSettings {
                 result.setProperty(ICONS_REGULAR_FONT_PATH, preparePathForDefaultResource(result.getProperty(ICONS_REGULAR_FONT_PATH)));
                 result.setProperty(ICONS_BRAND_FONT_PATH, preparePathForDefaultResource(result.getProperty(ICONS_BRAND_FONT_PATH)));
             }
-
+            return result;
         } catch (FileNotFoundException error) {
             logger.log(Level.SEVERE, "Не найден файл конфигурации по умолчанию", error);
+            throw new ParseException(error);
         } catch (IOException error) {
             logger.log(Level.SEVERE, "Не возможно загрузить настройки умолчанию", error);
-        } catch (ClassNotFoundException error) {
-            logger.log(Level.SEVERE, "Не возможно найти класс", error);
+            throw new ParseException(error);
         }
-
-        return result;
     }
 
-    private String preparePathForDefaultResource(String path) throws FileNotFoundException, ClassNotFoundException {
-        URL resource = Class.forName(SolidIconsSettings.class.getName()).getResource(path);
+    private String preparePathForDefaultResource(String path) throws FileNotFoundException {
+        URL resource = this.getClass().getResource(path);
 
         if (resource == null) {
             throw new FileNotFoundException("resources path: " + path);

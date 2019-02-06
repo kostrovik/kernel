@@ -1,7 +1,9 @@
 package com.github.kostrovik.kernel.views.menu;
 
-import com.github.kostrovik.kernel.interfaces.views.MenuBuilderInterface;
-import javafx.scene.control.MenuItem;
+import com.github.kostrovik.kernel.models.AbstractMenuBuilder;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Menu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +14,19 @@ import java.util.List;
  * date:    23/07/2018
  * github:  https://github.com/kostrovik/kernel
  */
-public class MenuBuilder implements MenuBuilderInterface {
+public class MenuBuilder extends AbstractMenuBuilder {
     @Override
-    public List<MenuItem> getMenuList() {
+    public List<Menu> getMenuList() {
         return new ArrayList<>();
     }
 
     @Override
     public String getModuleMenuName() {
         return "";
+    }
+
+    @Override
+    protected EventHandler<ActionEvent> prepareAction(String actionClass) {
+        return null;
     }
 }

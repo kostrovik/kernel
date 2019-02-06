@@ -1,53 +1,51 @@
-.root{
+.root {
     -icons-color: #ff0066;
     -top-icons-color: white;
     -base-icons-color: black;
 }
 
-.far{
+.far {
     -fx-fill: -icons-color;
 }
 
-.glyph-icon{
+.glyph-icon {
     -fx-fill: -icons-color;
 }
 
-.stack-base{
+.stack-base {
     -fx-font-size: 3em;
     -fx-fill: -base-icons-color;
 }
 
-.stack-top{
+.stack-top {
     -fx-font-size: 2em;
     -fx-fill: -top-icons-color;
 }
 
-.blue-icon{
+.blue-icon {
     -icons-color: blue;
-    /*-fx-fill: linear-gradient(-icons-color 0%, derive(-icons-color, 100%) 30%, derive(red, 30%) 85%);*/
     -fx-fill: #ffffff;
 }
 
-.green-icon{
+.green-icon {
     -icons-color: green;
-    /*-fx-fill: linear-gradient(-icons-color 0%, derive(-icons-color, 100%) 30%, derive(red, 30%) 85%);*/
     -fx-fill: #cccccc;
 }
 
-.exit-button{
+.exit-button {
     -icons-color: gray;
 }
 
-.alien-button{
+.alien-button {
     -icons-color: yellowgreen;
 }
 
-.thumbs-up-icon{
+.thumbs-up-icon {
     -glyph-name: "THUMBS_UP";
     -glyph-size: 6em;
 }
 
-.thumbs-down-icon{
+.thumbs-down-icon {
     -glyph-name: "THUMBS_DOWN";
     -glyph-size: 6em;
 }
